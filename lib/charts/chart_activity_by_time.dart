@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:health_app_mobile_client/services/health_data_service.dart';
 
 class ActivityChart extends StatefulWidget {
   final String leftTitle;
@@ -13,7 +12,41 @@ class ActivityChart extends StatefulWidget {
 }
 
 class _ActivityChartState extends State<ActivityChart> {
-  List<BarChartGroupData> thisBarCharts = [];
+  List<BarChartGroupData> thisBarCharts = [
+    BarChartGroupData(
+      barsSpace: 4,
+      x: 0,
+      barRods: [
+        BarChartRodData(
+          toY: 4,
+          // color: widget.leftBarColor,
+          width: 4,
+        ),
+      ],
+    ),
+        BarChartGroupData(
+      barsSpace: 4,
+      x: 1,
+      barRods: [
+        BarChartRodData(
+          toY: 4,
+          // color: widget.leftBarColor,
+          width: 4,
+        ),
+      ],
+    ),
+        BarChartGroupData(
+      barsSpace: 4,
+      x: 2,
+      barRods: [
+        BarChartRodData(
+          toY: 4,
+          // color: widget.leftBarColor,
+          width: 4,
+        ),
+      ],
+    )
+  ];
 
   
   @override
@@ -31,6 +64,35 @@ class _ActivityChartState extends State<ActivityChart> {
       ),
     );
   }
+}
+
+FlTitlesData? myTilesData(BuildContext context, String leftTitle) {
+  return FlTitlesData(
+    leftTitles: AxisTitles(
+      axisNameWidget: Text(
+        leftTitle,
+        style: Theme.of(context).textTheme.bodyLarge,
+      ),
+      sideTitles: const SideTitles(
+        getTitlesWidget: leftTitleWidgets,
+        showTitles: true,
+        interval: 2,
+      ),
+    ),
+    bottomTitles: const AxisTitles(
+      sideTitles: SideTitles(
+        getTitlesWidget: bottomTitleWidgets,
+        showTitles: true,
+        interval: 1,
+      ),
+    ),
+    rightTitles: const AxisTitles(
+      sideTitles: SideTitles(showTitles: false),
+    ),
+    topTitles: const AxisTitles(
+      sideTitles: SideTitles(showTitles: false),
+    ),
+  );
 }
 
 Widget bottomTitleWidgets(double value, TitleMeta meta) {
@@ -108,35 +170,6 @@ BarTouchData? myBarTouchData(BuildContext context) {
           const TextStyle(fontSize: 13.0, fontWeight: FontWeight.bold),
         );
       },
-    ),
-  );
-}
-
-FlTitlesData? myTilesData(BuildContext context, String leftTitle) {
-  return FlTitlesData(
-    leftTitles: AxisTitles(
-      axisNameWidget: Text(
-        leftTitle,
-        style: Theme.of(context).textTheme.bodyLarge,
-      ),
-      sideTitles: const SideTitles(
-        getTitlesWidget: leftTitleWidgets,
-        showTitles: true,
-        interval: 2,
-      ),
-    ),
-    bottomTitles: const AxisTitles(
-      sideTitles: SideTitles(
-        getTitlesWidget: bottomTitleWidgets,
-        showTitles: true,
-        interval: 1,
-      ),
-    ),
-    rightTitles: const AxisTitles(
-      sideTitles: SideTitles(showTitles: false),
-    ),
-    topTitles: const AxisTitles(
-      sideTitles: SideTitles(showTitles: false),
     ),
   );
 }

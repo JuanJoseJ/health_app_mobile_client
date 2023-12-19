@@ -49,7 +49,7 @@ class HealthDataService {
 
   // Returns a list of minutes of activity for equal periods of time in a day
   //!!!!!!!!!! CHANGE THIS !!!!!!!!!!!!!!!!!!!!!!!!
-  // Change this, so you fetch data once for around ten days ONCE at the init of the state of the app
+  // Change this, so you fetch data once for around ten days ONCE at the init of the state of the mainPage
   // Then, make this function filter periods of single days from THAT list when you want to get the lists.
   // Finally, make the functions that generates the bars for: A DAY, A MONTH, and A YEAR.
   Future<List<int>> getDailyActivityByPeriods(
@@ -70,6 +70,8 @@ class HealthDataService {
       return startOfDay
           .add(Duration(hours: valueToAdd.floor(), minutes: minutes.toInt()));
     });
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // DONT FETCH DATA HERE
     List<HealthDataPoint> moveMinutes =
         await fetchHealthData(startOfDay, endtOfDay, type);
     // Initialize the activityList with zeros for each period
