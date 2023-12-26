@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:health/health.dart';
+import 'package:health_app_mobile_client/pages/my_home_page.dart';
+import 'package:health_app_mobile_client/services/health_data_service.dart';
+import 'package:provider/provider.dart';
 
 class ActivityChart extends StatefulWidget {
   final String leftTitle;
@@ -12,57 +16,32 @@ class ActivityChart extends StatefulWidget {
 }
 
 class _ActivityChartState extends State<ActivityChart> {
-  List<BarChartGroupData> thisBarCharts = [
-    BarChartGroupData(
-      barsSpace: 4,
-      x: 0,
-      barRods: [
-        BarChartRodData(
-          toY: 4,
-          // color: widget.leftBarColor,
-          width: 4,
-        ),
-      ],
-    ),
-        BarChartGroupData(
-      barsSpace: 4,
-      x: 1,
-      barRods: [
-        BarChartRodData(
-          toY: 4,
-          // color: widget.leftBarColor,
-          width: 4,
-        ),
-      ],
-    ),
-        BarChartGroupData(
-      barsSpace: 4,
-      x: 2,
-      barRods: [
-        BarChartRodData(
-          toY: 4,
-          // color: widget.leftBarColor,
-          width: 4,
-        ),
-      ],
-    )
+  // final hds = HealthDataService();
+  final List<MaterialAccentColor> dailyActivityRodColors = [
+    Colors.orangeAccent,
+    Colors.redAccent,
+    Colors.blueAccent
   ];
 
-  
   @override
   Widget build(BuildContext context) {
-    // myDataGroups(context);
-
-    return BarChart(
-      BarChartData(
-        barGroups: thisBarCharts,
-        titlesData: myTilesData(context, widget.leftTitle),
-        barTouchData: myBarTouchData(context),
-        borderData: FlBorderData(
-          show: false,
+    return Consumer<HealthDataProvider>(builder: (context, hDataPoints, child) {
+      List<BarChartGroupData> thisBarCharts = genBarChartDataGroups(
+          hDataPoints.currentDataPoints,
+          3,
+          DateTime.now(),
+          dailyActivityRodColors);
+      return BarChart(
+        BarChartData(
+          barGroups: thisBarCharts,
+          titlesData: myTilesData(context, widget.leftTitle),
+          barTouchData: myBarTouchData(context),
+          borderData: FlBorderData(
+            show: false,
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
@@ -76,7 +55,7 @@ FlTitlesData? myTilesData(BuildContext context, String leftTitle) {
       sideTitles: const SideTitles(
         getTitlesWidget: leftTitleWidgets,
         showTitles: true,
-        interval: 2,
+        interval: 5,
       ),
     ),
     bottomTitles: const AxisTitles(
@@ -132,10 +111,10 @@ Widget bottomTitleWidgets(double value, TitleMeta meta) {
 }
 
 Widget leftTitleWidgets(double value, TitleMeta meta) {
-  // final Widget text;
-
   return Text(
-    value.toStringAsFixed(value.truncateToDouble() == value ? 0 : 1),
+    (value % meta.appliedInterval == 0)
+        ? value.toStringAsFixed(0)
+        : '', // Only show titles on the same period
     style: const TextStyle(
       color: Colors.black54,
     ),
@@ -147,6 +126,8 @@ BarTouchData? myBarTouchData(BuildContext context) {
   String timeText;
   return BarTouchData(
     touchTooltipData: BarTouchTooltipData(
+      fitInsideVertically: true,
+      fitInsideHorizontally: true,
       maxContentWidth: 70,
       tooltipPadding: const EdgeInsets.all(4),
       tooltipBgColor: Color.fromARGB(255, 236, 236, 236).withOpacity(0.9),
@@ -174,3 +155,46 @@ BarTouchData? myBarTouchData(BuildContext context) {
   );
 }
 
+/// Generates a list of [BarChartGroupData] based on health data points.
+///
+/// This function takes a list of [HealthDataPoint] objects [hDataPoints],
+/// an integer [nPeriods] representing the number of periods in which to accumulate
+/// the activity, a [DateTime] [date]for the specific date, and an optional list
+/// of [Color]s [barColors] for customizing the colors of the bars.
+/// If [barColors] is not provided, a default color of [Colors.blueAccent] will be used.
+///
+/// The function calculates the activity periods using the [HealthDataService],
+/// assigns colors to the bars based on the provided [barColors], and returns
+/// a list of [BarChartGroupData].
+List<BarChartGroupData> genBarChartDataGroups(List<HealthDataPoint> hDataPoints,
+    int nPeriods, DateTime date, List<Color>? barColors) {
+  // !!!!!!!!!!!!!! Modify this function to accept a list of dates
+  // so that multiple dates can be  taken into account to accumulate the work
+  List<BarChartGroupData> tempBarCharts = [];
+
+  List<int> periods = HealthDataService()
+      .getDailyActivityByPeriods(nPeriods, date, hDataPoints);
+
+  // Default color if barColors is not provided
+  barColors ??= [Colors.blueAccent];
+
+  for (int i = 0; i < periods.length; i++) {
+    var value = periods[i];
+    var color =
+        barColors[i % barColors.length]; // Handle color assignment logic
+
+    tempBarCharts.add(
+      BarChartGroupData(
+        x: i,
+        barRods: [
+          BarChartRodData(
+            toY: value.toDouble(),
+            color: color,
+          ),
+        ],
+      ),
+    );
+  }
+
+  return tempBarCharts;
+}

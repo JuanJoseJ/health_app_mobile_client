@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
+import 'package:health_app_mobile_client/pages/my_home_page.dart';
 import 'package:health_app_mobile_client/services/health_data_service.dart';
 import 'package:health_app_mobile_client/widgets/health/util.dart';
+import 'package:provider/provider.dart';
 
 void main() => runApp(HealthApp());
 
@@ -104,9 +106,6 @@ class _HealthAppState extends State<HealthApp> {
     // filter out duplicates
     _healthDataList = HealthFactory.removeDuplicates(_healthDataList);
 
-    // print the results
-    // _healthDataList.forEach((x) => print(x));
-
     // update the UI to display the results
     setState(() {
       _state = _healthDataList.isEmpty ? AppState.NO_DATA : AppState.DATA_READY;
@@ -129,8 +128,6 @@ class _HealthAppState extends State<HealthApp> {
       } catch (error) {
         print("Caught exception in getTotalStepsInInterval: $error");
       }
-
-      print('Total number of steps: $steps');
 
       setState(() {
         _nofSteps = (steps == null) ? 0 : steps;
@@ -279,58 +276,60 @@ class _HealthAppState extends State<HealthApp> {
         appBar: AppBar(
           title: const Text('Health Example'),
         ),
-        body: Container(
-          child: Column(
-            children: [
-              Wrap(
-                spacing: 10,
+        body: Consumer<HealthDataProvider>(
+          builder: (context, healthDataProvider, child) {
+            return Container(
+              child: Column(
                 children: [
-                  TextButton(
-                      onPressed: authorize,
-                      child:
-                          Text("Auth", style: TextStyle(color: Colors.white)),
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStatePropertyAll(Colors.blue))),
-                  TextButton(
-                      onPressed: fetchData,
-                      child: Text("Fetch Data",
-                          style: TextStyle(color: Colors.white)),
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStatePropertyAll(Colors.blue))),
-                  TextButton(
-                      onPressed: fetchStepData,
-                      child: Text("Fetch Step Data",
-                          style: TextStyle(color: Colors.white)),
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStatePropertyAll(Colors.blue))),
-                  TextButton(
-                      onPressed: () async {
-                        try {
-                          DateTime now = DateTime.now();
-                          int nPeriods = 3;
+                  Wrap(
+                    spacing: 10,
+                    children: [
+                      TextButton(
+                          onPressed: authorize,
+                          child: Text("Auth",
+                              style: TextStyle(color: Colors.white)),
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStatePropertyAll(Colors.blue))),
+                      TextButton(
+                          onPressed: fetchData,
+                          child: Text("Fetch Data",
+                              style: TextStyle(color: Colors.white)),
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStatePropertyAll(Colors.blue))),
+                      TextButton(
+                          onPressed: fetchStepData,
+                          child: Text("Fetch Step Data",
+                              style: TextStyle(color: Colors.white)),
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStatePropertyAll(Colors.blue))),
+                      TextButton(
+                          onPressed: () async {
+                            try {
+                              DateTime now = DateTime.now();
+                              int nPeriods = 3;
 
-                          List<int> result =
-                              await HealthDataService().getDailyActivityByPeriods(nPeriods, now);
-
-                          print("Activity List: $result");
-                        } catch (e) {
-                          print("$e");
-                        }
-                      },
-                      child:
-                          Text("Probar", style: TextStyle(color: Colors.white)),
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStatePropertyAll(Colors.blue))),
+                              List<int> result = await HealthDataService()
+                                  .getDailyActivityByPeriods(nPeriods, now, healthDataProvider.currentDataPoints);
+                            } catch (e) {
+                              print("$e");
+                            }
+                          },
+                          child: Text("Probar",
+                              style: TextStyle(color: Colors.white)),
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStatePropertyAll(Colors.blue))),
+                    ],
+                  ),
+                  Divider(thickness: 3),
+                  Expanded(child: Center(child: _content()))
                 ],
               ),
-              Divider(thickness: 3),
-              Expanded(child: Center(child: _content()))
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

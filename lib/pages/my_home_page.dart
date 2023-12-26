@@ -36,11 +36,14 @@ class _MainPageState extends State<MainPage> {
     int nOfDays = 10;
     DateTime endtOfDay =
         DateTime(now.year, now.month, now.day).add(const Duration(days: 1));
+    final List<HealthDataAccess> permission = [HealthDataAccess.READ];
     final List<HealthDataType> type = [HealthDataType.MOVE_MINUTES];
+    // Check permission to read Move minutes
+    await healthDataService.checkPermissions(permission, type);
     List<HealthDataPoint> fetchedData = await healthDataService.fetchHealthData(
         endtOfDay.subtract(Duration(days: nOfDays)), endtOfDay, type);
     dataPointsProvider.updateDataPoints(fetchedData); //Trigger rebuild
-    print("New saved data points: [${dataPointsProvider.currentDataPoints}]");
+    // print("New saved data points: [${dataPointsProvider.currentDataPoints}]");
   }
 
   @override
@@ -51,6 +54,7 @@ class _MainPageState extends State<MainPage> {
       },
       child: Scaffold(
         appBar: MyTopBar(),
+        // body: HealthApp(),
         body: changePage(_currentIndex),
         // body: ExampleWidget(),
         bottomNavigationBar: MyBottomBar(
@@ -104,7 +108,8 @@ class ExampleWidget extends StatelessWidget {
     return Consumer<HealthDataProvider>(
       builder: (context, healthDataProvider, child) {
         // Access the data from the provider
-        List<HealthDataPoint> activityData = healthDataProvider.currentDataPoints;
+        List<HealthDataPoint> activityData =
+            healthDataProvider.currentDataPoints;
 
         // Use the data to build your UI
         return ListView.builder(
