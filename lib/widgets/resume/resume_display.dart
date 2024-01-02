@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:health_app_mobile_client/pages/my_home_page.dart';
 import 'package:health_app_mobile_client/widgets/resume/resume_cards.dart';
 
 class ResumeCardsScafold extends StatelessWidget {
-  const ResumeCardsScafold({super.key});
+  final AppState? appState;
+  const ResumeCardsScafold(this.appState, {super.key});
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _myCards() {
     return const Padding(
       padding: EdgeInsets.all(8.0),
       child: Flex(
@@ -54,8 +55,7 @@ class ResumeCardsScafold extends StatelessWidget {
                       title: "Food",
                       myIcon: Icon(
                         Icons.restaurant,
-                        color: Colors.green
-                        ,
+                        color: Colors.green,
                       ),
                     )),
                   ],
@@ -79,5 +79,68 @@ class ResumeCardsScafold extends StatelessWidget {
         ],
       ),
     );
+    ;
+  }
+
+  Widget _loading() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+              padding: const EdgeInsets.all(20),
+              child: const CircularProgressIndicator(
+                strokeWidth: 10,
+              )),
+          const Text('Fetching data...')
+        ],
+      ),
+    );
+  }
+
+  Widget _contentNoData() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[Text('No Data to show')],
+      ),
+    );
+  }
+
+  Widget _contentNotFetched() {
+    return const Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('Data could not be fetched'),
+      ],
+    );
+  }
+
+  Widget _notAuthorized() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[Text('Authorization not granted')],
+      ),
+    );
+  }
+
+  Widget _content() {
+    if (appState == AppState.FETCHING_DATA) {
+      return _loading();
+    } else if (appState == AppState.DATA_NOT_FETCHED) {
+      return _contentNotFetched();
+    } else if (appState == AppState.NO_DATA) {
+      return _contentNoData();
+    } else if (appState == AppState.AUTH_NOT_GRANTED) {
+      return _notAuthorized();
+    } else {
+      return _myCards();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _content();
   }
 }

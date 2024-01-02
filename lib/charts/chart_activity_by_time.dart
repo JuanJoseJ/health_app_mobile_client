@@ -117,6 +117,7 @@ Widget leftTitleWidgets(double value, TitleMeta meta) {
         : '', // Only show titles on the same period
     style: const TextStyle(
       color: Colors.black54,
+      fontSize: 9,
     ),
     textAlign: TextAlign.center,
   );

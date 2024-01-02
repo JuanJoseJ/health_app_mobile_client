@@ -9,6 +9,20 @@ import 'package:provider/provider.dart';
 
 import '../widgets/navigation/bottom_bar.dart';
 
+enum AppState {
+  DATA_NOT_FETCHED,
+  FETCHING_DATA,
+  DATA_READY,
+  NO_DATA,
+  AUTHORIZED,
+  AUTH_NOT_GRANTED,
+  DATA_ADDED,
+  DATA_DELETED,
+  DATA_NOT_ADDED,
+  DATA_NOT_DELETED,
+  STEPS_READY,
+}
+
 class MainPage extends StatefulWidget {
   const MainPage({Key? key, required this.title}) : super(key: key);
 
@@ -21,6 +35,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
   final dataPointsProvider = HealthDataProvider();
+  AppState _state = AppState.DATA_NOT_FETCHED;
 
   @override
   void initState() {
@@ -32,6 +47,7 @@ class _MainPageState extends State<MainPage> {
   // it arrives later and triggers a rebuild
   Future<void> fetchInitialData() async {
     final HealthDataService healthDataService = HealthDataService();
+    List<HealthDataPoint> fetchedData = [];
     DateTime now = DateTime.now();
     int nOfDays = 10;
     DateTime endtOfDay =
@@ -39,11 +55,27 @@ class _MainPageState extends State<MainPage> {
     final List<HealthDataAccess> permission = [HealthDataAccess.READ];
     final List<HealthDataType> type = [HealthDataType.MOVE_MINUTES];
     // Check permission to read Move minutes
-    await healthDataService.checkPermissions(permission, type);
-    List<HealthDataPoint> fetchedData = await healthDataService.fetchHealthData(
-        endtOfDay.subtract(Duration(days: nOfDays)), endtOfDay, type);
-    dataPointsProvider.updateDataPoints(fetchedData); //Trigger rebuild
-    // print("New saved data points: [${dataPointsProvider.currentDataPoints}]");
+    setState(() {
+      _state = AppState.FETCHING_DATA;
+    });
+    bool permitedAcces =
+        await healthDataService.checkPermissions(permission, type);
+    if (!permitedAcces) {
+      setState(() {
+        _state = AppState.AUTH_NOT_GRANTED;
+      });
+    } else {
+      fetchedData = await healthDataService.fetchHealthData(
+          endtOfDay.subtract(Duration(days: nOfDays)), endtOfDay, type);
+      setState(() {
+        if (fetchedData.isEmpty) {
+          _state = AppState.NO_DATA;
+        } else {
+          _state = AppState.DATA_READY;
+          dataPointsProvider.updateDataPoints(fetchedData); //Trigger rebuild
+        }
+      });
+    }
   }
 
   @override
@@ -55,7 +87,7 @@ class _MainPageState extends State<MainPage> {
       child: Scaffold(
         appBar: MyTopBar(),
         // body: HealthApp(),
-        body: changePage(_currentIndex),
+        body: pageSelector(_currentIndex, _state),
         // body: ExampleWidget(),
         bottomNavigationBar: MyBottomBar(
           currentIndex: _currentIndex,
@@ -71,20 +103,20 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-Widget? changePage(int i) {
+Widget? pageSelector(int i, AppState? appState) {
   Widget page;
   switch (i) {
     case 0:
-      page = ResumeCardsScafold();
+      page = ResumeCardsScafold(appState);
       break;
     case 1:
       page = HealthApp();
       break;
     case 2:
-      page = ProfileScreen();
+      page = const ProfileScreen();
       break;
     default:
-      page = ResumeCardsScafold();
+      page = const ResumeCardsScafold(null);
   }
   return page;
 }
@@ -97,31 +129,5 @@ class HealthDataProvider extends ChangeNotifier {
   void updateDataPoints(List<HealthDataPoint> newDataPoints) {
     _currentDataPoints = newDataPoints;
     notifyListeners();
-  }
-}
-
-// !!!!!!!!!!!!!!!!!!! DELETE THIS AFTERWARDS !!!!!!!!!!!!!!!!!!!!!!!!!!!
-// Junst an example of how to use a provider for the initial fetched data
-class ExampleWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<HealthDataProvider>(
-      builder: (context, healthDataProvider, child) {
-        // Access the data from the provider
-        List<HealthDataPoint> activityData =
-            healthDataProvider.currentDataPoints;
-
-        // Use the data to build your UI
-        return ListView.builder(
-          itemCount: activityData.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text('Data: ${activityData[index]}'),
-              // Add more UI elements based on the data
-            );
-          },
-        );
-      },
-    );
   }
 }
