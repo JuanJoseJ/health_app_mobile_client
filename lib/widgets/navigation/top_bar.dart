@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MyTopBar extends StatelessWidget implements PreferredSizeWidget {
-
+  const MyTopBar({super.key});
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 

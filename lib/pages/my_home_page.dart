@@ -34,7 +34,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
-  final dataPointsProvider = HealthDataProvider();
+  final dataPointsProvider = HomeDateProvider();
   AppState _state = AppState.DATA_NOT_FETCHED;
 
   @override
@@ -85,7 +85,7 @@ class _MainPageState extends State<MainPage> {
         return dataPointsProvider;
       },
       child: Scaffold(
-        appBar: MyTopBar(),
+        appBar: const MyTopBar(),
         // body: HealthApp(),
         body: pageSelector(_currentIndex, _state),
         // body: ExampleWidget(),
@@ -97,7 +97,6 @@ class _MainPageState extends State<MainPage> {
             });
           },
         ),
-        backgroundColor: Theme.of(context).colorScheme.background,
       ),
     );
   }
@@ -123,11 +122,18 @@ Widget? pageSelector(int i, AppState? appState) {
 
 // Provider allows down the tree widgets to access the fetched
 
-class HealthDataProvider extends ChangeNotifier {
+class HomeDateProvider extends ChangeNotifier {
   List<HealthDataPoint> _currentDataPoints = [];
   List<HealthDataPoint> get currentDataPoints => _currentDataPoints;
   void updateDataPoints(List<HealthDataPoint> newDataPoints) {
     _currentDataPoints = newDataPoints;
+    notifyListeners();
+  }
+
+  DateTime _currentDate = DateTime.now();
+  DateTime get currentDate => _currentDate;
+  void updateCurrentDate(DateTime newDate) {
+    _currentDate = newDate;
     notifyListeners();
   }
 }

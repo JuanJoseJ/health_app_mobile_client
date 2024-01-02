@@ -1,85 +1,89 @@
 import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/pages/my_home_page.dart';
+import 'package:health_app_mobile_client/widgets/navigation/date_bar.dart';
 import 'package:health_app_mobile_client/widgets/resume/resume_cards.dart';
 
 class ResumeCardsScafold extends StatelessWidget {
   final AppState? appState;
   const ResumeCardsScafold(this.appState, {super.key});
 
-  Widget _myCards() {
-    return const Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Flex(
-        direction: Axis.vertical,
-        children: <Widget>[
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                    child: Column(
-                  children: [
-                    Expanded(
-                        child: ResumeCard(
-                      title: "Activity",
-                      myIcon: Icon(
-                        Icons.fitness_center,
-                        color: Colors.orangeAccent,
-                      ),
-                    )),
-                  ],
-                )),
-                Expanded(
-                    child: Column(
-                  children: [
-                    Expanded(
-                        child: ResumeCard(
-                      title: "Days",
-                      myIcon: Icon(
-                        Icons.self_improvement,
-                        color: Colors.redAccent,
-                      ),
-                    )),
-                  ],
-                )),
-              ],
+  Widget _myCards(BuildContext context) {
+    return Scaffold(
+      appBar: DateBar(),
+      backgroundColor: Theme.of(context).colorScheme.background,
+      body: const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Flex(
+          direction: Axis.vertical,
+          children: <Widget>[
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                      child: Column(
+                    children: [
+                      Expanded(
+                          child: ResumeCard(
+                        title: "Activity",
+                        myIcon: Icon(
+                          Icons.fitness_center,
+                          color: Colors.orangeAccent,
+                        ),
+                      )),
+                    ],
+                  )),
+                  Expanded(
+                      child: Column(
+                    children: [
+                      Expanded(
+                          child: ResumeCard(
+                        title: "Days",
+                        myIcon: Icon(
+                          Icons.self_improvement,
+                          color: Colors.redAccent,
+                        ),
+                      )),
+                    ],
+                  )),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                    child: Column(
-                  children: [
-                    Expanded(
-                        child: ResumeCard(
-                      title: "Food",
-                      myIcon: Icon(
-                        Icons.restaurant,
-                        color: Colors.green,
-                      ),
-                    )),
-                  ],
-                )),
-                Expanded(
-                    child: Column(
-                  children: [
-                    Expanded(
-                        child: ResumeCard(
-                      title: "Sleep",
-                      myIcon: Icon(
-                        Icons.hotel,
-                        color: Colors.lightBlueAccent,
-                      ),
-                    )),
-                  ],
-                )),
-              ],
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                      child: Column(
+                    children: [
+                      Expanded(
+                          child: ResumeCard(
+                        title: "Food",
+                        myIcon: Icon(
+                          Icons.restaurant,
+                          color: Colors.green,
+                        ),
+                      )),
+                    ],
+                  )),
+                  Expanded(
+                      child: Column(
+                    children: [
+                      Expanded(
+                          child: ResumeCard(
+                        title: "Sleep",
+                        myIcon: Icon(
+                          Icons.hotel,
+                          color: Colors.lightBlueAccent,
+                        ),
+                      )),
+                    ],
+                  )),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
-    ;
   }
 
   Widget _loading() {
@@ -125,7 +129,7 @@ class ResumeCardsScafold extends StatelessWidget {
     );
   }
 
-  Widget _content() {
+  Widget _content(BuildContext context) {
     if (appState == AppState.FETCHING_DATA) {
       return _loading();
     } else if (appState == AppState.DATA_NOT_FETCHED) {
@@ -135,12 +139,12 @@ class ResumeCardsScafold extends StatelessWidget {
     } else if (appState == AppState.AUTH_NOT_GRANTED) {
       return _notAuthorized();
     } else {
-      return _myCards();
+      return _myCards(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return _content();
+    return _content(context);
   }
 }

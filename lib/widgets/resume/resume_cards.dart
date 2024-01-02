@@ -58,8 +58,11 @@ class ResumeCard extends StatelessWidget {
             ),
           ),
         )),
-        Consumer<HealthDataProvider>(builder: (context, hDataProv, child) {
-          int totMinutes = getDailyActivityByPeriods(DateTime.now(), hDataProv.currentDataPoints);
+        Consumer<HomeDateProvider>(builder: (context, hDataProv, child) {
+          int totMinutes = getDailyActivityByPeriods(
+            hDataProv.currentDate, 
+            hDataProv.currentDataPoints
+          );
           return Row(
             children: [
               Expanded(
