@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:health/health.dart';
 import 'package:health_app_mobile_client/charts/chart_activity_by_time.dart';
+import 'package:health_app_mobile_client/pages/my_home_page.dart';
+import 'package:provider/provider.dart';
 
 class ResumeCard extends StatelessWidget {
   final String title;
@@ -33,13 +36,12 @@ class ResumeCard extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {}, 
-                    icon: Icon(
+                      onPressed: () {},
+                      icon: Icon(
                         Icons.edit,
                         color: Theme.of(context).colorScheme.primary,
                         size: 17.0,
-                      )
-                  )
+                      ))
                 ],
               ),
             ),
@@ -47,31 +49,49 @@ class ResumeCard extends StatelessWidget {
         ),
         const Expanded(
             child: AspectRatio(
-              aspectRatio: 1.0 / 1.0, 
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
-                child: ActivityChart(
-                  leftTitle: "Minutes of activity",
-                  bottomTitle: "",
-                ),
-              ),
-            )
+          aspectRatio: 1.0 / 1.0,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
+            child: ActivityChart(
+              leftTitle: "Minutes of activity",
+              bottomTitle: "",
+            ),
           ),
-        const Row(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: 
-                  Text(
-                    "Total minutes of activity: ${10} min",
-                    textAlign: TextAlign.end,  
+        )),
+        Consumer<HealthDataProvider>(builder: (context, hDataProv, child) {
+          int totMinutes = getDailyActivityByPeriods(DateTime.now(), hDataProv.currentDataPoints);
+          return Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    "Total minutes of activity: $totMinutes min",
+                    textAlign: TextAlign.end,
                   ),
-              ),
-            )
-          ],
-        )
+                ),
+              )
+            ],
+          );
+        })
       ]),
     );
   }
+}
+
+int getDailyActivityByPeriods(
+    DateTime date, List<HealthDataPoint> moveMinutes) {
+  int totalMoveMinutes = 0;
+  final startOfDay = DateTime(date.year, date.month, date.day);
+  final endtOfDay =
+      DateTime(date.year, date.month, date.day).add(const Duration(days: 1));
+
+  // Iterate over the data and accumulate the values for each period
+  for (HealthDataPoint dataPoint in moveMinutes) {
+    if (dataPoint.dateFrom.isAfter(startOfDay) &&
+        dataPoint.dateFrom.isBefore(endtOfDay)) {
+      totalMoveMinutes++;
+    }
+  }
+  return totalMoveMinutes;
 }

@@ -55,7 +55,7 @@ FlTitlesData? myTilesData(BuildContext context, String leftTitle) {
       sideTitles: const SideTitles(
         getTitlesWidget: leftTitleWidgets,
         showTitles: true,
-        interval: 5,
+        // interval: 5,
       ),
     ),
     bottomTitles: const AxisTitles(

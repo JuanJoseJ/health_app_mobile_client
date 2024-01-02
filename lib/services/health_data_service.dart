@@ -93,6 +93,4 @@ class HealthDataService {
 
     return activityList;
   }
-
-  //See if it is better to put this function somewhere else
 }
