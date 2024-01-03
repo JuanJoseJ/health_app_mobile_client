@@ -25,7 +25,7 @@ class _ActivityChartState extends State<ActivityChart> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeDateProvider>(builder: (context, hDataProvider, child) {
+    return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
       List<BarChartGroupData> thisBarCharts = genBarChartDataGroups(
           hDataProvider.currentDataPoints,
           3,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:health/health.dart';
 import 'package:health_app_mobile_client/pages/my_home_page.dart';
+import 'package:health_app_mobile_client/services/health_data_service.dart';
 import 'package:provider/provider.dart';
 
 class DateBar extends StatelessWidget implements PreferredSizeWidget {
@@ -10,7 +12,7 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeDateProvider>(builder: (context, hDataProvider, child) {
+    return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
       return AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         elevation: 1,
@@ -22,22 +24,26 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
         leading: IconButton(
           onPressed: () {
             hDataProvider.updateCurrentDate(
-                hDataProvider.currentDate.subtract(const Duration(days: 1)));
+                  hDataProvider.currentDate.subtract(const Duration(days: 1)));
+            if (hDataProvider.currentDate
+                    .isAtSameMomentAs(hDataProvider.currentMinDate) ||
+                hDataProvider.currentDate
+                    .isBefore(hDataProvider.currentMinDate)) {
+              hDataProvider.fetchDataPoints();
+
+            } 
           },
           icon: Icon(Icons.arrow_back, color: Colors.black),
         ),
         actions: [
           IconButton(
             onPressed: () {
-              final startOfDay = DateTime(
-                  DateTime.now().year,
-                  DateTime.now().month,
-                  DateTime.now().day
-                );
+              final startOfDay = DateTime(DateTime.now().year,
+                  DateTime.now().month, DateTime.now().day);
               if (hDataProvider.currentDate.isBefore(startOfDay)) {
                 hDataProvider.updateCurrentDate(
                     hDataProvider.currentDate.add(const Duration(days: 1)));
-              }else{
+              } else {
                 null;
               }
             },

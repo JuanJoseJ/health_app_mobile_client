@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/pages/my_home_page.dart';
 import 'package:health_app_mobile_client/widgets/navigation/date_bar.dart';
 import 'package:health_app_mobile_client/widgets/resume/resume_cards.dart';
+import 'package:provider/provider.dart';
 
 class ResumeCardsScafold extends StatelessWidget {
-  final AppState? appState;
-  const ResumeCardsScafold(this.appState, {super.key});
+  const ResumeCardsScafold({super.key});
 
   Widget _myCards(BuildContext context) {
     return Scaffold(
@@ -130,17 +130,21 @@ class ResumeCardsScafold extends StatelessWidget {
   }
 
   Widget _content(BuildContext context) {
-    if (appState == AppState.FETCHING_DATA) {
-      return _loading();
-    } else if (appState == AppState.DATA_NOT_FETCHED) {
-      return _contentNotFetched();
-    } else if (appState == AppState.NO_DATA) {
-      return _contentNoData();
-    } else if (appState == AppState.AUTH_NOT_GRANTED) {
-      return _notAuthorized();
-    } else {
-      return _myCards(context);
-    }
+    return Consumer<HomeDataProvider>(
+      builder: (context, hDataProvider, child){
+        if (hDataProvider.currentAppState == AppState.FETCHING_DATA) {
+          return _loading();
+        } else if (hDataProvider.currentAppState == AppState.DATA_NOT_FETCHED) {
+          return _contentNotFetched();
+        } else if (hDataProvider.currentAppState == AppState.NO_DATA) {
+          return _contentNoData();
+        } else if (hDataProvider.currentAppState == AppState.AUTH_NOT_GRANTED) {
+          return _notAuthorized();
+        } else {
+          return _myCards(context);
+        }
+      }
+    );
   }
 
   @override

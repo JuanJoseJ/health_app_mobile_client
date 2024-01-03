@@ -58,7 +58,7 @@ class ResumeCard extends StatelessWidget {
             ),
           ),
         )),
-        Consumer<HomeDateProvider>(builder: (context, hDataProv, child) {
+        Consumer<HomeDataProvider>(builder: (context, hDataProv, child) {
           int totMinutes = getDailyActivityByPeriods(
             hDataProv.currentDate, 
             hDataProv.currentDataPoints
@@ -69,7 +69,7 @@ class ResumeCard extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
-                    "Total minutes of activity: $totMinutes min",
+                    "$totMinutes minutes",
                     textAlign: TextAlign.end,
                   ),
                 ),

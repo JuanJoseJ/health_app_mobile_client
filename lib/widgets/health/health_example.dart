@@ -276,7 +276,7 @@ class _HealthAppState extends State<HealthApp> {
         appBar: AppBar(
           title: const Text('Health Example'),
         ),
-        body: Consumer<HomeDateProvider>(
+        body: Consumer<HomeDataProvider>(
           builder: (context, healthDataProvider, child) {
             return Container(
               child: Column(

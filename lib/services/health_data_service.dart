@@ -32,6 +32,10 @@ class HealthDataService {
     healthDataList = HealthFactory.removeDuplicates(healthDataList);
     return healthDataList;
   }
+  
+  List<HealthDataPoint> removeDuplicates(List<HealthDataPoint> points){
+    return HealthFactory.removeDuplicates(points);
+  }
 
   // Ill work on the steps only if it is required in the future
   Future<int> fetchStepData(DateTime start, DateTime end) async {

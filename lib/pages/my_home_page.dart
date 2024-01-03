@@ -34,8 +34,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
-  final dataPointsProvider = HomeDateProvider();
-  AppState _state = AppState.DATA_NOT_FETCHED;
+  final hDataProvider = HomeDataProvider();
 
   @override
   void initState() {
@@ -46,48 +45,47 @@ class _MainPageState extends State<MainPage> {
   // The data is fetched at the init state, but
   // it arrives later and triggers a rebuild
   Future<void> fetchInitialData() async {
-    final HealthDataService healthDataService = HealthDataService();
-    List<HealthDataPoint> fetchedData = [];
-    DateTime now = DateTime.now();
-    int nOfDays = 10;
-    DateTime endtOfDay =
-        DateTime(now.year, now.month, now.day).add(const Duration(days: 1));
-    final List<HealthDataAccess> permission = [HealthDataAccess.READ];
-    final List<HealthDataType> type = [HealthDataType.MOVE_MINUTES];
-    // Check permission to read Move minutes
-    setState(() {
-      _state = AppState.FETCHING_DATA;
-    });
-    bool permitedAcces =
-        await healthDataService.checkPermissions(permission, type);
-    if (!permitedAcces) {
-      setState(() {
-        _state = AppState.AUTH_NOT_GRANTED;
-      });
-    } else {
-      fetchedData = await healthDataService.fetchHealthData(
-          endtOfDay.subtract(Duration(days: nOfDays)), endtOfDay, type);
-      setState(() {
-        if (fetchedData.isEmpty) {
-          _state = AppState.NO_DATA;
-        } else {
-          _state = AppState.DATA_READY;
-          dataPointsProvider.updateDataPoints(fetchedData); //Trigger rebuild
-        }
-      });
-    }
+    // final HealthDataService healthDataService = HealthDataService();
+    // List<HealthDataPoint> fetchedData = [];
+    // DateTime now = DateTime.now();
+    // int nOfDays = hDataProvider.currentDateRange;
+    // DateTime endtOfDay =
+    //     DateTime(now.year, now.month, now.day).add(const Duration(days: 1));
+    // final List<HealthDataAccess> permission = [HealthDataAccess.READ];
+    // final List<HealthDataType> type = [HealthDataType.MOVE_MINUTES];
+    // // Check permission to read Move minutes
+    // hDataProvider.updateCurrentAppState(AppState.FETCHING_DATA);
+    // bool permitedAcces =
+    //     await healthDataService.checkPermissions(permission, type);
+    // if (!permitedAcces) {
+    //   hDataProvider.updateCurrentAppState(AppState.AUTH_NOT_GRANTED);
+    // } else {
+    //   fetchedData = await healthDataService.fetchHealthData(
+    //       endtOfDay.subtract(Duration(days: nOfDays)), endtOfDay, type);
+    //   if (fetchedData.isEmpty) {
+    //     hDataProvider.updateCurrentAppState(AppState.NO_DATA);
+    //   } else {
+    //     hDataProvider.updateCurrentAppState(AppState.DATA_READY);
+    //     hDataProvider
+    //         .updateCurrentMinDate(now.subtract(Duration(days: nOfDays)));
+    //     hDataProvider.updateDataPoints(fetchedData); //Trigger rebuild
+    //   }
+    // }
+
+    await hDataProvider.fetchDataPoints();
+
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) {
-        return dataPointsProvider;
+        return hDataProvider;
       },
       child: Scaffold(
         appBar: const MyTopBar(),
         // body: HealthApp(),
-        body: pageSelector(_currentIndex, _state),
+        body: pageSelector(_currentIndex),
         // body: ExampleWidget(),
         bottomNavigationBar: MyBottomBar(
           currentIndex: _currentIndex,
@@ -102,11 +100,11 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-Widget? pageSelector(int i, AppState? appState) {
+Widget? pageSelector(int i) {
   Widget page;
   switch (i) {
     case 0:
-      page = ResumeCardsScafold(appState);
+      page = ResumeCardsScafold();
       break;
     case 1:
       page = HealthApp();
@@ -115,25 +113,76 @@ Widget? pageSelector(int i, AppState? appState) {
       page = const ProfileScreen();
       break;
     default:
-      page = const ResumeCardsScafold(null);
+      page = const ResumeCardsScafold();
   }
   return page;
 }
 
 // Provider allows down the tree widgets to access the fetched
 
-class HomeDateProvider extends ChangeNotifier {
+class HomeDataProvider extends ChangeNotifier {
+  final HealthDataService healthDataService = HealthDataService();
+
   List<HealthDataPoint> _currentDataPoints = [];
   List<HealthDataPoint> get currentDataPoints => _currentDataPoints;
   void updateDataPoints(List<HealthDataPoint> newDataPoints) {
-    _currentDataPoints = newDataPoints;
+    _currentDataPoints.addAll(newDataPoints);
+    _currentDataPoints = healthDataService.removeDuplicates(_currentDataPoints);
+    notifyListeners();
+  }
+  Future<void> fetchDataPoints() async {
+    List<HealthDataPoint> fetchedData = [];
+    DateTime now = currentDate;
+    int nOfDays = currentDateRange;
+    DateTime endtOfDay =
+        DateTime(now.year, now.month, now.day).add(const Duration(days: 1));
+    final List<HealthDataAccess> permission = [HealthDataAccess.READ];
+    final List<HealthDataType> type = [HealthDataType.MOVE_MINUTES];
+    // Check permission to read Move minutes
+    updateCurrentAppState(AppState.FETCHING_DATA);
+    bool permitedAcces =
+        await healthDataService.checkPermissions(permission, type);
+    if (!permitedAcces) {
+      updateCurrentAppState(AppState.AUTH_NOT_GRANTED);
+    } else {
+      fetchedData = await healthDataService.fetchHealthData(
+          endtOfDay.subtract(Duration(days: nOfDays)), endtOfDay, type);
+      if (fetchedData.isEmpty & currentDataPoints.isEmpty) {
+        updateCurrentAppState(AppState.NO_DATA);
+      } else {
+        updateCurrentAppState(AppState.DATA_READY);
+        updateCurrentMinDate(now.subtract(Duration(days: nOfDays)));
+        updateDataPoints(fetchedData); //Trigger rebuild
+      }
+    }
     notifyListeners();
   }
 
-  DateTime _currentDate = DateTime.now();
+  DateTime _currentDate = DateTime.now(); //Start at current date
   DateTime get currentDate => _currentDate;
   void updateCurrentDate(DateTime newDate) {
     _currentDate = newDate;
+    notifyListeners();
+  }
+
+  late DateTime _currentMinDate;
+  DateTime get currentMinDate => _currentMinDate;
+  void updateCurrentMinDate(DateTime newMinDate) {
+    _currentMinDate = newMinDate;
+    notifyListeners();
+  }
+
+  int _currentDateRange = 10; // Range of data stored
+  int get currentDateRange => _currentDateRange;
+  void updateCurrentDateRange(int newDateRange) {
+    _currentDateRange = newDateRange;
+    notifyListeners();
+  }
+
+  AppState _currentAppState = AppState.DATA_NOT_FETCHED; // Range of data stored
+  AppState get currentAppState => _currentAppState;
+  void updateCurrentAppState(AppState newAppState) {
+    _currentAppState = newAppState;
     notifyListeners();
   }
 }
