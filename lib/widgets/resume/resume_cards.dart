@@ -7,8 +7,9 @@ import 'package:provider/provider.dart';
 class ResumeCard extends StatelessWidget {
   final String title;
   final Icon myIcon;
+  final StatefulWidget chart;
 
-  const ResumeCard({Key? key, required this.title, required this.myIcon})
+  const ResumeCard({Key? key, required this.title, required this.myIcon, required this.chart})
       : super(key: key);
 
   @override
@@ -47,15 +48,12 @@ class ResumeCard extends StatelessWidget {
             ),
           ],
         ),
-        const Expanded(
+        Expanded(
             child: AspectRatio(
           aspectRatio: 1.0 / 1.0,
           child: Padding(
-            padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
-            child: ActivityChart(
-              leftTitle: "Minutes of activity",
-              bottomTitle: "",
-            ),
+            padding: EdgeInsets.fromLTRB(8, 16, 8, 0),
+            child: chart,
           ),
         )),
         Consumer<HomeDataProvider>(builder: (context, hDataProv, child) {

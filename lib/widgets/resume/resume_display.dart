@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:health_app_mobile_client/charts/chart_activity_by_time.dart';
+import 'package:health_app_mobile_client/charts/chart_sleep_by_time.dart';
 import 'package:health_app_mobile_client/pages/my_home_page.dart';
 import 'package:health_app_mobile_client/widgets/navigation/date_bar.dart';
 import 'package:health_app_mobile_client/widgets/resume/resume_cards.dart';
@@ -29,6 +31,10 @@ class ResumeCardsScafold extends StatelessWidget {
                           Icons.fitness_center,
                           color: Colors.orangeAccent,
                         ),
+                        chart: ActivityChart(
+                          leftTitle: "Minutes of activity",
+                          bottomTitle: "",
+                        ),
                       )),
                     ],
                   )),
@@ -41,6 +47,10 @@ class ResumeCardsScafold extends StatelessWidget {
                         myIcon: Icon(
                           Icons.self_improvement,
                           color: Colors.redAccent,
+                        ),
+                        chart: ActivityChart(
+                          leftTitle: "Minutes of activity",
+                          bottomTitle: "",
                         ),
                       )),
                     ],
@@ -61,6 +71,10 @@ class ResumeCardsScafold extends StatelessWidget {
                           Icons.restaurant,
                           color: Colors.green,
                         ),
+                        chart: ActivityChart(
+                          leftTitle: "Minutes of activity",
+                          bottomTitle: "",
+                        ),
                       )),
                     ],
                   )),
@@ -74,6 +88,7 @@ class ResumeCardsScafold extends StatelessWidget {
                           Icons.hotel,
                           color: Colors.lightBlueAccent,
                         ),
+                        chart: SleepChart(),
                       )),
                     ],
                   )),

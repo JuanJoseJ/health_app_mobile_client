@@ -45,35 +45,7 @@ class _MainPageState extends State<MainPage> {
   // The data is fetched at the init state, but
   // it arrives later and triggers a rebuild
   Future<void> fetchInitialData() async {
-    // final HealthDataService healthDataService = HealthDataService();
-    // List<HealthDataPoint> fetchedData = [];
-    // DateTime now = DateTime.now();
-    // int nOfDays = hDataProvider.currentDateRange;
-    // DateTime endtOfDay =
-    //     DateTime(now.year, now.month, now.day).add(const Duration(days: 1));
-    // final List<HealthDataAccess> permission = [HealthDataAccess.READ];
-    // final List<HealthDataType> type = [HealthDataType.MOVE_MINUTES];
-    // // Check permission to read Move minutes
-    // hDataProvider.updateCurrentAppState(AppState.FETCHING_DATA);
-    // bool permitedAcces =
-    //     await healthDataService.checkPermissions(permission, type);
-    // if (!permitedAcces) {
-    //   hDataProvider.updateCurrentAppState(AppState.AUTH_NOT_GRANTED);
-    // } else {
-    //   fetchedData = await healthDataService.fetchHealthData(
-    //       endtOfDay.subtract(Duration(days: nOfDays)), endtOfDay, type);
-    //   if (fetchedData.isEmpty) {
-    //     hDataProvider.updateCurrentAppState(AppState.NO_DATA);
-    //   } else {
-    //     hDataProvider.updateCurrentAppState(AppState.DATA_READY);
-    //     hDataProvider
-    //         .updateCurrentMinDate(now.subtract(Duration(days: nOfDays)));
-    //     hDataProvider.updateDataPoints(fetchedData); //Trigger rebuild
-    //   }
-    // }
-
     await hDataProvider.fetchDataPoints();
-
   }
 
   @override
@@ -136,8 +108,16 @@ class HomeDataProvider extends ChangeNotifier {
     int nOfDays = currentDateRange;
     DateTime endtOfDay =
         DateTime(now.year, now.month, now.day).add(const Duration(days: 1));
-    final List<HealthDataAccess> permission = [HealthDataAccess.READ];
-    final List<HealthDataType> type = [HealthDataType.MOVE_MINUTES];
+    final List<HealthDataAccess> permission = [
+      HealthDataAccess.READ, 
+      HealthDataAccess.READ, 
+      HealthDataAccess.READ
+    ];
+    final List<HealthDataType> type = [
+      HealthDataType.MOVE_MINUTES, 
+      HealthDataType.SLEEP_ASLEEP, 
+      HealthDataType.SLEEP_AWAKE
+    ] ;
     // Check permission to read Move minutes
     updateCurrentAppState(AppState.FETCHING_DATA);
     bool permitedAcces =
