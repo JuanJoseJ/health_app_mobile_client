@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:health/health.dart';
 import 'package:health_app_mobile_client/pages/my_home_page.dart';
-import 'package:health_app_mobile_client/services/health_data_service.dart';
 import 'package:provider/provider.dart';
 
 class DateBar extends StatelessWidget implements PreferredSizeWidget {

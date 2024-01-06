@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:health_app_mobile_client/pages/my_home_page.dart';
+import 'package:health_app_mobile_client/services/health_data_service.dart';
+import 'package:provider/provider.dart';
 
 class SleepChart extends StatefulWidget {
   const SleepChart({super.key});
@@ -10,35 +13,34 @@ class SleepChart extends StatefulWidget {
 
 class SleepChartState extends State {
   bool sectionTchd = false;
-  double goalSleepTime = 8; // In minutes
+  final double widthFraction = 1 / 2;
 
   List<PieChartSectionData> showingSections(
-      String text, double widthFraction, double sleepMinutes) {
-    double minutesOfDay = 24;
+      double widthFraction, double totSleepMinutes) {
+    double minutesOfDay = 24 * 60;
 
     return [
       PieChartSectionData(
-        color: Colors.blueAccent,
-        value: sleepMinutes,
-        title: text,
-        showTitle: sectionTchd,
-        radius: (sectionTchd ? 100 : 80) * (1 - widthFraction),
-        titleStyle: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-        badgeWidget: sectionTchd
+          color: Colors.blueAccent,
+          value: totSleepMinutes,
+          title: '${((totSleepMinutes / minutesOfDay) * 100).round()}%',
+          showTitle: sectionTchd,
+          radius: (sectionTchd ? 100 : 80) * (1 - widthFraction),
+          titleStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+          badgeWidget: sectionTchd
               ? null
               : const Icon(
                   Icons.nightlight,
                   size: 16.0,
                   color: Colors.white,
-                )
-      ),
+                )),
       PieChartSectionData(
           color: Colors.orangeAccent,
-          value: (minutesOfDay - sleepMinutes),
+          value: (minutesOfDay - totSleepMinutes),
           title: '',
           radius: 80 * (1 - widthFraction),
           titleStyle: const TextStyle(
@@ -54,19 +56,18 @@ class SleepChartState extends State {
     ];
   }
 
-  PieTouchData nightPieTouchData(){
+  PieTouchData nightPieTouchData() {
     return PieTouchData(
-            touchCallback: (FlTouchEvent event, pieTouchResponse) {
-              print(event);
-              setState(() {
-                if (event is FlPointerHoverEvent) {
-                  sectionTchd = true;
-                }else if (event is FlTapUpEvent || event is FlLongPressEnd){
-                  sectionTchd = false;
-                }
-              });
-            },
-          );
+      touchCallback: (FlTouchEvent event, pieTouchResponse) {
+        setState(() {
+          if (event is FlPointerHoverEvent) {
+            sectionTchd = true;
+          } else if (event is FlTapUpEvent || event is FlLongPressEnd) {
+            sectionTchd = false;
+          }
+        });
+      },
+    );
   }
 
   @override
@@ -75,21 +76,25 @@ class SleepChartState extends State {
     double screenWidth = MediaQuery.of(context).size.width;
 
     // Calculate the centerSpaceRadius based on a percentage of the screen width
-    double widthFraction = 1 / 2;
     double centerSpaceRadiusPercentage = 0.2;
     double centerSpaceRadius =
         screenWidth * centerSpaceRadiusPercentage * widthFraction;
 
-    return PieChart(
-      PieChartData(
-          pieTouchData: nightPieTouchData(),
-          borderData: FlBorderData(
-            show: false,
-          ),
-          sectionsSpace: 2,
-          centerSpaceRadius: centerSpaceRadius,
-          sections: showingSections("33.33%", widthFraction, goalSleepTime),
-          startDegreeOffset: 180),
-    );
+    return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
+      final HealthDataService hds = new HealthDataService();
+      final double totSleepMinutes = hds.getSleepByDays(
+          1, hDataProvider.currentDate, hDataProvider.currentDataPoints);
+      return PieChart(
+        PieChartData(
+            pieTouchData: nightPieTouchData(),
+            borderData: FlBorderData(
+              show: false,
+            ),
+            sectionsSpace: 2,
+            centerSpaceRadius: centerSpaceRadius,
+            sections: showingSections(widthFraction, totSleepMinutes),
+            startDegreeOffset: 180),
+      );
+    });
   }
 }

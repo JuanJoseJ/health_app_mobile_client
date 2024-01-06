@@ -312,7 +312,7 @@ class _HealthAppState extends State<HealthApp> {
                               int nPeriods = 3;
 
                               List<int> result = await HealthDataService()
-                                  .getDailyActivityByPeriods(nPeriods, now, healthDataProvider.currentDataPoints);
+                                  .getActivityByPeriods(nPeriods, now, healthDataProvider.currentDataPoints);
                             } catch (e) {
                               print("$e");
                             }

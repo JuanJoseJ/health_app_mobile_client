@@ -174,7 +174,7 @@ List<BarChartGroupData> genBarChartDataGroups(List<HealthDataPoint> hDataPoints,
   List<BarChartGroupData> tempBarCharts = [];
 
   List<int> periods = HealthDataService()
-      .getDailyActivityByPeriods(nPeriods, date, hDataPoints);
+      .getActivityByPeriods(nPeriods, date, hDataPoints);
 
   // Default color if barColors is not provided
   barColors ??= [Colors.blueAccent];

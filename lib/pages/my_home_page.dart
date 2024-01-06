@@ -4,7 +4,7 @@ import 'package:health/health.dart';
 import 'package:health_app_mobile_client/services/health_data_service.dart';
 import 'package:health_app_mobile_client/widgets/health/health_example.dart';
 import 'package:health_app_mobile_client/widgets/navigation/top_bar.dart';
-import 'package:health_app_mobile_client/widgets/resume/resume_display.dart';
+import 'package:health_app_mobile_client/widgets/home/resume_display.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/navigation/bottom_bar.dart';
@@ -94,12 +94,14 @@ Widget? pageSelector(int i) {
 
 class HomeDataProvider extends ChangeNotifier {
   final HealthDataService healthDataService = HealthDataService();
+  
 
   List<HealthDataPoint> _currentDataPoints = [];
   List<HealthDataPoint> get currentDataPoints => _currentDataPoints;
   void updateDataPoints(List<HealthDataPoint> newDataPoints) {
     _currentDataPoints.addAll(newDataPoints);
     _currentDataPoints = healthDataService.removeDuplicates(_currentDataPoints);
+    healthDataService.getSleepByDays(1, DateTime.now(), _currentDataPoints);
     notifyListeners();
   }
   Future<void> fetchDataPoints() async {

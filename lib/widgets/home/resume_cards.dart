@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:health/health.dart';
-import 'package:health_app_mobile_client/charts/chart_activity_by_time.dart';
-import 'package:health_app_mobile_client/pages/my_home_page.dart';
-import 'package:provider/provider.dart';
 
 class ResumeCard extends StatelessWidget {
   final String title;
   final Icon myIcon;
   final StatefulWidget chart;
+  final Widget bottomWidget;
 
-  const ResumeCard({Key? key, required this.title, required this.myIcon, required this.chart})
+  const ResumeCard({Key? key, required this.title, required this.myIcon, required this.chart, required this.bottomWidget})
       : super(key: key);
 
   @override
@@ -56,43 +53,10 @@ class ResumeCard extends StatelessWidget {
             child: chart,
           ),
         )),
-        Consumer<HomeDataProvider>(builder: (context, hDataProv, child) {
-          int totMinutes = getDailyActivityByPeriods(
-            hDataProv.currentDate, 
-            hDataProv.currentDataPoints
-          );
-          return Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "$totMinutes minutes",
-                    textAlign: TextAlign.end,
-                  ),
-                ),
-              )
-            ],
-          );
-        })
+        bottomWidget
       ]),
     );
   }
 }
 
-int getDailyActivityByPeriods(
-    DateTime date, List<HealthDataPoint> moveMinutes) {
-  int totalMoveMinutes = 0;
-  final startOfDay = DateTime(date.year, date.month, date.day);
-  final endtOfDay =
-      DateTime(date.year, date.month, date.day).add(const Duration(days: 1));
 
-  // Iterate over the data and accumulate the values for each period
-  for (HealthDataPoint dataPoint in moveMinutes) {
-    if (dataPoint.dateFrom.isAfter(startOfDay) &&
-        dataPoint.dateFrom.isBefore(endtOfDay)) {
-      totalMoveMinutes++;
-    }
-  }
-  return totalMoveMinutes;
-}

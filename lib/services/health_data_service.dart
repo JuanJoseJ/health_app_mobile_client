@@ -30,8 +30,8 @@ class HealthDataService {
     healthDataList = HealthFactory.removeDuplicates(healthDataList);
     return healthDataList;
   }
-  
-  List<HealthDataPoint> removeDuplicates(List<HealthDataPoint> points){
+
+  List<HealthDataPoint> removeDuplicates(List<HealthDataPoint> points) {
     return HealthFactory.removeDuplicates(points);
   }
 
@@ -52,22 +52,26 @@ class HealthDataService {
   /// Calculates daily activity by dividing a day into specified periods.
   ///
   /// This function takes the number of periods [nPeriods], a specific [DateTime] [date],
-  /// and a list of [HealthDataPoint] objects [moveMinutes] representing movement data
+  /// and a list of [HealthDataPoint] objects [dataPoints] representing movement data
   /// points for that day. It returns a list of integers representing the accumulated
   /// activity values for each specified period throughout the day.
   ///
   /// The function generates time periods based on the number of periods and
   /// calculates the activity for each period by accumulating movement values
-  /// from the provided [moveMinutes]. The resulting list [activityList] contains
+  /// from the provided [dataPoints]. The resulting list [activityList] contains
   /// the total activity for each specified period.
-  List<int> getDailyActivityByPeriods(
-      int nPeriods, DateTime date, List<HealthDataPoint> moveMinutes) {
-          // !!!! Change this function, so that a list of dates can be passed to accumulate the minutes of activity
-      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CHANGE THIS
+  List<int> getActivityByPeriods(
+      int nPeriods, DateTime date, List<HealthDataPoint> dataPoints) {
+    // !!!! Change this function, so that a list of dates can be passed to accumulate the minutes of activity
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CHANGE THIS
     //First make sure to take the correct time period
     final startOfDay = DateTime(date.year, date.month, date.day);
     final endtOfDay =
         DateTime(date.year, date.month, date.day).add(const Duration(days: 1));
+
+    final List<HealthDataPoint> cleanMoveMinutes = [...dataPoints];
+    cleanMoveMinutes
+        .removeWhere((element) => element.type != HealthDataType.MOVE_MINUTES);
 
     // Generate the periods of time, as a list of hours [initial, end1, end2, ...]
     // each period is represented by [i, i+1]
@@ -82,7 +86,7 @@ class HealthDataService {
     List<int> activityList = List.generate(nPeriods, (index) => 0);
 
     // Iterate over the data and accumulate the values for each period
-    for (HealthDataPoint dataPoint in moveMinutes) {
+    for (HealthDataPoint dataPoint in cleanMoveMinutes) {
       for (int i = 0; i < periods.length - 1; i++) {
         if (dataPoint.dateFrom.isAfter(periods[i]) &&
             dataPoint.dateFrom.isBefore(periods[i + 1])) {
@@ -94,5 +98,24 @@ class HealthDataService {
     }
 
     return activityList;
+  }
+
+  /// The getSleepByDays function calculates the total sleep duration over
+  /// a specified number of days leading up to a given date from a list of
+  /// health data points (hdp). It filters the relevant sleep data points
+  /// within the specified date range, sums their corresponding sleep durations,
+  /// and returns the total sleep duration.
+  double getSleepByDays(int nDays, DateTime date, List<HealthDataPoint> hdp) {
+    List<HealthDataPoint> clearHdp = [...hdp];
+    double totSleep = 0;
+    clearHdp.removeWhere((element) =>
+        element.type != HealthDataType.SLEEP_ASLEEP ||
+        element.dateFrom.isBefore(date.subtract(Duration(days: nDays))) ||
+        element.dateTo.isAfter(date));
+    for (HealthDataPoint p in clearHdp) {
+      totSleep += double.parse(p.value.toString());
+    }
+    print(clearHdp);
+    return totSleep;
   }
 }
