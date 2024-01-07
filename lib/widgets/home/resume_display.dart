@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:health_app_mobile_client/pages/my_home_page.dart';
+import 'package:health_app_mobile_client/pages/home_provider.dart';
+import 'package:health_app_mobile_client/util/app_states.dart';
 import 'package:health_app_mobile_client/widgets/home/cards_display.dart';
 import 'package:provider/provider.dart';
 
