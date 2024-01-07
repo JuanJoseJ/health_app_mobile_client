@@ -131,7 +131,7 @@ BarTouchData? myBarTouchData(BuildContext context) {
       fitInsideHorizontally: true,
       maxContentWidth: 70,
       tooltipPadding: const EdgeInsets.all(4),
-      tooltipBgColor: Color.fromARGB(255, 236, 236, 236).withOpacity(0.9),
+      tooltipBgColor: const Color.fromARGB(255, 236, 236, 236).withOpacity(0.9),
       getTooltipItem: (group, groupIndex, rod, rodIndex) {
         switch (groupIndex) {
           case 0:

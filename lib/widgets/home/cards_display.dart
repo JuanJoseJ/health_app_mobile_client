@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/charts/chart_activity_by_time.dart';
+import 'package:health_app_mobile_client/charts/chart_calories_by_time.dart';
 import 'package:health_app_mobile_client/charts/chart_sleep_by_time.dart';
 import 'package:health_app_mobile_client/widgets/home/bottom_widgets/activity_bottom_widget.dart';
 import 'package:health_app_mobile_client/widgets/home/bottom_widgets/sleep_bottom_widget.dart';
@@ -73,10 +74,7 @@ class CardsScafold extends StatelessWidget {
                           Icons.local_fire_department,
                           color: Colors.redAccent,
                         ),
-                        chart: ActivityChart(
-                          leftTitle: "Minutes of activity",
-                          bottomTitle: "",
-                        ),
+                        chart: CaloriesChart(),
                         bottomWidget: Text("xxx activiti"),
                       )),
                     ],

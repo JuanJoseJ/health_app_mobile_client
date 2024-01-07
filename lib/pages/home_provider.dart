@@ -40,6 +40,12 @@ class HomeDataProvider extends ChangeNotifier {
     } else {
       fetchedData = await healthDataService.fetchHealthData(
           endtOfDay.subtract(Duration(days: nOfDays)), endtOfDay, type);
+      // List<HealthDataPoint> copy = [];
+      // copy.addAll(fetchedData);
+      // copy.removeWhere((element) => element.type != HealthDataType.ACTIVE_ENERGY_BURNED);
+      // for (var i in copy){
+      //   print(i);
+      // }
       if (fetchedData.isEmpty & currentDataPoints.isEmpty) {
         updateCurrentAppState(AppState.NO_DATA);
       } else {
