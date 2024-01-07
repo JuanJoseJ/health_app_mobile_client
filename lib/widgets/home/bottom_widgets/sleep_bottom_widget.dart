@@ -8,14 +8,16 @@ class SleepBottomWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hdp, child) {
-      int totMinutes = 0;
+      int totMinutes = HealthDataService().getSleepByDays(1, hdp.currentDate, hdp.currentDataPoints).round();
       return Row(
         children: [
           Expanded(
             child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                "${HealthDataService().getSleepByDays(1, hdp.currentDate, hdp.currentDataPoints).round()} minutes of sleep",
+                totMinutes > 0 ?
+                "$totMinutes minutes of sleep" 
+                :"No sleep registered",
                 textAlign: TextAlign.end,
               ),
             ),

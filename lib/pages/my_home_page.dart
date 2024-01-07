@@ -1,8 +1,6 @@
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:health/health.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
-import 'package:health_app_mobile_client/services/health_data_service.dart';
 import 'package:health_app_mobile_client/widgets/health/health_example.dart';
 import 'package:health_app_mobile_client/widgets/navigation/top_bar.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_display.dart';

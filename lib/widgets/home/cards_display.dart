@@ -44,10 +44,10 @@ class CardsScafold extends StatelessWidget {
                     children: [
                       Expanded(
                           child: ResumeCard(
-                        title: "Days",
+                        title: "What?",
                         myIcon: Icon(
                           Icons.self_improvement,
-                          color: Colors.redAccent,
+                          color: Colors.green,
                         ),
                         chart: ActivityChart(
                           leftTitle: "Minutes of activity",
@@ -68,10 +68,10 @@ class CardsScafold extends StatelessWidget {
                     children: [
                       Expanded(
                           child: ResumeCard(
-                        title: "Food",
+                        title: "Calories",
                         myIcon: Icon(
-                          Icons.restaurant,
-                          color: Colors.green,
+                          Icons.local_fire_department,
+                          color: Colors.redAccent,
                         ),
                         chart: ActivityChart(
                           leftTitle: "Minutes of activity",

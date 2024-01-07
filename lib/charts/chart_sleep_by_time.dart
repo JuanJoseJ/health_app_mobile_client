@@ -16,7 +16,7 @@ class SleepChartState extends State {
   final double widthFraction = 1 / 2;
 
   List<PieChartSectionData> showingSections(
-    double widthFraction, double totSleepMinutes) {
+      double widthFraction, double totSleepMinutes) {
     double minutesOfDay = 24 * 60;
 
     return [
@@ -59,10 +59,14 @@ class SleepChartState extends State {
   PieTouchData nightPieTouchData() {
     return PieTouchData(
       touchCallback: (FlTouchEvent event, pieTouchResponse) {
+        print(event);
         setState(() {
           if (event is FlPointerHoverEvent) {
             sectionTchd = true;
-          } else if (event is FlTapUpEvent || event is FlLongPressEnd) {
+          } else if (event is FlTapUpEvent ||
+              event is FlLongPressEnd ||
+              event is FlLongPressMoveUpdate ||
+              event is FlPanEndEvent) {
             sectionTchd = false;
           }
         });

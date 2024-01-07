@@ -29,7 +29,7 @@ class HomeDataProvider extends ChangeNotifier {
     final List<HealthDataType> type = [
       HealthDataType.MOVE_MINUTES, 
       HealthDataType.SLEEP_ASLEEP, 
-      HealthDataType.SLEEP_AWAKE
+      HealthDataType.ACTIVE_ENERGY_BURNED,
     ] ;
     // Check permission to read Move minutes
     updateCurrentAppState(AppState.FETCHING_DATA);
