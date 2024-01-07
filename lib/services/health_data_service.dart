@@ -106,16 +106,22 @@ class HealthDataService {
   /// within the specified date range, sums their corresponding sleep durations,
   /// and returns the total sleep duration.
   double getSleepByDays(int nDays, DateTime date, List<HealthDataPoint> hdp) {
+
+    // Debo mostrar esto como un porcentaje del día transcurrido
+
     List<HealthDataPoint> clearHdp = [...hdp];
     double totSleep = 0;
     clearHdp.removeWhere((element) =>
         element.type != HealthDataType.SLEEP_ASLEEP ||
-        element.dateFrom.isBefore(date.subtract(Duration(days: nDays))) ||
-        element.dateTo.isAfter(date));
+        !isSameDate(element.dateTo, date)    
+    );
     for (HealthDataPoint p in clearHdp) {
       totSleep += double.parse(p.value.toString());
     }
-    print(clearHdp);
     return totSleep;
   }
+}
+
+bool isSameDate(DateTime date1, DateTime date2) {
+  return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
 }

@@ -16,7 +16,7 @@ class SleepChartState extends State {
   final double widthFraction = 1 / 2;
 
   List<PieChartSectionData> showingSections(
-      double widthFraction, double totSleepMinutes) {
+    double widthFraction, double totSleepMinutes) {
     double minutesOfDay = 24 * 60;
 
     return [
