@@ -1,4 +1,5 @@
 import 'package:health/health.dart';
+import 'package:health_app_mobile_client/util/dates_util.dart';
 
 class HealthDataService {
   HealthFactory health = HealthFactory(useHealthConnectIfAvailable: true);
@@ -73,14 +74,7 @@ class HealthDataService {
     cleanMoveMinutes
         .removeWhere((element) => element.type != HealthDataType.MOVE_MINUTES);
 
-    // Generate the periods of time, as a list of hours [initial, end1, end2, ...]
-    // each period is represented by [i, i+1]
-    final List<DateTime> periods = List.generate(nPeriods + 1, (index) {
-      final valueToAdd = ((index * 24) / nPeriods);
-      double minutes = (valueToAdd - valueToAdd.floor()) * 60;
-      return startOfDay
-          .add(Duration(hours: valueToAdd.floor(), minutes: minutes.toInt()));
-    });
+    final List<DateTime> periods = calcPeriods(nPeriods, startOfDay);
 
     // Initialize the activityList with zeros for each period
     List<int> activityList = List.generate(nPeriods, (index) => 0);
@@ -106,22 +100,47 @@ class HealthDataService {
   /// within the specified date range, sums their corresponding sleep durations,
   /// and returns the total sleep duration.
   double getSleepByDays(int nDays, DateTime date, List<HealthDataPoint> hdp) {
-
     // Debo mostrar esto como un porcentaje del día transcurrido
 
     List<HealthDataPoint> clearHdp = [...hdp];
     double totSleep = 0;
     clearHdp.removeWhere((element) =>
         element.type != HealthDataType.SLEEP_ASLEEP ||
-        !isSameDate(element.dateTo, date)    
-    );
+        !isSameDate(element.dateTo, date));
     for (HealthDataPoint p in clearHdp) {
       totSleep += double.parse(p.value.toString());
     }
     return totSleep;
   }
+
+  List<double> getBurnedCalByPeriod(
+      int nPeriods, DateTime date, List<HealthDataPoint> dataPoints) {
+
+    final startOfDay = DateTime(date.year, date.month, date.day);
+    final endtOfDay =
+        DateTime(date.year, date.month, date.day).add(const Duration(days: 1));
+
+    final List<HealthDataPoint> cleanCaloriesList = [...dataPoints];
+    cleanCaloriesList
+        .removeWhere((element) => element.type != HealthDataType.ACTIVE_ENERGY_BURNED);
+
+    final List<DateTime> periods = calcPeriods(nPeriods, startOfDay);
+
+    // Initialize the activityList with zeros for each period
+    List<double> caloriesList = List.generate(nPeriods, (index) => 0);
+
+    for (HealthDataPoint dataPoint in cleanCaloriesList) {
+      for (int i = 0; i < periods.length - 1; i++) {
+        if (dataPoint.dateFrom.isAfter(periods[i]) &&
+            dataPoint.dateFrom.isBefore(periods[i + 1])) {
+          // Add the value to the corresponding period
+          caloriesList[i] += double.parse(dataPoint.value.toString());
+          break; // Move to the next data point
+        }
+      }
+    }
+
+    return caloriesList;
+  }
 }
 
-bool isSameDate(DateTime date1, DateTime date2) {
-  return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
-}

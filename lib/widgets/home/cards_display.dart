@@ -3,6 +3,7 @@ import 'package:health_app_mobile_client/charts/chart_activity_by_time.dart';
 import 'package:health_app_mobile_client/charts/chart_calories_by_time.dart';
 import 'package:health_app_mobile_client/charts/chart_sleep_by_time.dart';
 import 'package:health_app_mobile_client/widgets/home/bottom_widgets/activity_bottom_widget.dart';
+import 'package:health_app_mobile_client/widgets/home/bottom_widgets/calories_bottom_widget.dart';
 import 'package:health_app_mobile_client/widgets/home/bottom_widgets/sleep_bottom_widget.dart';
 import 'package:health_app_mobile_client/widgets/navigation/date_bar.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_cards.dart';
@@ -75,7 +76,7 @@ class CardsScafold extends StatelessWidget {
                           color: Colors.redAccent,
                         ),
                         chart: CaloriesChart(),
-                        bottomWidget: Text("xxx activiti"),
+                        bottomWidget: CaloriesBottomWidget(),
                       )),
                     ],
                   )),

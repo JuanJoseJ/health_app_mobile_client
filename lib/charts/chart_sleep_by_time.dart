@@ -59,7 +59,6 @@ class SleepChartState extends State {
   PieTouchData nightPieTouchData() {
     return PieTouchData(
       touchCallback: (FlTouchEvent event, pieTouchResponse) {
-        print(event);
         setState(() {
           if (event is FlPointerHoverEvent) {
             sectionTchd = true;

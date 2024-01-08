@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
+import 'package:health_app_mobile_client/services/health_data_service.dart';
 import 'package:provider/provider.dart';
 
 class CaloriesChart extends StatefulWidget {
@@ -11,38 +12,22 @@ class CaloriesChart extends StatefulWidget {
 }
 
 class CaloriesChartState extends State {
-  List<LineChartBarData> myLineChartBarData() {
+
+  List<LineChartBarData> calBurnedBarData(List<double> nCalories) {
+    List<FlSpot> spotsList = [];
+    for (var i = 0; i < nCalories.length; i++) {
+      spotsList.add(FlSpot(i.toDouble(), nCalories[i]));
+    }
+
     return [
       LineChartBarData(
-        isCurved: true,
         color: Colors.orangeAccent,
         barWidth: 6,
         isStrokeCapRound: true,
         dotData: const FlDotData(show: false),
         belowBarData: BarAreaData(show: false),
-        spots: const [
-          FlSpot(0, 3),
-          FlSpot(1, 0),
-          FlSpot(2, 7),
-          FlSpot(3, 5),
-          FlSpot(4, 5),
-        ],
-      ),
-      LineChartBarData(
-        isCurved: true,
-        color: Colors.green,
-        barWidth: 6,
-        isStrokeCapRound: true,
-        dotData: const FlDotData(show: false),
-        belowBarData: BarAreaData(show: false),
-        spots: const [
-          FlSpot(0, 6),
-          FlSpot(1, 3),
-          FlSpot(2, 4),
-          FlSpot(3, 0),
-          FlSpot(4, 5),
-        ],
-      ),
+        spots: spotsList,
+      )
     ];
   }
 
@@ -51,6 +36,7 @@ class CaloriesChartState extends State {
       bottomTitles: AxisTitles(
         sideTitles: SideTitles(
           showTitles: true,
+          interval: 1,
           getTitlesWidget: bottomTitleWidgets,
         ),
       ),
@@ -77,23 +63,20 @@ class CaloriesChartState extends State {
     final Widget text;
     switch (value.toInt()) {
       case 0:
-        text = Container();
-        break;
-      case 1:
         text = const Icon(
           Icons.wb_twighlight,
           size: 18.0,
           color: Colors.black54,
         );
         break;
-      case 2:
+      case 1:
         text = const Icon(
           Icons.wb_sunny,
           size: 16.0,
           color: Colors.black54,
         );
         break;
-      case 3:
+      case 2:
         text = const Icon(
           Icons.nightlight,
           size: 16.0,
@@ -134,17 +117,25 @@ class CaloriesChartState extends State {
           List<LineTooltipItem?> items = [];
           for (var element in touchedSpots) {
             String tempText = '';
-            if(element.barIndex == 0){
+            String time = '';
+            if (element.barIndex == 0) {
               tempText = 'burned';
-            }else if(element.barIndex == 1){
+            } else if (element.barIndex == 1) {
               tempText = 'spent';
             }
+            if (element.x == 0) {
+              time = "morning";
+            }else if(element.x == 1){
+              time = "afternoon";
+            }else if(element.x == 2){
+              time = "night";
+            }
             LineTooltipItem newItem = LineTooltipItem(
-                "${element.y} calories $tempText",
+                "${element.y.round()} calories $tempText in the $time",
                 TextStyle(
-                  fontSize: 13.0, 
+                  fontSize: 13.0,
                   fontWeight: FontWeight.bold,
-                  color: element.bar.color,  
+                  color: element.bar.color,
                 ));
             items.add(newItem);
           }
@@ -157,9 +148,11 @@ class CaloriesChartState extends State {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
+      List<double> calories = HealthDataService().getBurnedCalByPeriod(
+          3, hDataProvider.currentDate, hDataProvider.currentDataPoints);
       return LineChart(
         LineChartData(
-          lineBarsData: myLineChartBarData(),
+          lineBarsData: calBurnedBarData(calories),
           titlesData: linearTilesData(context),
           lineTouchData: myLineTouchData(),
           borderData: FlBorderData(show: false),
