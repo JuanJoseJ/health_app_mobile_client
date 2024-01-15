@@ -5,8 +5,15 @@ class ResumeCard extends StatelessWidget {
   final Icon myIcon;
   final StatefulWidget chart;
   final Widget bottomWidget;
+  final VoidCallback? notifyParent;
 
-  const ResumeCard({Key? key, required this.title, required this.myIcon, required this.chart, required this.bottomWidget})
+  const ResumeCard(
+      {Key? key,
+      required this.title,
+      required this.myIcon,
+      required this.chart,
+      required this.bottomWidget,
+      required this.notifyParent})
       : super(key: key);
 
   @override
@@ -25,9 +32,19 @@ class ResumeCard extends StatelessWidget {
                         children: [
                           myIcon,
                           const SizedBox(width: 8.0),
-                          Text(
-                            title,
-                            style: Theme.of(context).textTheme.titleLarge,
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              // foregroundColor: Colors.white,
+                              padding: const EdgeInsets.all(1.0),
+                              textStyle: const TextStyle(fontSize: 20),
+                            ),
+                            onPressed: () {
+                              notifyParent!();
+                            },
+                            child: Text(
+                              title,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
                           ),
                         ],
                       ),
@@ -58,5 +75,3 @@ class ResumeCard extends StatelessWidget {
     );
   }
 }
-
-

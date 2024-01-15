@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/util/app_states.dart';
-import 'package:health_app_mobile_client/widgets/home/cards_display.dart';
+import 'package:health_app_mobile_client/widgets/home/scafold_selection.dart';
 import 'package:provider/provider.dart';
 
-class ResumeCardsScafold extends StatelessWidget {
-  const ResumeCardsScafold({super.key});
+class HomeScafold extends StatelessWidget {
+  const HomeScafold({super.key});
 
   Widget _loading() {
     return Center(
@@ -62,7 +62,7 @@ class ResumeCardsScafold extends StatelessWidget {
         } else if (hDataProvider.currentAppState == AppState.AUTH_NOT_GRANTED) {
           return _notAuthorized();
         } else {
-          return CardsScafold();
+          return DataScafold();
         }
       }
     );

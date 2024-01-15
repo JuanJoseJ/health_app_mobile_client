@@ -2,8 +2,8 @@ import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/widgets/health/health_example.dart';
+import 'package:health_app_mobile_client/widgets/home/home_display.dart';
 import 'package:health_app_mobile_client/widgets/navigation/top_bar.dart';
-import 'package:health_app_mobile_client/widgets/home/resume_display.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/navigation/bottom_bar.dart';
@@ -59,7 +59,7 @@ Widget? pageSelector(int i) {
   Widget page;
   switch (i) {
     case 0:
-      page = ResumeCardsScafold();
+      page = HomeScafold();
       break;
     case 1:
       page = HealthApp();
@@ -68,7 +68,7 @@ Widget? pageSelector(int i) {
       page = const ProfileScreen();
       break;
     default:
-      page = const ResumeCardsScafold();
+      page = const HomeScafold();
   }
   return page;
 }
