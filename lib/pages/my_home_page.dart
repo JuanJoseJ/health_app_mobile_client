@@ -1,6 +1,7 @@
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
+import 'package:health_app_mobile_client/widgets/bullets/bullets_display.dart';
 import 'package:health_app_mobile_client/widgets/health/health_example.dart';
 import 'package:health_app_mobile_client/widgets/home/home_display.dart';
 import 'package:health_app_mobile_client/widgets/navigation/top_bar.dart';
@@ -62,7 +63,7 @@ Widget? pageSelector(int i) {
       page = HomeScafold();
       break;
     case 1:
-      page = HealthApp();
+      page = BulletsDisplay();
       break;
     case 2:
       page = const ProfileScreen();
