@@ -25,7 +25,7 @@ class _DataScafoldState extends State<DataScafold> {
         page = CardsScafold(navigateFn: navigate);
         break;
       case 1:
-        page = const DetailScafold();
+        page = DetailScafold(navigateFn: navigate);
         break;
       default:
         page = CardsScafold();

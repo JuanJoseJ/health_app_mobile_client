@@ -50,26 +50,32 @@ class ResumeCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.edit,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 17.0,
-                      ))
+                  // IconButton(
+                  //     onPressed: () {},
+                  //     icon: Icon(
+                  //       Icons.edit,
+                  //       color: Theme.of(context).colorScheme.primary,
+                  //       size: 17.0,
+                  //     ))
                 ],
               ),
             ),
           ],
         ),
         Expanded(
-            child: AspectRatio(
-          aspectRatio: 1.0 / 1.0,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(8, 16, 8, 0),
-            child: chart,
+          child: Row(
+            children: [
+              Expanded(
+                  child: AspectRatio(
+                aspectRatio: 1.0 / 1.0,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(8, 16, 8, 0),
+                  child: chart,
+                ),
+              )),
+            ],
           ),
-        )),
+        ),
         bottomWidget
       ]),
     );
