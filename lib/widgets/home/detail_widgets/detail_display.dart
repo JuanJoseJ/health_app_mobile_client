@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/charts/chart_activity_by_time.dart';
-import 'package:health_app_mobile_client/charts/chart_calories_by_time.dart';
-import 'package:health_app_mobile_client/charts/chart_sleep_by_time.dart';
+import 'package:health_app_mobile_client/widgets/home/detail_widgets/detail_card.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/activity_bottom_widget.dart';
-import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/calories_bottom_widget.dart';
-import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/sleep_bottom_widget.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/resume_card.dart';
-import 'package:health_app_mobile_client/widgets/navigation/date_bar.dart';
 import 'package:health_app_mobile_client/widgets/navigation/detail_top_bar.dart';
 
 class DetailScafold extends StatelessWidget {
@@ -25,31 +21,7 @@ class DetailScafold extends StatelessWidget {
         child: Flex(
           direction: Axis.vertical,
           children: <Widget>[
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(
-                      child: Column(
-                    children: [
-                      Expanded(
-                          child: ResumeCard(
-                        title: "Daily Activity",
-                        myIcon: const Icon(
-                          Icons.fitness_center,
-                          color: Colors.orangeAccent,
-                        ),
-                        chart: const ActivityChart(
-                          leftTitle: "Minutes of activity",
-                          bottomTitle: "",
-                        ),
-                        bottomWidget: ActivityBottomWidget(),
-                        notifyParent: navigateFn,
-                      )),
-                    ],
-                  )),
-                ],
-              ),
-            ),
+            DetailCard(navigateFn: navigateFn),
             Expanded(
               child: Row(
                 children: [
@@ -106,3 +78,4 @@ class DetailScafold extends StatelessWidget {
     );
   }
 }
+

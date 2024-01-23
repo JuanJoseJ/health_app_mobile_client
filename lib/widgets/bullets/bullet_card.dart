@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class BulletCard extends StatefulWidget {
-  Color? cardMainColor;
-  String title;
-  String description;
-  BulletCard(
+  final Color? cardMainColor;
+  final String title;
+  final String description;
+  const BulletCard(
       {super.key,
       required this.cardMainColor,
       required this.title,

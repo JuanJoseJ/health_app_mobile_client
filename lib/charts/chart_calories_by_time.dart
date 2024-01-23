@@ -150,12 +150,15 @@ class CaloriesChartState extends State {
     return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
       List<double> calories = HealthDataService().getBurnedCalByPeriod(
           3, hDataProvider.currentDate, hDataProvider.currentDataPoints);
-      return LineChart(
-        LineChartData(
-          lineBarsData: calBurnedBarData(calories),
-          titlesData: linearTilesData(context),
-          lineTouchData: myLineTouchData(),
-          borderData: FlBorderData(show: false),
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+        child: LineChart(
+          LineChartData(
+            lineBarsData: calBurnedBarData(calories),
+            titlesData: linearTilesData(context),
+            lineTouchData: myLineTouchData(),
+            borderData: FlBorderData(show: false),
+          ),
         ),
       );
     });
