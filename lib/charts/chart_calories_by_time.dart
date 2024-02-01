@@ -12,7 +12,6 @@ class CaloriesChart extends StatefulWidget {
 }
 
 class CaloriesChartState extends State {
-
   List<LineChartBarData> calBurnedBarData(List<double> nCalories) {
     List<FlSpot> spotsList = [];
     for (var i = 0; i < nCalories.length; i++) {
@@ -47,9 +46,15 @@ class CaloriesChartState extends State {
         sideTitles: SideTitles(showTitles: false),
       ),
       leftTitles: AxisTitles(
-        axisNameWidget: Text(
-          "Calories",
-          style: Theme.of(context).textTheme.bodyLarge,
+        axisNameWidget: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: IntrinsicWidth(
+            child: Text(
+              "Calories",
+              style: Theme.of(context).textTheme.bodyLarge,
+              overflow: TextOverflow.visible,
+            ),
+          ),
         ),
         sideTitles: SideTitles(
           getTitlesWidget: leftTitleWidgets,
@@ -125,9 +130,9 @@ class CaloriesChartState extends State {
             }
             if (element.x == 0) {
               time = "morning";
-            }else if(element.x == 1){
+            } else if (element.x == 1) {
               time = "afternoon";
-            }else if(element.x == 2){
+            } else if (element.x == 2) {
               time = "night";
             }
             LineTooltipItem newItem = LineTooltipItem(

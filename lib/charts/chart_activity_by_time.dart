@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:health/health.dart';
+import 'package:health_app_mobile_client/charts/side_tittle_widgets/bottom_tittle_widgets.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/services/health_data_service.dart';
 import 'package:provider/provider.dart';
@@ -8,8 +9,12 @@ import 'package:provider/provider.dart';
 class ActivityChart extends StatefulWidget {
   final String leftTitle;
   final String bottomTitle;
+  final Widget Function(double, TitleMeta) bottomTittleWidget;
   const ActivityChart(
-      {super.key, required this.leftTitle, required this.bottomTitle});
+      {super.key,
+      required this.leftTitle,
+      required this.bottomTitle,
+      required this.bottomTittleWidget});
 
   @override
   State<ActivityChart> createState() => _ActivityChartState();
@@ -23,6 +28,41 @@ class _ActivityChartState extends State<ActivityChart> {
     Colors.blueAccent
   ];
 
+  FlTitlesData? myTilesData(BuildContext context) {
+    return FlTitlesData(
+      leftTitles: AxisTitles(
+        axisNameWidget: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: IntrinsicWidth(
+            child: Text(
+              widget.leftTitle,
+              style: Theme.of(context).textTheme.bodyLarge,
+              overflow: TextOverflow.visible,
+            ),
+          ),
+        ),
+        sideTitles: const SideTitles(
+          getTitlesWidget: leftTitleWidgets,
+          showTitles: true,
+          // interval: 5,
+        ),
+      ),
+      bottomTitles: AxisTitles(
+        sideTitles: SideTitles(
+          getTitlesWidget: widget.bottomTittleWidget,
+          showTitles: true,
+          interval: 1,
+        ),
+      ),
+      rightTitles: const AxisTitles(
+        sideTitles: SideTitles(showTitles: false),
+      ),
+      topTitles: const AxisTitles(
+        sideTitles: SideTitles(showTitles: false),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
@@ -34,7 +74,7 @@ class _ActivityChartState extends State<ActivityChart> {
       return BarChart(
         BarChartData(
           barGroups: thisBarCharts,
-          titlesData: myTilesData(context, widget.leftTitle),
+          titlesData: myTilesData(context),
           barTouchData: myBarTouchData(context),
           borderData: FlBorderData(
             show: false,
@@ -43,71 +83,6 @@ class _ActivityChartState extends State<ActivityChart> {
       );
     });
   }
-}
-
-FlTitlesData? myTilesData(BuildContext context, String leftTitle) {
-  return FlTitlesData(
-    leftTitles: AxisTitles(
-      axisNameWidget: Text(
-        leftTitle,
-        style: Theme.of(context).textTheme.bodyLarge,
-      ),
-      sideTitles: const SideTitles(
-        getTitlesWidget: leftTitleWidgets,
-        showTitles: true,
-        // interval: 5,
-      ),
-    ),
-    bottomTitles: const AxisTitles(
-      sideTitles: SideTitles(
-        getTitlesWidget: bottomTitleWidgets,
-        showTitles: true,
-        interval: 1,
-      ),
-    ),
-    rightTitles: const AxisTitles(
-      sideTitles: SideTitles(showTitles: false),
-    ),
-    topTitles: const AxisTitles(
-      sideTitles: SideTitles(showTitles: false),
-    ),
-  );
-}
-
-Widget bottomTitleWidgets(double value, TitleMeta meta) {
-  final Widget text;
-  switch (value.toInt()) {
-    case 0:
-      text = const Icon(
-        Icons.wb_twighlight,
-        size: 18.0,
-        color: Colors.black54,
-      );
-      break;
-    case 1:
-      text = const Icon(
-        Icons.wb_sunny,
-        size: 18.0,
-        color: Colors.black54,
-      );
-      break;
-    case 2:
-      text = const Icon(
-        Icons.nightlight,
-        size: 16.0,
-        color: Colors.black54,
-      );
-      break;
-    default:
-      text = const Icon(
-        Icons.wb_sunny,
-        size: 20.0,
-        color: Colors.black54,
-      );
-      break;
-  }
-
-  return text;
 }
 
 Widget leftTitleWidgets(double value, TitleMeta meta) {
@@ -173,8 +148,8 @@ List<BarChartGroupData> genBarChartDataGroups(List<HealthDataPoint> hDataPoints,
   // so that multiple dates can be  taken into account to accumulate the work
   List<BarChartGroupData> tempBarCharts = [];
 
-  List<int> periods = HealthDataService()
-      .getActivityByPeriods(nPeriods, date, hDataPoints);
+  List<int> periods =
+      HealthDataService().getActivityByPeriods(nPeriods, date, hDataPoints);
 
   // Default color if barColors is not provided
   barColors ??= [Colors.blueAccent];

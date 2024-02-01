@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/charts/chart_activity_by_time.dart';
 import 'package:health_app_mobile_client/charts/chart_calories_by_time.dart';
 import 'package:health_app_mobile_client/charts/chart_sleep_by_time.dart';
+import 'package:health_app_mobile_client/charts/side_tittle_widgets/bottom_tittle_widgets.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/activity_bottom_widget.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/calories_bottom_widget.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/sleep_bottom_widget.dart';
@@ -37,6 +38,7 @@ class CardsScafold extends StatelessWidget {
                         chart: const ActivityChart(
                           leftTitle: "Minutes of activity",
                           bottomTitle: "",
+                          bottomTittleWidget: dailyThirdsBTW,
                         ),
                         bottomWidget: ActivityBottomWidget(),
                         notifyParent: navigateFn,
@@ -56,6 +58,7 @@ class CardsScafold extends StatelessWidget {
                         chart: const ActivityChart(
                           leftTitle: "Minutes of activity",
                           bottomTitle: "",
+                          bottomTittleWidget: dailyThirdsBTW,
                         ),
                         bottomWidget: Text("xxx activiti"),
                         notifyParent: navigateFn,
