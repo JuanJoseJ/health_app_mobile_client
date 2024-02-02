@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:health_app_mobile_client/charts/chart_activity_by_time.dart';
-import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/activity_bottom_widget.dart';
-import 'package:health_app_mobile_client/widgets/home/resume_widgets/resume_card.dart';
 
 class DetailCard extends StatelessWidget {
   final String title;

@@ -45,6 +45,7 @@ dependencies:
   firebase_ui_oauth_google: ^1.2.14
   permission_handler: ^11.0.1
   provider: ^6.1.1
+  intl: ^0.18.1
 
 
 dev_dependencies:

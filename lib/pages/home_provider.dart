@@ -5,7 +5,6 @@ import 'package:health_app_mobile_client/util/app_states.dart';
 
 class HomeDataProvider extends ChangeNotifier {
   final HealthDataService healthDataService = HealthDataService();
-  
 
   List<HealthDataPoint> _currentDataPoints = [];
   List<HealthDataPoint> get currentDataPoints => _currentDataPoints;
@@ -15,6 +14,7 @@ class HomeDataProvider extends ChangeNotifier {
     healthDataService.getSleepByDays(1, DateTime.now(), _currentDataPoints);
     notifyListeners();
   }
+
   Future<void> fetchDataPoints() async {
     List<HealthDataPoint> fetchedData = [];
     DateTime now = currentDate;
@@ -22,15 +22,15 @@ class HomeDataProvider extends ChangeNotifier {
     DateTime endtOfDay =
         DateTime(now.year, now.month, now.day).add(const Duration(days: 1));
     final List<HealthDataAccess> permission = [
-      HealthDataAccess.READ, 
-      HealthDataAccess.READ, 
+      HealthDataAccess.READ,
+      HealthDataAccess.READ,
       HealthDataAccess.READ
     ];
     final List<HealthDataType> type = [
-      HealthDataType.MOVE_MINUTES, 
-      HealthDataType.SLEEP_ASLEEP, 
+      HealthDataType.MOVE_MINUTES,
+      HealthDataType.SLEEP_ASLEEP,
       HealthDataType.ACTIVE_ENERGY_BURNED,
-    ] ;
+    ];
     // Check permission to read Move minutes
     updateCurrentAppState(AppState.FETCHING_DATA);
     bool permitedAcces =
@@ -82,6 +82,13 @@ class HomeDataProvider extends ChangeNotifier {
   AppState get currentAppState => _currentAppState;
   void updateCurrentAppState(AppState newAppState) {
     _currentAppState = newAppState;
+    notifyListeners();
+  }
+
+  String _currentTopBarSelect = 'day';
+  String get currentTopBarSelect => _currentTopBarSelect;
+  void updateCurrentTopBarSelect(String newTopBarSelect) {
+    _currentTopBarSelect = newTopBarSelect;
     notifyListeners();
   }
 }
