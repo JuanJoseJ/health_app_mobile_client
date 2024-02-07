@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health/health.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -33,62 +34,150 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
     return newString;
   }
 
+  bool isDataMissing(
+      List<HealthDataPoint> dataPoints, DateTime startDate, DateTime endDate) {
+    // Simplified logic to check for data coverage
+    // You might need more sophisticated checks depending on how your data points overlap or are spaced out
+    for (var dp in dataPoints) {
+      if ((dp.dateFrom.isBefore(endDate) ||
+              dp.dateFrom.isAtSameMomentAs(endDate)) &&
+          (dp.dateTo.isAfter(startDate) ||
+              dp.dateTo.isAtSameMomentAs(startDate))) {
+        return false; // Found a data point covering the range
+      }
+    }
+    return true; // No data point covers the range
+  }
+
+  bool isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  void updateDate(BuildContext context, HomeDataProvider provider,
+      {required bool isForward}) {
+    DateTime newDate;
+    DateTime startDate;
+    DateTime endDate;
+    final currentDate = provider.currentDate;
+    final topBarSelect = provider.currentTopBarSelect;
+    final today = DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day + 1)
+        .subtract(const Duration(seconds: 1));
+    final startOfToday = DateTime(today.year, today.month, today.day);
+
+    switch (topBarSelect) {
+      case 'day':
+        newDate = isForward
+            ? currentDate.add(Duration(days: 1))
+            : currentDate.subtract(Duration(days: 1));
+        // Prevent newDate from exceeding today's date
+        if (newDate.isAfter(startOfToday)) {
+          newDate = startOfToday;
+        }
+        startDate = newDate;
+        endDate = newDate;
+        //Fetch data if not present for the days
+        if (startDate.isBefore(provider.currentMinDate)) {
+          provider.fetchDataPoints(
+              startDate.subtract(const Duration(days: 10)), startOfToday);
+          provider.updateCurrentMinDate(
+              startDate.subtract(const Duration(days: 10)));
+        }
+        provider.updateCurrentDate(newDate);
+        break;
+      case 'week':
+        int daysToAdjust = isForward ? 7 : -7;
+        newDate = currentDate.add(Duration(days: daysToAdjust));
+        // Adjust startOfWeek to ensure it doesn't start in the future
+        DateTime startOfWeek =
+            newDate.subtract(Duration(days: newDate.weekday - 1));
+        if (startOfWeek.isAfter(startOfToday)) {
+          newDate = startOfToday;
+          startOfWeek =
+              startOfToday.subtract(Duration(days: startOfToday.weekday - 1));
+          startDate = startOfWeek;
+          endDate = today;
+        } else {
+          startDate = startOfWeek;
+          endDate = startOfWeek.add(Duration(days: 6));
+        }
+        provider.fetchDataPoints(startDate, endDate);
+        provider.updateCurrentMinDate(startDate);
+        provider.updateCurrentDate(endDate);
+        break;
+      case 'month':
+        int monthsToAdjust = isForward ? 1 : -1;
+        newDate = DateTime(currentDate.year, currentDate.month + monthsToAdjust,
+            currentDate.day);
+        // Prevent navigating to a future month
+        if (newDate.isAfter(DateTime(today.year, today.month + 1, 0))) {
+          newDate = DateTime(today.year, today.month, today.day);
+        }
+        startDate = DateTime(newDate.year, newDate.month, 1);
+        endDate = DateTime(newDate.year, newDate.month + 1, 0);
+        provider.fetchDataPoints(startDate, endDate);
+        provider.updateCurrentMinDate(startDate);
+        provider.updateCurrentDate(endDate);
+        break;
+      default:
+        return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
+    return Consumer<HomeDataProvider>(builder: (context, hDP, child) {
       return AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         elevation: 1,
         centerTitle: true,
-        title: Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: () {
-                  hDataProvider.updateCurrentDate(hDataProvider.currentDate
-                      .subtract(const Duration(days: 1)));
-                  if (hDataProvider.currentDate
-                          .isAtSameMomentAs(hDataProvider.currentMinDate) ||
-                      hDataProvider.currentDate
-                          .isBefore(hDataProvider.currentMinDate)) {
-                    hDataProvider.fetchDataPoints();
-                  }
-                },
-                icon: Icon(Icons.arrow_back, color: Colors.black),
-              ),
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _getTopBarString(hDataProvider.currentTopBarSelect,
-                            hDataProvider.currentDate),
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ],
+        title: Flex(
+          direction: Axis.horizontal,
+          children: [
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    onPressed: () => updateDate(context, hDP, isForward: false),
                   ),
-                ),
+                  Expanded(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _getTopBarString(
+                                hDP.currentTopBarSelect, hDP.currentDate),
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.arrow_forward,
+                      color: Colors.black,
+                    ),
+                    onPressed: (hDP.currentDate.isAfter(DateTime(
+                                DateTime.now().year,
+                                DateTime.now().month,
+                                DateTime.now().day)
+                            .subtract(const Duration(seconds: 1))))
+                        ? null
+                        : () => updateDate(context, hDP, isForward: true),
+                  ),
+                  const VerticalDivider(),
+                  MyDropdownPage(),
+                ],
               ),
-              IconButton(
-                onPressed: () {
-                  final startOfDay = DateTime(DateTime.now().year,
-                      DateTime.now().month, DateTime.now().day);
-                  if (hDataProvider.currentDate.isBefore(startOfDay)) {
-                    hDataProvider.updateCurrentDate(
-                        hDataProvider.currentDate.add(const Duration(days: 1)));
-                  } else {
-                    null;
-                  }
-                },
-                icon: Icon(Icons.arrow_forward, color: Colors.black),
-              ),
-              const VerticalDivider(),
-              MyDropdownPage(),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     });
@@ -96,6 +185,8 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class MyDropdownPage extends StatelessWidget {
+  const MyDropdownPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(

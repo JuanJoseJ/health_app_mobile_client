@@ -27,19 +27,18 @@ class ActivityBottomWidget extends StatelessWidget {
   }
 }
 
-int getTotalDailyActivity(
-    DateTime date, List<HealthDataPoint> moveMinutes) {
+int getTotalDailyActivity(DateTime date, List<HealthDataPoint> moveMinutes) {
   int totalMoveMinutes = 0;
   final startOfDay = DateTime(date.year, date.month, date.day);
-  final endtOfDay =
-      DateTime(date.year, date.month, date.day).add(const Duration(days: 1));
+  final endtOfDay = startOfDay.add(const Duration(days: 1));
 
-  // Iterate over the data and accumulate the values for each period
   for (HealthDataPoint dataPoint in moveMinutes) {
     if (dataPoint.dateFrom.isAfter(startOfDay) &&
-        dataPoint.dateFrom.isBefore(endtOfDay)) {
+        dataPoint.dateFrom.isBefore(endtOfDay) && dataPoint.type==HealthDataType.MOVE_MINUTES) {
       totalMoveMinutes++;
     }
   }
+  print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
+  print("$totalMoveMinutes");
   return totalMoveMinutes;
 }

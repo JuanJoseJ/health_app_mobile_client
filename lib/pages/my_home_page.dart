@@ -28,7 +28,12 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> fetchInitialData() async {
-    await hDataProvider.fetchDataPoints();
+    DateTime endDate = DateTime(
+            DateTime.now().year, DateTime.now().month, DateTime.now().day + 1)
+        .subtract(const Duration(seconds: 1));
+    DateTime startDate =
+        endDate.subtract(Duration(days: 10)).add(const Duration(seconds: 1));
+    await hDataProvider.fetchDataPoints(startDate, endDate);
   }
 
   @override
@@ -72,5 +77,3 @@ Widget? pageSelector(int i) {
   }
   return page;
 }
-
-

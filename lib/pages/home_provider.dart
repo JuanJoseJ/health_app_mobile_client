@@ -15,12 +15,7 @@ class HomeDataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchDataPoints() async {
-    List<HealthDataPoint> fetchedData = [];
-    DateTime now = currentDate;
-    int nOfDays = currentDateRange;
-    DateTime endtOfDay =
-        DateTime(now.year, now.month, now.day).add(const Duration(days: 1));
+  Future<void> fetchDataPoints(DateTime startDate, DateTime endDate) async {
     final List<HealthDataAccess> permission = [
       HealthDataAccess.READ,
       HealthDataAccess.READ,
@@ -38,43 +33,34 @@ class HomeDataProvider extends ChangeNotifier {
     if (!permitedAcces) {
       updateCurrentAppState(AppState.AUTH_NOT_GRANTED);
     } else {
-      fetchedData = await healthDataService.fetchHealthData(
-          endtOfDay.subtract(Duration(days: nOfDays)), endtOfDay, type);
-      // List<HealthDataPoint> copy = [];
-      // copy.addAll(fetchedData);
-      // copy.removeWhere((element) => element.type != HealthDataType.ACTIVE_ENERGY_BURNED);
-      // for (var i in copy){
-      //   print(i);
-      // }
+      List<HealthDataPoint> fetchedData =
+          await healthDataService.fetchHealthData(startDate, endDate, type);
       if (fetchedData.isEmpty & currentDataPoints.isEmpty) {
         updateCurrentAppState(AppState.NO_DATA);
       } else {
+        // Update your data points with the fetched data
+        updateDataPoints(fetchedData);
         updateCurrentAppState(AppState.DATA_READY);
-        updateCurrentMinDate(now.subtract(Duration(days: nOfDays)));
-        updateDataPoints(fetchedData); //Trigger rebuild
+        // Update currentMinDate if the startDate is earlier than the currentMinDate
+        if (startDate.isBefore(currentMinDate)) {
+          updateCurrentMinDate(startDate);
+        }
       }
     }
     notifyListeners();
   }
 
-  DateTime _currentDate = DateTime.now(); //Start at current date
+  DateTime _currentDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day+1).subtract(const Duration(seconds: 1)); //Start at current date
   DateTime get currentDate => _currentDate;
   void updateCurrentDate(DateTime newDate) {
     _currentDate = newDate;
     notifyListeners();
   }
 
-  late DateTime _currentMinDate;
+    DateTime _currentMinDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day); // Initialize with a default value
   DateTime get currentMinDate => _currentMinDate;
   void updateCurrentMinDate(DateTime newMinDate) {
     _currentMinDate = newMinDate;
-    notifyListeners();
-  }
-
-  int _currentDateRange = 10; // Range of data stored
-  int get currentDateRange => _currentDateRange;
-  void updateCurrentDateRange(int newDateRange) {
-    _currentDateRange = newDateRange;
     notifyListeners();
   }
 
@@ -88,7 +74,26 @@ class HomeDataProvider extends ChangeNotifier {
   String _currentTopBarSelect = 'day';
   String get currentTopBarSelect => _currentTopBarSelect;
   void updateCurrentTopBarSelect(String newTopBarSelect) {
-    _currentTopBarSelect = newTopBarSelect;
-    notifyListeners();
+    if (newTopBarSelect != _currentTopBarSelect) {
+      _currentTopBarSelect = newTopBarSelect;
+      _currentDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day+1).subtract(const Duration(minutes: 1));
+      switch (newTopBarSelect) {
+        case 'day':
+          _currentMinDate = DateTime(
+              _currentDate.year, _currentDate.month, _currentDate.day - 10);
+          fetchDataPoints(_currentMinDate, _currentDate);
+          break;
+        case 'week':
+          int weekday = _currentDate.weekday;
+          _currentMinDate = _currentDate.subtract(Duration(days: weekday - 1));
+          fetchDataPoints(_currentMinDate, _currentDate);
+          break;
+        case 'month':
+          _currentMinDate = DateTime(_currentDate.year, _currentDate.month, 1);
+          fetchDataPoints(_currentMinDate, _currentDate);
+          break;
+      }
+      notifyListeners();
+    }
   }
 }
