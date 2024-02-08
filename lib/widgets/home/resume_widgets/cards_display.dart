@@ -33,7 +33,6 @@ class CardsScafold extends StatelessWidget {
                 : new DateTime(now.year + 1, 1, 1);
             DateTime firstDayCurrentMonth =
                 new DateTime(now.year, now.month, 1);
-                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ${firstDayNextMonth.difference(firstDayCurrentMonth).inDays}");
             return firstDayNextMonth.difference(firstDayCurrentMonth).inDays;
           default:
             return 3;

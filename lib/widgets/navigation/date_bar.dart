@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:health/health.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';

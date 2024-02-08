@@ -18,24 +18,15 @@ class DetailCard extends StatelessWidget {
   Row topCardTitle(BuildContext context) {
     return Row(
       children: [
-        IconButton(
-          onPressed: () {
-            changeDate();
-          },
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-        ),
         Expanded(
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.titleLarge,
-            textAlign: TextAlign.center,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              title,
+              style: Theme.of(context).textTheme.titleLarge,
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
-        IconButton(
-          onPressed: () {
-            changeDate();
-          },
-          icon: Icon(Icons.arrow_forward, color: Colors.black),
         ),
       ],
     );
@@ -60,33 +51,26 @@ class DetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Row(
-        children: [
-          Expanded(
-              child: Column(
-            children: [
-              Expanded(
-                child: Card(
-                  child: Column(
-                    children: [
-                      topCardTitle(context), 
-                      dateSubTitle(context),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 0, 16, 0),
-                          child: chart,
-                        ),
-                      ),
-                      bottomWidget,
-                    ],
-                  ),
-                ),
+    return Column(
+      children: [
+    Expanded(
+      child: Card(
+        child: Column(
+          children: [
+            topCardTitle(context),
+            dateSubTitle(context),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 16, 0),
+                child: chart,
               ),
-            ],
-          )),
-        ],
+            ),
+            bottomWidget,
+          ],
+        ),
       ),
+    ),
+      ],
     );
   }
 }
