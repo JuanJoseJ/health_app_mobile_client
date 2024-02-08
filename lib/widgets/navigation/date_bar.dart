@@ -8,7 +8,7 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
   const DateBar({Key? key});
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   String _getTopBarString(String topBarSelect, DateTime currentDate) {
     String newString = "";
@@ -34,28 +34,7 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
     return newString;
   }
 
-  bool isDataMissing(
-      List<HealthDataPoint> dataPoints, DateTime startDate, DateTime endDate) {
-    // Simplified logic to check for data coverage
-    // You might need more sophisticated checks depending on how your data points overlap or are spaced out
-    for (var dp in dataPoints) {
-      if ((dp.dateFrom.isBefore(endDate) ||
-              dp.dateFrom.isAtSameMomentAs(endDate)) &&
-          (dp.dateTo.isAfter(startDate) ||
-              dp.dateTo.isAtSameMomentAs(startDate))) {
-        return false; // Found a data point covering the range
-      }
-    }
-    return true; // No data point covers the range
-  }
-
-  bool isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
-  }
-
-  void updateDate(BuildContext context, HomeDataProvider provider,
+  void _updateDate(BuildContext context, HomeDataProvider provider,
       {required bool isForward}) {
     DateTime newDate;
     DateTime startDate;
@@ -142,7 +121,7 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.black),
-                    onPressed: () => updateDate(context, hDP, isForward: false),
+                    onPressed: () => _updateDate(context, hDP, isForward: false),
                   ),
                   Expanded(
                     child: FittedBox(
@@ -170,7 +149,7 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
                                 DateTime.now().day)
                             .subtract(const Duration(seconds: 1))))
                         ? null
-                        : () => updateDate(context, hDP, isForward: true),
+                        : () => _updateDate(context, hDP, isForward: true),
                   ),
                   const VerticalDivider(),
                   MyDropdownPage(),

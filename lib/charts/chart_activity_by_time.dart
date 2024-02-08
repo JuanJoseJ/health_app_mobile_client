@@ -6,14 +6,16 @@ import 'package:health_app_mobile_client/services/health_data_service.dart';
 import 'package:provider/provider.dart';
 
 class ActivityChart extends StatefulWidget {
-  final String leftTitle;
-  final String bottomTitle;
-  final Widget Function(double, TitleMeta) bottomTittleWidget;
+  final String? leftTitle;
+  final String? bottomTitle;
+  final Widget Function(double, TitleMeta)? bottomTittleWidget;
+  final int nPeriods;
   const ActivityChart(
       {super.key,
-      required this.leftTitle,
-      required this.bottomTitle,
-      required this.bottomTittleWidget});
+      this.leftTitle,
+      this.bottomTitle,
+      this.bottomTittleWidget,
+      required this.nPeriods});
 
   @override
   State<ActivityChart> createState() => _ActivityChartState();
@@ -27,32 +29,36 @@ class _ActivityChartState extends State<ActivityChart> {
     Colors.blueAccent
   ];
 
-  FlTitlesData? myTilesData(BuildContext context) {
+  FlTitlesData? myTitlesData(BuildContext context) {
     return FlTitlesData(
       leftTitles: AxisTitles(
-        axisNameWidget: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: IntrinsicWidth(
-            child: Text(
-              widget.leftTitle,
-              style: Theme.of(context).textTheme.bodyLarge,
-              overflow: TextOverflow.visible,
-            ),
-          ),
-        ),
+        axisNameWidget: widget.leftTitle != null
+            ? FittedBox(
+                fit: BoxFit.scaleDown,
+                child: IntrinsicWidth(
+                  child: Text(
+                    widget.leftTitle!,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    overflow: TextOverflow.visible,
+                  ),
+                ),
+              )
+            : const Row(),
         sideTitles: const SideTitles(
           getTitlesWidget: leftTitleWidgets,
           showTitles: true,
           // interval: 5,
         ),
       ),
-      bottomTitles: AxisTitles(
-        sideTitles: SideTitles(
-          getTitlesWidget: widget.bottomTittleWidget,
-          showTitles: true,
-          interval: 1,
-        ),
-      ),
+      bottomTitles: widget.bottomTittleWidget != null
+          ? AxisTitles(
+              sideTitles: SideTitles(
+                getTitlesWidget: widget.bottomTittleWidget!,
+                showTitles: true,
+                interval: 1,
+              ),
+            )
+          : const AxisTitles(sideTitles: SideTitles(showTitles: false)),
       rightTitles: const AxisTitles(
         sideTitles: SideTitles(showTitles: false),
       ),
@@ -67,13 +73,13 @@ class _ActivityChartState extends State<ActivityChart> {
     return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
       List<BarChartGroupData> thisBarCharts = genBarChartDataGroups(
           hDataProvider.currentDataPoints,
-          3,
+          widget.nPeriods,
           hDataProvider.currentDate,
           dailyActivityRodColors);
       return BarChart(
         BarChartData(
           barGroups: thisBarCharts,
-          titlesData: myTilesData(context),
+          titlesData: myTitlesData(context),
           barTouchData: myBarTouchData(context),
           borderData: FlBorderData(
             show: false,

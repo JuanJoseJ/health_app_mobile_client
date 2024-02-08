@@ -38,7 +38,5 @@ int getTotalDailyActivity(DateTime date, List<HealthDataPoint> moveMinutes) {
       totalMoveMinutes++;
     }
   }
-  print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
-  print("$totalMoveMinutes");
   return totalMoveMinutes;
 }
