@@ -50,13 +50,6 @@ class ResumeCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // IconButton(
-                  //     onPressed: () {},
-                  //     icon: Icon(
-                  //       Icons.edit,
-                  //       color: Theme.of(context).colorScheme.primary,
-                  //       size: 17.0,
-                  //     ))
                 ],
               ),
             ),

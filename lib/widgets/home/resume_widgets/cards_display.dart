@@ -63,7 +63,6 @@ class CardsScafold extends StatelessWidget {
                           ),
                           chart: ActivityChart(
                             leftTitle: "Minutes of activity",
-                            bottomTitle: "",
                             bottomTittleWidget: dailyThirdsBTW,
                             nPeriods: getNumberOfPeriods(),
                           ),

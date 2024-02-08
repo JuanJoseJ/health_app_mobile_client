@@ -5,18 +5,45 @@ import 'package:provider/provider.dart';
 
 class ActivityBottomWidget extends StatelessWidget {
   const ActivityBottomWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hDataProv, child) {
-      int totMinutes = getTotalDailyActivity(
-          hDataProv.currentDate, hDataProv.currentDataPoints);
+      DateTime startDate = hDataProv.currentDate;
+      DateTime? endDate;
+
+      int activity = 0;
+      String textSuffix = '';
+
+      switch (hDataProv.currentTopBarSelect) {
+        case 'day':
+          // Calculate total activity for the day
+          activity = getTotalActivityForDay(startDate,
+              hDataProv.currentDataPoints, HealthDataType.MOVE_MINUTES);
+          break;
+        case 'week':
+          startDate = startDate.subtract(Duration(days: startDate.weekday - 1));
+          endDate = startDate.add(const Duration(days: 7));
+          activity = getMeanActivity(startDate, endDate,
+              hDataProv.currentDataPoints, HealthDataType.MOVE_MINUTES);
+          textSuffix = ' (avg)';
+          break;
+        case 'month':
+          startDate = DateTime(startDate.year, startDate.month, 1);
+          endDate = DateTime(startDate.year, startDate.month + 1, 0);
+          activity = getMeanActivity(startDate, endDate,
+              hDataProv.currentDataPoints, HealthDataType.MOVE_MINUTES);
+          textSuffix = ' (avg)';
+          break;
+      }
+
       return Row(
         children: [
           Expanded(
             child: Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                "$totMinutes minutes",
+                "$activity min$textSuffix",
                 textAlign: TextAlign.end,
               ),
             ),
@@ -25,18 +52,55 @@ class ActivityBottomWidget extends StatelessWidget {
       );
     });
   }
-}
 
-int getTotalDailyActivity(DateTime date, List<HealthDataPoint> moveMinutes) {
-  int totalMoveMinutes = 0;
-  final startOfDay = DateTime(date.year, date.month, date.day);
-  final endtOfDay = startOfDay.add(const Duration(days: 1));
+  int getTotalActivityForDay(DateTime date, List<HealthDataPoint> dataPoints,
+      HealthDataType activityType) {
+    int totalActivity = 0;
+    final startOfDay = DateTime(date.year, date.month, date.day);
+    final endOfDay = startOfDay.add(const Duration(days: 1));
 
-  for (HealthDataPoint dataPoint in moveMinutes) {
-    if (dataPoint.dateFrom.isAfter(startOfDay) &&
-        dataPoint.dateFrom.isBefore(endtOfDay) && dataPoint.type==HealthDataType.MOVE_MINUTES) {
-      totalMoveMinutes++;
+    for (HealthDataPoint dataPoint in dataPoints) {
+      if (dataPoint.dateFrom.isAfter(startOfDay) &&
+          dataPoint.dateFrom.isBefore(endOfDay) &&
+          dataPoint.type == activityType) {
+        totalActivity++; // Increment by 1 for each data point; adjust as necessary for your data
+      }
     }
+
+    return totalActivity;
   }
-  return totalMoveMinutes;
+
+  int getMeanActivity(DateTime startDate, DateTime? endDate,
+      List<HealthDataPoint> dataPoints, HealthDataType activityType) {
+    int totalActivity = 0;
+    int daysCounted = 0;
+    DateTime currentDate = startDate;
+
+    // If no endDate is provided or it's in the future, set it to today's date
+    DateTime today = DateTime.now();
+    endDate = endDate == null || endDate.isAfter(today)
+        ? DateTime(today.year, today.month, today.day)
+        : endDate;
+
+    while (currentDate.isBefore(endDate.add(const Duration(days: 1)))) {
+      // Add one day to include the endDate in the loop
+      final startOfDay =
+          DateTime(currentDate.year, currentDate.month, currentDate.day);
+      final endOfDay = startOfDay.add(const Duration(days: 1));
+
+      for (HealthDataPoint dataPoint in dataPoints) {
+        if (dataPoint.dateFrom.isAfter(startOfDay) &&
+            dataPoint.dateFrom.isBefore(endOfDay) &&
+            dataPoint.type == activityType) {
+          totalActivity++; // Increment by 1 for each data point; adjust as necessary for your data
+        }
+      }
+
+      currentDate = endOfDay;
+      daysCounted++;
+    }
+
+    // Calculate mean activity per day based on the actual number of days counted
+    return daysCounted > 0 ? totalActivity ~/ daysCounted : 0;
+  }
 }
