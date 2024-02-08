@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:health/health.dart';
+import 'package:health_app_mobile_client/charts/side_tittle_widgets/bottom_tittle_widgets.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/services/health_data_service.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +30,7 @@ class _ActivityChartState extends State<ActivityChart> {
     Colors.blueAccent
   ];
 
-  FlTitlesData? myTitlesData(BuildContext context) {
+  FlTitlesData? myTitlesData(BuildContext context, HomeDataProvider hdp) {
     return FlTitlesData(
       leftTitles: AxisTitles(
         axisNameWidget: widget.leftTitle != null
@@ -50,15 +51,13 @@ class _ActivityChartState extends State<ActivityChart> {
           // interval: 5,
         ),
       ),
-      bottomTitles: widget.bottomTittleWidget != null
-          ? AxisTitles(
+      bottomTitles: AxisTitles(
               sideTitles: SideTitles(
-                getTitlesWidget: widget.bottomTittleWidget!,
+                getTitlesWidget: selectbottomTittleWidget(hdp),
                 showTitles: true,
                 interval: 1,
               ),
-            )
-          : const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            ),
       rightTitles: const AxisTitles(
         sideTitles: SideTitles(showTitles: false),
       ),
@@ -68,21 +67,71 @@ class _ActivityChartState extends State<ActivityChart> {
     );
   }
 
+  Widget Function(double value, TitleMeta meta) selectbottomTittleWidget(HomeDataProvider hdp){
+    late Widget Function(double value, TitleMeta meta) btw;
+    switch (hdp.currentTopBarSelect) {
+      case "day":
+        btw = dailyThirdsBTW;
+        break;
+      case "week":
+        btw = weeklyThirdsBTW();
+        break;
+      case "month":
+        btw = monthlyThirdsBTW(hdp.currentDate);
+        break;
+      default:
+    }
+    return btw;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
+      // Determine the start and end dates based on the current selection
+      DateTime startDate = hDataProvider.currentDate;
+      DateTime? endDate;
+
+      switch (hDataProvider.currentTopBarSelect) {
+        case 'day':
+          startDate = DateTime(startDate.year, startDate.month, startDate.day);
+          endDate = null;
+          break;
+        case 'week':
+          int weekday = startDate.weekday;
+          startDate = startDate.subtract(Duration(
+              days: weekday -
+                  1)); // Adjust to the start of the week (assuming week starts on Monday)
+          endDate = startDate.add(Duration(days: 7));
+          break;
+        case 'month':
+          startDate = DateTime(startDate.year, startDate.month,
+              1); // Adjust to the start of the month
+          endDate = DateTime(
+              startDate.year, startDate.month + 1, 0); // Last day of the month
+          break;
+        default:
+          endDate = startDate.add(const Duration(
+              days: 1)); // Default to one day if the selection is unrecognized
+      }
+
+      // Generate bar chart data groups based on the calculated start and end dates
       List<BarChartGroupData> thisBarCharts = genBarChartDataGroups(
           hDataProvider.currentDataPoints,
           widget.nPeriods,
-          hDataProvider.currentDate,
-          dailyActivityRodColors);
-      return BarChart(
-        BarChartData(
-          barGroups: thisBarCharts,
-          titlesData: myTitlesData(context),
-          barTouchData: myBarTouchData(context),
-          borderData: FlBorderData(
-            show: false,
+          startDate,
+          dailyActivityRodColors,
+          endDate);
+
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+        child: BarChart(
+          BarChartData(
+            barGroups: thisBarCharts,
+            titlesData: myTitlesData(context, hDataProvider),
+            barTouchData: myBarTouchData(context),
+            borderData: FlBorderData(
+              show: false,
+            ),
           ),
         ),
       );
@@ -136,25 +185,43 @@ BarTouchData? myBarTouchData(BuildContext context) {
   );
 }
 
-/// Generates a list of [BarChartGroupData] based on health data points.
+/// Generates a list of `BarChartGroupData` for use in a bar chart, based on health data points.
 ///
-/// This function takes a list of [HealthDataPoint] objects [hDataPoints],
-/// an integer [nPeriods] representing the number of periods in which to accumulate
-/// the activity, a [DateTime] [date]for the specific date, and an optional list
-/// of [Color]s [barColors] for customizing the colors of the bars.
-/// If [barColors] is not provided, a default color of [Colors.blueAccent] will be used.
+/// This function takes a list of `HealthDataPoint` objects, a number of periods to divide the data into,
+/// a start date, and optionally, a list of colors for the bars and an end date. It divides the time range
+/// between the start and end dates (or the 24 hours starting from the start date if no end date is provided)
+/// into the specified number of periods. It then calculates the activity level for each period based on the
+/// health data points provided. Each period's activity level is represented as a bar in the bar chart.
 ///
-/// The function calculates the activity periods using the [HealthDataService],
-/// assigns colors to the bars based on the provided [barColors], and returns
-/// a list of [BarChartGroupData].
-List<BarChartGroupData> genBarChartDataGroups(List<HealthDataPoint> hDataPoints,
-    int nPeriods, DateTime date, List<Color>? barColors) {
-  // !!!!!!!!!!!!!! Modify this function to accept a list of dates
-  // so that multiple dates can be  taken into account to accumulate the work
+/// The bars are colored using the provided list of colors, cycling through the list if there are more bars
+/// than colors. If no colors are provided, a default color of `Colors.blueAccent` is used for all bars.
+///
+/// Parameters:
+/// - `hDataPoints`: The list of `HealthDataPoint` objects containing the health data to be represented.
+/// - `nPeriods`: The number of periods to divide the data into. Each period will correspond to one bar in the bar chart.
+/// - `startDate`: The start date of the range of data to be represented.
+/// - `barColors` (optional): A list of `Color` objects to use for coloring the bars in the bar chart. If not provided,
+///   a default color is used.
+/// - `endDate` (optional): The end date of the range of data to be represented. If not provided, the range is assumed
+///   to be 24 hours starting from `startDate`.
+///
+/// Returns:
+/// A list of `BarChartGroupData` objects, each representing a bar in the bar chart for a specific period,
+/// with its height corresponding to the activity level calculated for that period.
+List<BarChartGroupData> genBarChartDataGroups(
+    List<HealthDataPoint> hDataPoints, int nPeriods, DateTime startDate,
+    [List<Color>? barColors, DateTime? endDate]) {
   List<BarChartGroupData> tempBarCharts = [];
 
-  List<int> periods =
-      HealthDataService().getActivityByPeriods(nPeriods, date, hDataPoints);
+  DateTime tempStartDate =
+      DateTime(startDate.year, startDate.month, startDate.day);
+  DateTime? tempEndDate;
+  endDate != null
+      ? tempEndDate = DateTime(endDate.year, endDate.month, endDate.day)
+      : tempEndDate = null;
+
+  List<int> periods = HealthDataService()
+      .getActivityByPeriods(nPeriods, hDataPoints, tempStartDate, tempEndDate);
 
   // Default color if barColors is not provided
   barColors ??= [Colors.blueAccent];
@@ -176,6 +243,6 @@ List<BarChartGroupData> genBarChartDataGroups(List<HealthDataPoint> hDataPoints,
       ),
     );
   }
-
+  
   return tempBarCharts;
 }

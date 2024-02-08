@@ -306,17 +306,7 @@ class _HealthAppState extends State<HealthApp> {
                               backgroundColor:
                                   MaterialStatePropertyAll(Colors.blue))),
                       TextButton(
-                          onPressed: () async {
-                            try {
-                              DateTime now = DateTime.now();
-                              int nPeriods = 3;
-
-                              List<int> result = await HealthDataService()
-                                  .getActivityByPeriods(nPeriods, now, healthDataProvider.currentDataPoints);
-                            } catch (e) {
-                              print("$e");
-                            }
-                          },
+                          onPressed: ()  {},
                           child: Text("Probar",
                               style: TextStyle(color: Colors.white)),
                           style: ButtonStyle(
