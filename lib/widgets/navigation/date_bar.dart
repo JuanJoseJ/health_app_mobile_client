@@ -104,6 +104,21 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
     }
   }
 
+  Future<void> _selectDate(
+      BuildContext context, HomeDataProvider provider) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: provider.currentDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(provider.currentDate.year, provider.currentDate.month,
+          provider.currentDate.day),
+    );
+
+    if (picked != null && picked != provider.currentDate) {
+      provider.updateCurrentDate(picked);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hDP, child) {
@@ -120,20 +135,24 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.black),
-                    onPressed: () => _updateDate(context, hDP, isForward: false),
+                    onPressed: () =>
+                        _updateDate(context, hDP, isForward: false),
                   ),
                   Expanded(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            _getTopBarString(
-                                hDP.currentTopBarSelect, hDP.currentDate),
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ],
+                    child: GestureDetector(
+                      onTap: () => _selectDate(context, hDP),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _getTopBarString(
+                                  hDP.currentTopBarSelect, hDP.currentDate),
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -151,7 +170,7 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
                         : () => _updateDate(context, hDP, isForward: true),
                   ),
                   const VerticalDivider(),
-                  MyDropdownPage(),
+                  const MyDropdownPage(),
                 ],
               ),
             ),

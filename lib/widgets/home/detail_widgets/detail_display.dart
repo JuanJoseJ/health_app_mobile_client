@@ -55,7 +55,7 @@ class DetailScaffold extends StatelessWidget {
           child: Column(
             children: <Widget>[
               Flexible(
-                flex: 1, // This makes the DetailCard take 1/3 of the space
+                flex: 2, // This makes the DetailCard take 1/3 of the space
                 child: DetailCard(
                   changeDate: () {},
                   title: "Daily Activity",
@@ -68,7 +68,7 @@ class DetailScaffold extends StatelessWidget {
                   date: dateText,
                 ),
               ),
-              const Spacer(flex: 2),
+              const Spacer(flex: 1),
             ],
           ),
         ),
