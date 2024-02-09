@@ -5,6 +5,7 @@ import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/widgets/home/detail_widgets/detail_card.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/activity_bottom_widget.dart';
 import 'package:health_app_mobile_client/widgets/navigation/detail_top_bar.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class DetailScaffold extends StatelessWidget {
@@ -17,11 +18,19 @@ class DetailScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hDP, child) {
+      String dateText = '';
       int getNumberOfPeriods() {
         switch (hDP.currentTopBarSelect) {
           case "day":
+            dateText = DateFormat('EEEE d, yyyy').format(hDP.currentDate);
             return 3;
           case "week":
+            DateTime startOfWeek = hDP.currentDate
+                .subtract(Duration(days: hDP.currentDate.weekday - 1));
+            DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
+            String startString = DateFormat('MMMM d').format(startOfWeek);
+            String endString = DateFormat('MMMM d').format(endOfWeek);
+            dateText = "$startString - $endString";
             return 7;
           case "month":
             DateTime now = hDP.currentDate;
@@ -29,6 +38,7 @@ class DetailScaffold extends StatelessWidget {
                 ? DateTime(now.year, now.month + 1, 1)
                 : DateTime(now.year + 1, 1, 1);
             DateTime firstDayCurrentMonth = DateTime(now.year, now.month, 1);
+            dateText = DateFormat('MMMM y').format(hDP.currentDate);
             return firstDayNextMonth.difference(firstDayCurrentMonth).inDays;
           default:
             return 3;
@@ -55,11 +65,10 @@ class DetailScaffold extends StatelessWidget {
                     nPeriods: getNumberOfPeriods(),
                   ),
                   bottomWidget: const ActivityBottomWidget(),
-                  date: "22/01/2024",
+                  date: dateText,
                 ),
               ),
-              const Spacer(
-                  flex: 2),
+              const Spacer(flex: 2),
             ],
           ),
         ),

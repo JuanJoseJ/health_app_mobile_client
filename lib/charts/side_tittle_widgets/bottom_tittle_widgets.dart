@@ -43,13 +43,13 @@ Widget Function(double value, TitleMeta meta) weeklyThirdsBTW() {
     // Assuming the week starts on Monday and ends on Sunday
     switch (value.toInt()) {
       case 0:
-        text = 'M'; // Monday
+        text = 'Mo'; // Monday
         break;
       case 3:
-        text = 'W'; // Wednesday
+        text = 'Th'; // Wednesday
         break;
       case 6:
-        text = 'S'; // Sunday
+        text = 'Su'; // Sunday
         break;
       default:
         return const SizedBox.shrink(); // Empty widget for other values

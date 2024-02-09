@@ -100,8 +100,6 @@ class HealthDataService {
   List<double> getBurnedCalByPeriod(
       int nPeriods, DateTime date, List<HealthDataPoint> dataPoints) {
     final startOfDay = DateTime(date.year, date.month, date.day);
-    final endtOfDay =
-        DateTime(date.year, date.month, date.day).add(const Duration(days: 1));
 
     final List<HealthDataPoint> cleanCaloriesList = [...dataPoints];
     cleanCaloriesList.removeWhere(

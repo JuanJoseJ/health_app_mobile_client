@@ -27,13 +27,16 @@ class CardsScafold extends StatelessWidget {
           case "week":
             return 7;
           case "month":
-            DateTime now = hDP.currentDate;
-            DateTime firstDayNextMonth = (now.month < 12)
-                ? new DateTime(now.year, now.month + 1, 1)
-                : new DateTime(now.year + 1, 1, 1);
-            DateTime firstDayCurrentMonth =
-                new DateTime(now.year, now.month, 1);
-            return firstDayNextMonth.difference(firstDayCurrentMonth).inDays;
+            DateTime date = hDP.currentDate;
+            DateTime firstDayNextMonth;
+            if (date.month < 12) {
+              firstDayNextMonth = DateTime(date.year, date.month + 1, 1);
+            } else {
+              firstDayNextMonth = DateTime(date.year + 1, 1, 1);
+            }
+            DateTime lastDayOfMonth =
+                firstDayNextMonth.subtract(Duration(days: 1));
+            return lastDayOfMonth.day;
           default:
             return 3;
         }

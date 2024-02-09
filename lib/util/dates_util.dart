@@ -4,35 +4,22 @@ bool isSameDate(DateTime date1, DateTime date2) {
       date1.day == date2.day;
 }
 
-List<DateTime> calcPeriods(int nPeriods, DateTime start, [DateTime? end]) {
-  // Ensure there's at least one period
-  if (nPeriods < 1) nPeriods = 1;
+List<DateTime> calcPeriods(int nPeriods, DateTime startDate,
+    [DateTime? endDate]) {
+      
+  // If endDate is not provided, set it to the end of startDate's day
+  endDate ??=
+      DateTime(startDate.year, startDate.month, startDate.day, 23, 59, 59);
 
-  final List<DateTime> periods = [];
-  Duration totalDuration;
+  // Calculate the total duration in seconds
+  int totalDurationSeconds = endDate.difference(startDate).inSeconds;
 
-  if (end != null) {
-    // If an end date is provided, calculate the total duration between the start and end dates
-    totalDuration = end.difference(start);
-  } else {
-    // If no end date is provided, assume a single day and calculate the duration for 24 hours
-    totalDuration = Duration(hours: 24);
-    end = start.add(totalDuration);
-  }
+  // Calculate the duration of each period in seconds
+  int periodDurationSeconds = (totalDurationSeconds / nPeriods).round();
 
-  for (int i = 0; i <= nPeriods; i++) {
-    // Calculate the fraction of the total duration for each period
-    double fractionOfTotalDuration =
-        totalDuration.inMilliseconds * i / nPeriods;
-    // Add each period's start time to the list
-    periods.add(
-        start.add(Duration(milliseconds: fractionOfTotalDuration.round())));
-  }
-
-  // If dividing multiple days, ensure the last period starts at the exact end time
-  if (end != null && periods.last != end) {
-    periods.removeLast();
-    periods.add(end);
-  }
+  // Generate the list of period start times
+  List<DateTime> periods = List.generate(nPeriods + 1, (i) {
+    return startDate.add(Duration(seconds: periodDurationSeconds * i));
+  });
   return periods;
 }

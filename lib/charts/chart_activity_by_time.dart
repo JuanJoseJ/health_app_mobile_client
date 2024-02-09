@@ -4,6 +4,7 @@ import 'package:health/health.dart';
 import 'package:health_app_mobile_client/charts/side_tittle_widgets/bottom_tittle_widgets.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/services/health_data_service.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class ActivityChart extends StatefulWidget {
@@ -52,12 +53,12 @@ class _ActivityChartState extends State<ActivityChart> {
         ),
       ),
       bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                getTitlesWidget: selectbottomTittleWidget(hdp),
-                showTitles: true,
-                interval: 1,
-              ),
-            ),
+        sideTitles: SideTitles(
+          getTitlesWidget: selectbottomTittleWidget(hdp),
+          showTitles: true,
+          interval: 1,
+        ),
+      ),
       rightTitles: const AxisTitles(
         sideTitles: SideTitles(showTitles: false),
       ),
@@ -67,7 +68,8 @@ class _ActivityChartState extends State<ActivityChart> {
     );
   }
 
-  Widget Function(double value, TitleMeta meta) selectbottomTittleWidget(HomeDataProvider hdp){
+  Widget Function(double value, TitleMeta meta) selectbottomTittleWidget(
+      HomeDataProvider hdp) {
     late Widget Function(double value, TitleMeta meta) btw;
     switch (hdp.currentTopBarSelect) {
       case "day":
@@ -98,16 +100,12 @@ class _ActivityChartState extends State<ActivityChart> {
           break;
         case 'week':
           int weekday = startDate.weekday;
-          startDate = startDate.subtract(Duration(
-              days: weekday -
-                  1)); // Adjust to the start of the week (assuming week starts on Monday)
-          endDate = startDate.add(Duration(days: 7));
+          startDate = startDate.subtract(Duration(days: weekday - 1));
+          endDate = startDate.add(const Duration(days: 7));
           break;
         case 'month':
-          startDate = DateTime(startDate.year, startDate.month,
-              1); // Adjust to the start of the month
-          endDate = DateTime(
-              startDate.year, startDate.month + 1, 0); // Last day of the month
+          startDate = DateTime(startDate.year, startDate.month, 1);
+          endDate = DateTime(startDate.year, startDate.month + 1, 1);
           break;
         default:
           endDate = startDate.add(const Duration(
@@ -128,7 +126,7 @@ class _ActivityChartState extends State<ActivityChart> {
           BarChartData(
             barGroups: thisBarCharts,
             titlesData: myTitlesData(context, hDataProvider),
-            barTouchData: myBarTouchData(context),
+            barTouchData: myBarTouchData(context, hDataProvider),
             borderData: FlBorderData(
               show: false,
             ),
@@ -152,8 +150,8 @@ Widget leftTitleWidgets(double value, TitleMeta meta) {
   );
 }
 
-BarTouchData? myBarTouchData(BuildContext context) {
-  String timeText;
+BarTouchData? myBarTouchData(
+    BuildContext context, HomeDataProvider hDataProvider) {
   return BarTouchData(
     touchTooltipData: BarTouchTooltipData(
       fitInsideVertically: true,
@@ -162,22 +160,41 @@ BarTouchData? myBarTouchData(BuildContext context) {
       tooltipPadding: const EdgeInsets.all(4),
       tooltipBgColor: const Color.fromARGB(255, 236, 236, 236).withOpacity(0.9),
       getTooltipItem: (group, groupIndex, rod, rodIndex) {
-        switch (groupIndex) {
-          case 0:
-            timeText = "morning";
+        String timeText = '';
+        DateTime startDate = hDataProvider.currentDate;
+
+        switch (hDataProvider.currentTopBarSelect) {
+          case "day":
+            switch (groupIndex) {
+              case 0:
+                timeText = "Morning";
+                break;
+              case 1:
+                timeText = "Afternoon";
+                break;
+              case 2:
+                timeText = "Night";
+                break;
+              default:
+                timeText = "";
+                break;
+            }
             break;
-          case 1:
-            timeText = "afternoon";
+          case "week":
+            DateTime weekDate =
+                DateTime(startDate.year, startDate.month, groupIndex - 2);
+            timeText = DateFormat('EEEE').format(weekDate);
             break;
-          case 2:
-            timeText = "night";
-            break;
-          default:
-            timeText = "";
+          case "month":
+            DateTime monthDate =
+                DateTime(startDate.year, startDate.month, groupIndex + 1);
+            timeText = DateFormat('EEEE d')
+                .format(monthDate); // Just the day of the month
             break;
         }
+
         return BarTooltipItem(
-          "${group.barRods[0].toY} minutes in the $timeText",
+          "${rod.toY} min. $timeText",
           const TextStyle(fontSize: 13.0, fontWeight: FontWeight.bold),
         );
       },
