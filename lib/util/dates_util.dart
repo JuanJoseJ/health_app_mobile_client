@@ -6,7 +6,6 @@ bool isSameDate(DateTime date1, DateTime date2) {
 
 List<DateTime> calcPeriods(int nPeriods, DateTime startDate,
     [DateTime? endDate]) {
-      
   // If endDate is not provided, set it to the end of startDate's day
   endDate ??=
       DateTime(startDate.year, startDate.month, startDate.day, 23, 59, 59);

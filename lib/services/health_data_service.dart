@@ -70,11 +70,10 @@ class HealthDataService {
         if (dataPoint.dateFrom.isAfter(periods[i]) &&
             dataPoint.dateTo.isBefore(periods[i + 1])) {
           activityList[i] += int.parse(dataPoint.value.toString());
-          break; // Move to the next data point
+          break;
         }
       }
     }
-
     return activityList;
   }
 

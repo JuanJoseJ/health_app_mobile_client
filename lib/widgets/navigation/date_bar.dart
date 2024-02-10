@@ -54,14 +54,16 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
         if (newDate.isAfter(startOfToday)) {
           newDate = startOfToday;
         }
-        startDate = newDate;
-        endDate = newDate;
+        startDate = DateTime(newDate.year, newDate.month, newDate.day);
+        endDate = startDate
+            .add(const Duration(hours: 24))
+            .subtract(const Duration(seconds: 1));
         //Fetch data if not present for the days
-        if (startDate.isBefore(provider.currentMinDate)) {
-          provider.fetchDataPoints(
-              startDate.subtract(const Duration(days: 10)), startOfToday);
-          provider.updateCurrentMinDate(
-              startDate.subtract(const Duration(days: 10)));
+        if (startDate.isBefore(provider.currentMinDate) ||
+            endDate.isAfter(provider.currentMaxDate)) {
+          provider.updateDataPoints([]);
+          provider.fetchDataPoints(startDate.subtract(const Duration(days: 5)),
+              endDate.add(const Duration(days: 5)));
         }
         provider.updateCurrentDate(newDate);
         break;
@@ -79,11 +81,15 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
           endDate = today;
         } else {
           startDate = startOfWeek;
-          endDate = startOfWeek.add(Duration(days: 6));
+          endDate = startDate
+              .add(const Duration(days: 7))
+              .subtract(const Duration(seconds: 1));
         }
+        startDate = DateTime(startDate.year, startDate.month, startDate.day);
         provider.fetchDataPoints(startDate, endDate);
         provider.updateCurrentMinDate(startDate);
-        provider.updateCurrentDate(endDate);
+        provider.updateCurrentMaxDate(endDate);
+        provider.updateCurrentDate(startDate);
         break;
       case 'month':
         int monthsToAdjust = isForward ? 1 : -1;
@@ -94,10 +100,12 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
           newDate = DateTime(today.year, today.month, today.day);
         }
         startDate = DateTime(newDate.year, newDate.month, 1);
-        endDate = DateTime(newDate.year, newDate.month + 1, 0);
+        endDate = DateTime(newDate.year, newDate.month + 1, 1)
+            .subtract(const Duration(seconds: 1));
         provider.fetchDataPoints(startDate, endDate);
         provider.updateCurrentMinDate(startDate);
-        provider.updateCurrentDate(endDate);
+        provider.updateCurrentMaxDate(endDate);
+        provider.updateCurrentDate(startDate);
         break;
       default:
         return;
@@ -106,16 +114,47 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
 
   Future<void> _selectDate(
       BuildContext context, HomeDataProvider provider) async {
+    DateTime now = DateTime.now();
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: provider.currentDate,
       firstDate: DateTime(2000),
-      lastDate: DateTime(provider.currentDate.year, provider.currentDate.month,
-          provider.currentDate.day),
+      lastDate: DateTime(now.year, now.month, now.day),
     );
+    late DateTime startDate;
+    late DateTime endDate;
+    DateTime currentDate = provider.currentDate;
 
-    if (picked != null && picked != provider.currentDate) {
+    if (picked != null && picked != currentDate) {
       provider.updateCurrentDate(picked);
+      if (picked.isBefore(currentDate) || picked.isAfter(currentDate)) {
+        switch (provider.currentTopBarSelect) {
+          case 'day':
+            startDate = picked.subtract(const Duration(days: 5));
+            endDate = picked.add(const Duration(days: 5));
+            break;
+          case 'week':
+            startDate = DateTime(picked.year, picked.month, picked.day)
+                .subtract(Duration(days: picked.weekday - 1));
+            endDate = startDate
+                .add(const Duration(days: 7))
+                .subtract(const Duration(seconds: 1));
+            break;
+          case 'month':
+            startDate = DateTime(picked.year, picked.month, 1);
+            endDate = DateTime(picked.year, picked.month + 1, 1)
+                .subtract(const Duration(seconds: 1));
+            break;
+          default:
+            startDate = picked.subtract(const Duration(days: 5));
+            endDate = picked.add(const Duration(days: 5));
+            break;
+        }
+        provider.updateDataPoints([]);
+        provider.updateCurrentMinDate(startDate);
+        provider.updateCurrentMaxDate(endDate);
+        provider.fetchDataPoints(startDate, endDate);
+      }
     }
   }
 

@@ -101,18 +101,21 @@ class _ActivityChartState extends State<ActivityChart> {
         case 'week':
           int weekday = startDate.weekday;
           startDate = startDate.subtract(Duration(days: weekday - 1));
-          endDate = startDate.add(const Duration(days: 7));
+          endDate = startDate
+              .add(const Duration(days: 7))
+              .subtract(const Duration(seconds: 1));
           break;
         case 'month':
           startDate = DateTime(startDate.year, startDate.month, 1);
-          endDate = DateTime(startDate.year, startDate.month + 1, 1);
+          endDate = DateTime(startDate.year, startDate.month + 1, 1)
+              .subtract(const Duration(seconds: 1));
           break;
         default:
           endDate = startDate.add(const Duration(
               days: 1)); // Default to one day if the selection is unrecognized
       }
-
       // Generate bar chart data groups based on the calculated start and end dates
+      
       List<BarChartGroupData> thisBarCharts = genBarChartDataGroups(
           hDataProvider.currentDataPoints,
           widget.nPeriods,
@@ -229,16 +232,8 @@ List<BarChartGroupData> genBarChartDataGroups(
     List<HealthDataPoint> hDataPoints, int nPeriods, DateTime startDate,
     [List<Color>? barColors, DateTime? endDate]) {
   List<BarChartGroupData> tempBarCharts = [];
-
-  DateTime tempStartDate =
-      DateTime(startDate.year, startDate.month, startDate.day);
-  DateTime? tempEndDate;
-  endDate != null
-      ? tempEndDate = DateTime(endDate.year, endDate.month, endDate.day)
-      : tempEndDate = null;
-
   List<int> periods = HealthDataService()
-      .getActivityByPeriods(nPeriods, hDataPoints, tempStartDate, tempEndDate);
+      .getActivityByPeriods(nPeriods, hDataPoints, startDate, endDate);
 
   // Default color if barColors is not provided
   barColors ??= [Colors.blueAccent];
@@ -260,6 +255,6 @@ List<BarChartGroupData> genBarChartDataGroups(
       ),
     );
   }
-  
+
   return tempBarCharts;
 }

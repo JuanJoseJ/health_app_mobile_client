@@ -41,9 +41,13 @@ class HomeDataProvider extends ChangeNotifier {
         // Update your data points with the fetched data
         updateDataPoints(fetchedData);
         updateCurrentAppState(AppState.DATA_READY);
-        // Update currentMinDate if the startDate is earlier than the currentMinDate
-        if (startDate.isBefore(currentMinDate)) {
+
+        DateTime tempMinDate = currentMinDate;
+        if (startDate.isBefore(currentMinDate) || startDate.isAfter(currentMaxDate)) {
           updateCurrentMinDate(startDate);
+        }
+        if (endDate.isAfter(currentMaxDate) || endDate.isBefore(tempMinDate)) {
+          updateCurrentMaxDate(endDate);
         }
       }
     }
@@ -61,6 +65,13 @@ class HomeDataProvider extends ChangeNotifier {
   DateTime get currentMinDate => _currentMinDate;
   void updateCurrentMinDate(DateTime newMinDate) {
     _currentMinDate = newMinDate;
+    notifyListeners();
+  }
+
+  DateTime _currentMaxDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  DateTime get currentMaxDate => _currentMaxDate;
+  void updateCurrentMaxDate(DateTime newMaxDate) {
+    _currentMaxDate = newMaxDate;
     notifyListeners();
   }
 
