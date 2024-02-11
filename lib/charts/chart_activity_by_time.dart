@@ -3,7 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:health/health.dart';
 import 'package:health_app_mobile_client/charts/side_tittle_widgets/bottom_tittle_widgets.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
-import 'package:health_app_mobile_client/services/health_data_service.dart';
+import 'package:health_app_mobile_client/services/google_fit_data_service.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -232,7 +232,7 @@ List<BarChartGroupData> genBarChartDataGroups(
     List<HealthDataPoint> hDataPoints, int nPeriods, DateTime startDate,
     [List<Color>? barColors, DateTime? endDate]) {
   List<BarChartGroupData> tempBarCharts = [];
-  List<int> periods = HealthDataService()
+  List<int> periods = GoogleFitDataService()
       .getActivityByPeriods(nPeriods, hDataPoints, startDate, endDate);
 
   // Default color if barColors is not provided

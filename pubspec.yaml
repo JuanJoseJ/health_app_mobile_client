@@ -32,8 +32,10 @@ dependencies:
     sdk: flutter
   google_sign_in: ^6.1.6
   fl_chart: ^0.64.0
-
+  flutter_web_auth: ^0.5.0
+  url_launcher: ^6.0.12
   health: ^8.1.0
+  uni_links: ^0.5.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -46,6 +48,9 @@ dependencies:
   permission_handler: ^11.0.1
   provider: ^6.1.1
   intl: ^0.18.1
+  crypto: ^3.0.3
+  http: ^1.1.0
+  flutter_custom_tabs: ^2.0.0+1
 
 
 dev_dependencies:

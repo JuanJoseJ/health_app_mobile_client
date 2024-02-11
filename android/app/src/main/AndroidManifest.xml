@@ -19,9 +19,19 @@
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme"
             />
+            <!-- Main intent filter -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Custom URL Scheme Intent Filter for OAuth redirection -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="healthapp" android:host="fitbit-callback" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
@@ -31,6 +41,7 @@
             android:value="2" />
     </application>
 
+    <!-- Optional permissions if you plan to access sensor data directly from Android -->
     <!-- <uses-permission android:name="android.permission.BODY_SENSORS" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.health.READ_STEPS" />

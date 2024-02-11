@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
-import 'package:health_app_mobile_client/services/health_data_service.dart';
+import 'package:health_app_mobile_client/services/google_fit_data_service.dart';
 import 'package:provider/provider.dart';
 
 class CaloriesChart extends StatefulWidget {
@@ -153,7 +153,7 @@ class CaloriesChartState extends State {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
-      List<double> calories = HealthDataService().getBurnedCalByPeriod(
+      List<double> calories = GoogleFitDataService().getBurnedCalByPeriod(
           3, hDataProvider.currentDate, hDataProvider.currentDataPoints);
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),

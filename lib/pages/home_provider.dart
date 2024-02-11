@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
-import 'package:health_app_mobile_client/services/health_data_service.dart';
+import 'package:health_app_mobile_client/services/google_fit_data_service.dart';
 import 'package:health_app_mobile_client/util/app_states.dart';
 
 class HomeDataProvider extends ChangeNotifier {
-  final HealthDataService healthDataService = HealthDataService();
+  final GoogleFitDataService healthDataService = GoogleFitDataService();
 
   List<HealthDataPoint> _currentDataPoints = [];
   List<HealthDataPoint> get currentDataPoints => _currentDataPoints;

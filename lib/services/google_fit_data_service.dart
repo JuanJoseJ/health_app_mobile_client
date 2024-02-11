@@ -1,7 +1,7 @@
 import 'package:health/health.dart';
 import 'package:health_app_mobile_client/util/dates_util.dart';
 
-class HealthDataService {
+class GoogleFitDataService {
   HealthFactory health = HealthFactory(useHealthConnectIfAvailable: true);
 
   // Check a list of permissions, and ask for authorization if required.
