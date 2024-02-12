@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:health/health.dart';
 import 'package:health_app_mobile_client/charts/side_tittle_widgets/bottom_tittle_widgets.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/services/google_fit_data_service.dart';
@@ -118,7 +117,7 @@ class _ActivityChartState extends State<ActivityChart> {
       // Generate bar chart data groups based on the calculated start and end dates
       
       List<BarChartGroupData> thisBarCharts = genBarChartDataGroups(
-          hDataProvider.currentDataPoints,
+          hDataProvider.currentActivityDataPoints,
           widget.nPeriods,
           startDate,
           dailyActivityRodColors,

@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
+import 'package:health/health.dart';
+import 'package:health_app_mobile_client/util/dates_util.dart';
+import 'package:health_app_mobile_client/util/default_data_util.dart';
 import 'package:health_app_mobile_client/util/fitbit_strings.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -51,8 +54,8 @@ class FitBitDataService {
       // The following line states that a login must be done by the user
       // A better aproach would be to asossiate an account with a user token,
       // but as we are only using the client authN, that is not possible.
-      // A back-end server would be required. 
-      '&prompt=login',
+      // A back-end server would be required.
+      '&prompt=login_consent', // Remove the '_consent' to require login
     );
 
     if (!await launchUrl(authorizationUrl,
@@ -148,8 +151,6 @@ class FitBitDataService {
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print("!!!!!!!!!!!!!!!!!!!!!!!!! FETCH !!!!!!!!!!!!!!!!!!!!!");
-      print(data);
       return data;
     } else {
       print("An error occurred at fetch: ${response.body}");
@@ -157,23 +158,97 @@ class FitBitDataService {
     }
   }
 
-  Future<dynamic> fetchSleepData(DateTime startDate,
+  Future<List<DefaultDataPoint>> fetchFitBitSleepData(DateTime startDate,
+      {DateTime? endDate}) async {
+    String start = DateFormat("yyyy-MM-dd").format(startDate);
+    String end = endDate != null
+        ? DateFormat("yyyy-MM-dd").format(endDate)
+        : DateFormat("yyyy-MM-dd")
+            .format(startDate.add(const Duration(hours: 24)));
+    String endPoint =
+        "https://api.fitbit.com/1.2/user/-/sleep/date/$start/$end.json";
+
+    List<DefaultDataPoint> defaultDataPoints = [];
+
+    try {
+      var response = await _fetchData(endPoint);
+      var decodedResponse = response is String
+          ? json.decode(response)
+          : response; // Decode if response is String
+
+      if (decodedResponse['sleep'] != null) {
+        for (var sleepRecord in decodedResponse['sleep']) {
+          // Iterate through each 'data' sleep level
+          for (var sleepLevel in sleepRecord['levels']['data']) {
+            // Parse the sleep level to create a DefaultDataPoint
+            Map<String, dynamic> sleepData = {
+              'startTime': sleepLevel['dateTime'],
+              'endTime': DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(
+                  DateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                      .parse(sleepLevel['dateTime'])
+                      .add(Duration(seconds: sleepLevel['seconds']))),
+              'seconds': sleepLevel['seconds'], // Duration in seconds
+              'level': sleepLevel['level'] // Sleep level type
+            };
+            defaultDataPoints.add(DefaultDataPoint.fromSleepData(sleepData));
+          }
+        }
+      }
+      // print(defaultDataPoints[1].toJson());
+      return defaultDataPoints;
+    } catch (e) {
+      print("An error occurred at fetch sleep: $e");
+      rethrow;
+    }
+  }
+
+  /// The getSleepByDays function calculates the total sleep duration over
+  /// a specified number of days leading up to a given date from a list of
+  /// health data points (hdp). It filters the relevant sleep data points
+  /// within the specified date range, sums their corresponding sleep durations,
+  /// and returns the total sleep duration.
+  double getSleepByDays(int nDays, DateTime date, List<DefaultDataPoint> hdp) {
+    // Debo mostrar esto como un porcentaje del día transcurrido
+
+    List<HealthDataType> acceptedSleepTypes = [
+      HealthDataType.SLEEP_IN_BED,
+      HealthDataType.SLEEP_ASLEEP,
+      HealthDataType.SLEEP_AWAKE,
+      HealthDataType.SLEEP_LIGHT,
+      HealthDataType.SLEEP_DEEP,
+      HealthDataType.SLEEP_REM,
+      HealthDataType.SLEEP_OUT_OF_BED,
+      HealthDataType.SLEEP_SESSION,
+    ];
+
+    List<DefaultDataPoint> clearHdp = [...hdp];
+    double totSleep = 0;
+    clearHdp.removeWhere((element) =>
+        !acceptedSleepTypes.contains(element.type) ||
+        !isSameDate(element.dateTo!, date));
+    for (DefaultDataPoint p in clearHdp) {
+      totSleep += double.parse(p.value.toString());
+    }
+    return totSleep;
+  }
+
+  Future<dynamic> fetchNutritionData(DateTime startDate,
       {DateTime? endDate}) async {
     String start = DateFormat("yyyy-MM-dd").format(startDate);
     String? end;
+    String? endPoint;
     if (endDate == null) {
-      end = DateFormat("yyyy-MM-dd")
-          .format(startDate.add(const Duration(hours: 24)));
+      endPoint = "https://api.fitbit.com/1/user/-/foods/log/date/$start.json";
+      // endPoint = "https://api.fitbit.com/1/user/-/meals.json";
     } else {
       end = DateFormat("yyyy-MM-dd").format(endDate);
+      endPoint =
+          "https://api.fitbit.com/1/user/-/foods/log/caloriesIn/date/$start/$end.json";
     }
-    String endPoint =
-        "https://api.fitbit.com//1.2/user/-/sleep/date/$start/$end.json";
-
     try {
       return await _fetchData(endPoint);
     } catch (e) {
-      print("An error occurred at fetch sleep: $e");
+      print("An error occurred at fetch nutrition: $e");
       rethrow;
     }
   }

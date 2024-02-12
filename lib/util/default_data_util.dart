@@ -1,8 +1,9 @@
 import 'package:health/health.dart';
+import 'package:intl/intl.dart';
 
 class DefaultDataPoint {
   DateTime dateFrom;
-  DateTime dateTo;
+  DateTime? dateTo;
   HealthValue value;
   HealthDataType type;
   HealthDataUnit unit;
@@ -10,7 +11,7 @@ class DefaultDataPoint {
   // Constructor
   DefaultDataPoint({
     required this.dateFrom,
-    required this.dateTo,
+    this.dateTo,
     required this.value,
     required this.type,
     required this.unit,
@@ -19,7 +20,7 @@ class DefaultDataPoint {
   Map<String, dynamic> toJson() {
     return {
       'dateFrom': dateFrom.toIso8601String(),
-      'dateTo': dateTo.toIso8601String(),
+      'dateTo': dateTo != null ? dateTo!.toIso8601String() : null,
       'value': value,
       'type': type,
       'unit': unit,
@@ -44,5 +45,49 @@ class DefaultDataPoint {
         value: healthDataPoint.value,
         type: healthDataPoint.type,
         unit: healthDataPoint.unit);
+  }
+
+  // Factory constructor in DefaultDataPoint for sleep data with internal type determination
+  factory DefaultDataPoint.fromSleepData(Map<String, dynamic> sleepData) {
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    DateTime dateFrom = dateFormat.parse(sleepData['startTime']);
+    DateTime dateTo = dateFormat.parse(sleepData['endTime']);
+    NumericHealthValue duration = NumericHealthValue(sleepData['seconds']
+            .toDouble() /
+        60); // Assuming duration is provided in seconds, converting to minutes
+
+    // Determine the HealthDataType based on the 'level' field in sleepData
+    HealthDataType sleepType;
+    switch (sleepData['level']) {
+      case 'asleep':
+        sleepType = HealthDataType.SLEEP_ASLEEP;
+        break;
+      case 'awake':
+        sleepType = HealthDataType.SLEEP_AWAKE;
+        break;
+      case 'light':
+        sleepType = HealthDataType.SLEEP_LIGHT;
+        break;
+      case 'restless':
+        sleepType = HealthDataType.SLEEP_LIGHT;
+        break;
+      case 'deep':
+        sleepType = HealthDataType.SLEEP_DEEP;
+        break;
+      case 'rem':
+        sleepType = HealthDataType.SLEEP_REM;
+        break;
+      default:
+        sleepType = HealthDataType.SLEEP_ASLEEP;
+        break;
+    }
+
+    return DefaultDataPoint(
+      dateFrom: dateFrom,
+      dateTo: dateTo,
+      value: duration,
+      type: sleepType,
+      unit: HealthDataUnit.MINUTE, // Assuming duration is measured in minutes
+    );
   }
 }

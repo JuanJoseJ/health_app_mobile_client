@@ -154,7 +154,7 @@ class CaloriesChartState extends State {
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
       List<double> calories = GoogleFitDataService().getBurnedCalByPeriod(
-          3, hDataProvider.currentDate, hDataProvider.currentDataPoints);
+          3, hDataProvider.currentDate, hDataProvider.currentActivityDataPoints);
       return Padding(
         padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
         child: LineChart(

@@ -21,7 +21,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
-  final googleFitDataProvider = HomeDataProvider();
+  final homeDataProvider = HomeDataProvider();
   final fitBitDataService = FitBitDataService();
 
   @override
@@ -43,24 +43,22 @@ class _MainPageState extends State<MainPage> {
     DateTime startDate = endDate
         .subtract(const Duration(days: 10))
         .add(const Duration(seconds: 1));
-    await googleFitDataProvider.fetchDataPoints(startDate, endDate);
+    await homeDataProvider.fetchActivityDataPoints(startDate, endDate);
 
-    // WORK ON THE FETCH FOR FITBIT
-    try {
-      String verifier = fitBitDataService.generateCodeVerifier();
-      fitBitDataService.openFitbitAuthorization(verifier);
-      await fitBitDataService.initLinkListener(verifier);
-      await fitBitDataService.fetchSleepData(startDate, endDate: endDate);
-    } catch (e) {
-      rethrow;
-    }
+    //FETCH FOR FITBIT
+    String verifier = fitBitDataService.generateCodeVerifier();
+    fitBitDataService.openFitbitAuthorization(verifier);
+    await fitBitDataService.initLinkListener(verifier);
+    homeDataProvider.updatefitBitDataService(fitBitDataService);
+    await homeDataProvider.fetchSleepDataPoints(startDate, endDate);
+
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) {
-        return googleFitDataProvider;
+        return homeDataProvider;
       },
       child: Scaffold(
         appBar: const MyTopBar(),

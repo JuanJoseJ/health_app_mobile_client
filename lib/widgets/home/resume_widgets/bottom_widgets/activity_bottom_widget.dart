@@ -20,20 +20,20 @@ class ActivityBottomWidget extends StatelessWidget {
         case 'day':
           // Calculate total activity for the day
           activity = getTotalActivityForDay(startDate,
-              hDataProv.currentDataPoints, HealthDataType.MOVE_MINUTES);
+              hDataProv.currentActivityDataPoints, HealthDataType.MOVE_MINUTES);
           break;
         case 'week':
           startDate = startDate.subtract(Duration(days: startDate.weekday - 1));
           endDate = startDate.add(const Duration(days: 7));
           activity = getMeanActivity(startDate, endDate,
-              hDataProv.currentDataPoints, HealthDataType.MOVE_MINUTES);
+              hDataProv.currentActivityDataPoints, HealthDataType.MOVE_MINUTES);
           textSuffix = ' (avg)';
           break;
         case 'month':
           startDate = DateTime(startDate.year, startDate.month, 1);
           endDate = DateTime(startDate.year, startDate.month + 1, 0);
           activity = getMeanActivity(startDate, endDate,
-              hDataProv.currentDataPoints, HealthDataType.MOVE_MINUTES);
+              hDataProv.currentActivityDataPoints, HealthDataType.MOVE_MINUTES);
           textSuffix = ' (avg)';
           break;
       }

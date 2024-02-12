@@ -8,7 +8,7 @@ class CaloriesBottomWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hdp, child) {
-      List<double> totCalories = GoogleFitDataService().getBurnedCalByPeriod(1, hdp.currentDate, hdp.currentDataPoints);
+      List<double> totCalories = GoogleFitDataService().getBurnedCalByPeriod(1, hdp.currentDate, hdp.currentActivityDataPoints);
       return Row(
         children: [
           Expanded(

@@ -61,8 +61,8 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
         //Fetch data if not present for the days
         if (startDate.isBefore(provider.currentMinDate) ||
             endDate.isAfter(provider.currentMaxDate)) {
-          provider.updateDataPoints([]);
-          provider.fetchDataPoints(startDate.subtract(const Duration(days: 5)),
+          provider.updateActivityDataPoints([]);
+          provider.fetchActivityDataPoints(startDate.subtract(const Duration(days: 5)),
               endDate.add(const Duration(days: 5)));
         }
         provider.updateCurrentDate(newDate);
@@ -86,7 +86,7 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
               .subtract(const Duration(seconds: 1));
         }
         startDate = DateTime(startDate.year, startDate.month, startDate.day);
-        provider.fetchDataPoints(startDate, endDate);
+        provider.fetchActivityDataPoints(startDate, endDate);
         provider.updateCurrentMinDate(startDate);
         provider.updateCurrentMaxDate(endDate);
         provider.updateCurrentDate(startDate);
@@ -102,7 +102,7 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
         startDate = DateTime(newDate.year, newDate.month, 1);
         endDate = DateTime(newDate.year, newDate.month + 1, 1)
             .subtract(const Duration(seconds: 1));
-        provider.fetchDataPoints(startDate, endDate);
+        provider.fetchActivityDataPoints(startDate, endDate);
         provider.updateCurrentMinDate(startDate);
         provider.updateCurrentMaxDate(endDate);
         provider.updateCurrentDate(startDate);
@@ -150,10 +150,10 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
             endDate = picked.add(const Duration(days: 5));
             break;
         }
-        provider.updateDataPoints([]);
+        provider.updateActivityDataPoints([]);
         provider.updateCurrentMinDate(startDate);
         provider.updateCurrentMaxDate(endDate);
-        provider.fetchDataPoints(startDate, endDate);
+        provider.fetchActivityDataPoints(startDate, endDate);
       }
     }
   }

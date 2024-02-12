@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
-import 'package:health_app_mobile_client/services/google_fit_data_service.dart';
+import 'package:health_app_mobile_client/services/fit_bit_data_service.dart';
 import 'package:provider/provider.dart';
 
 class SleepChart extends StatefulWidget {
@@ -84,9 +84,9 @@ class SleepChartState extends State {
         screenWidth * centerSpaceRadiusPercentage * widthFraction;
 
     return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
-      final GoogleFitDataService hds = new GoogleFitDataService();
-      final double totSleepMinutes = hds.getSleepByDays(
-          1, hDataProvider.currentDate, hDataProvider.currentDataPoints);
+      final FitBitDataService sleepDataService = FitBitDataService();
+      final double totSleepMinutes = sleepDataService.getSleepByDays(
+          1, hDataProvider.currentDate, hDataProvider.currentSleepDataPoints);
       return PieChart(
         PieChartData(
             pieTouchData: nightPieTouchData(),
