@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:health/health.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/services/google_fit_data_service.dart';
-import 'package:health_app_mobile_client/util/data_types.dart';
+import 'package:health_app_mobile_client/util/google_fit_data_types.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(HealthApp());

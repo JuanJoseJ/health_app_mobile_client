@@ -1,5 +1,6 @@
 import 'package:health/health.dart';
 import 'package:health_app_mobile_client/util/dates_util.dart';
+import 'package:health_app_mobile_client/util/default_data_util.dart';
 
 class GoogleFitDataService {
   HealthFactory health = HealthFactory(useHealthConnectIfAvailable: true);
@@ -20,17 +21,24 @@ class GoogleFitDataService {
     return hasPermissions!;
   }
 
-  Future<List<HealthDataPoint>> fetchHealthData(
-      DateTime start, DateTime end, List<HealthDataType> types) async {
-    List<HealthDataPoint> healthDataList = [];
-    try {
-      healthDataList = await health.getHealthDataFromTypes(start, end, types);
-    } catch (error) {
-      print("Exception in getHealthDataFromTypes: $error");
-    }
+  Future<List<DefaultDataPoint>> fetchHealthData(
+    DateTime start, DateTime end, List<HealthDataType> types) async {
+  List<HealthDataPoint> healthDataList = [];
+  try {
+    // Fetch HealthDataPoint objects
+    healthDataList = await health.getHealthDataFromTypes(start, end, types);
+
+    // Remove duplicates from the fetched HealthDataPoint list
     healthDataList = HealthFactory.removeDuplicates(healthDataList);
-    return healthDataList;
+  } catch (error) {
+    print("Exception in getHealthDataFromTypes: $error");
   }
+
+  // Convert the HealthDataPoint list (with duplicates removed) to a list of DefaultDataPoint objects
+  List<DefaultDataPoint> defaultDataPoints = _convertHealthDataPointsToDefault(healthDataList);
+
+  return defaultDataPoints;
+}
 
   List<HealthDataPoint> removeDuplicates(List<HealthDataPoint> points) {
     return HealthFactory.removeDuplicates(points);
@@ -51,10 +59,10 @@ class GoogleFitDataService {
   }
 
   List<int> getActivityByPeriods(
-      int nPeriods, List<HealthDataPoint> dataPoints, DateTime startDate,
+      int nPeriods, List<DefaultDataPoint> dataPoints, DateTime startDate,
       [DateTime? endDate]) {
     // Filter only MOVE_MINUTES data points
-    final List<HealthDataPoint> cleanMoveMinutes = dataPoints
+    final List<DefaultDataPoint> cleanMoveMinutes = dataPoints
         .where((element) => element.type == HealthDataType.MOVE_MINUTES)
         .toList();
 
@@ -65,7 +73,7 @@ class GoogleFitDataService {
     List<int> activityList = List.generate(nPeriods, (index) => 0);
 
     // Iterate over the data and accumulate the values for each period
-    for (HealthDataPoint dataPoint in cleanMoveMinutes) {
+    for (DefaultDataPoint dataPoint in cleanMoveMinutes) {
       for (int i = 0; i < periods.length - 1; i++) {
         if (dataPoint.dateFrom.isAfter(periods[i]) &&
             dataPoint.dateTo.isBefore(periods[i + 1])) {
@@ -82,25 +90,25 @@ class GoogleFitDataService {
   /// health data points (hdp). It filters the relevant sleep data points
   /// within the specified date range, sums their corresponding sleep durations,
   /// and returns the total sleep duration.
-  double getSleepByDays(int nDays, DateTime date, List<HealthDataPoint> hdp) {
+  double getSleepByDays(int nDays, DateTime date, List<DefaultDataPoint> hdp) {
     // Debo mostrar esto como un porcentaje del día transcurrido
 
-    List<HealthDataPoint> clearHdp = [...hdp];
+    List<DefaultDataPoint> clearHdp = [...hdp];
     double totSleep = 0;
     clearHdp.removeWhere((element) =>
         element.type != HealthDataType.SLEEP_ASLEEP ||
         !isSameDate(element.dateTo, date));
-    for (HealthDataPoint p in clearHdp) {
+    for (DefaultDataPoint p in clearHdp) {
       totSleep += double.parse(p.value.toString());
     }
     return totSleep;
   }
 
   List<double> getBurnedCalByPeriod(
-      int nPeriods, DateTime date, List<HealthDataPoint> dataPoints) {
+      int nPeriods, DateTime date, List<DefaultDataPoint> dataPoints) {
     final startOfDay = DateTime(date.year, date.month, date.day);
 
-    final List<HealthDataPoint> cleanCaloriesList = [...dataPoints];
+    final List<DefaultDataPoint> cleanCaloriesList = [...dataPoints];
     cleanCaloriesList.removeWhere(
         (element) => element.type != HealthDataType.ACTIVE_ENERGY_BURNED);
 
@@ -109,7 +117,7 @@ class GoogleFitDataService {
     // Initialize the activityList with zeros for each period
     List<double> caloriesList = List.generate(nPeriods, (index) => 0);
 
-    for (HealthDataPoint dataPoint in cleanCaloriesList) {
+    for (DefaultDataPoint dataPoint in cleanCaloriesList) {
       for (int i = 0; i < periods.length - 1; i++) {
         if (dataPoint.dateFrom.isAfter(periods[i]) &&
             dataPoint.dateFrom.isBefore(periods[i + 1])) {
@@ -122,4 +130,12 @@ class GoogleFitDataService {
 
     return caloriesList;
   }
+
+  List<DefaultDataPoint> _convertHealthDataPointsToDefault(List<HealthDataPoint> healthDataPoints) {
+  // Convert each HealthDataPoint in the list to a DefaultDataPoint
+  List<DefaultDataPoint> defaultDataPoints = healthDataPoints.map((healthDataPoint) =>
+      DefaultDataPoint.fromHealthDataPoint(healthDataPoint)).toList();
+  return defaultDataPoints;
+}
+
 }

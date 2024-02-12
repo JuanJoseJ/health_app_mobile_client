@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:health_app_mobile_client/authentication/auth_gate.dart';
+import 'package:health_app_mobile_client/pages/authentication/auth_gate.dart';
 import 'package:health_app_mobile_client/themes/primary_theme.dart';
 
 class MyApp extends StatelessWidget {

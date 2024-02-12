@@ -4,6 +4,7 @@ import 'package:health/health.dart';
 import 'package:health_app_mobile_client/charts/side_tittle_widgets/bottom_tittle_widgets.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/services/google_fit_data_service.dart';
+import 'package:health_app_mobile_client/util/default_data_util.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -229,7 +230,7 @@ BarTouchData? myBarTouchData(
 /// A list of `BarChartGroupData` objects, each representing a bar in the bar chart for a specific period,
 /// with its height corresponding to the activity level calculated for that period.
 List<BarChartGroupData> genBarChartDataGroups(
-    List<HealthDataPoint> hDataPoints, int nPeriods, DateTime startDate,
+    List<DefaultDataPoint> hDataPoints, int nPeriods, DateTime startDate,
     [List<Color>? barColors, DateTime? endDate]) {
   List<BarChartGroupData> tempBarCharts = [];
   List<int> periods = GoogleFitDataService()

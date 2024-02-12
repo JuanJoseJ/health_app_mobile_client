@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:health/health.dart';
 import 'package:health_app_mobile_client/services/google_fit_data_service.dart';
 import 'package:health_app_mobile_client/util/app_states.dart';
+import 'package:health_app_mobile_client/util/default_data_util.dart';
 
 class HomeDataProvider extends ChangeNotifier {
-  final GoogleFitDataService healthDataService = GoogleFitDataService();
+  final GoogleFitDataService googleFitHealthDataService = GoogleFitDataService();
 
-  List<HealthDataPoint> _currentDataPoints = [];
-  List<HealthDataPoint> get currentDataPoints => _currentDataPoints;
-  void updateDataPoints(List<HealthDataPoint> newDataPoints) {
+  List<DefaultDataPoint> _currentDataPoints = [];
+  List<DefaultDataPoint> get currentDataPoints => _currentDataPoints;
+  void updateDataPoints(List<DefaultDataPoint> newDataPoints) {
     _currentDataPoints.addAll(newDataPoints);
-    _currentDataPoints = healthDataService.removeDuplicates(_currentDataPoints);
-    healthDataService.getSleepByDays(1, DateTime.now(), _currentDataPoints);
+    googleFitHealthDataService.getSleepByDays(1, DateTime.now(), _currentDataPoints);
     notifyListeners();
   }
 
@@ -29,12 +29,12 @@ class HomeDataProvider extends ChangeNotifier {
     // Check permission to read Move minutes
     updateCurrentAppState(AppState.FETCHING_DATA);
     bool permitedAcces =
-        await healthDataService.checkPermissions(permission, type);
+        await googleFitHealthDataService.checkPermissions(permission, type);
     if (!permitedAcces) {
       updateCurrentAppState(AppState.AUTH_NOT_GRANTED);
     } else {
-      List<HealthDataPoint> fetchedData =
-          await healthDataService.fetchHealthData(startDate, endDate, type);
+      List<DefaultDataPoint> fetchedData =
+          await googleFitHealthDataService.fetchHealthData(startDate, endDate, type);
       if (fetchedData.isEmpty & currentDataPoints.isEmpty) {
         updateCurrentAppState(AppState.NO_DATA);
       } else {

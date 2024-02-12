@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
+import 'package:health_app_mobile_client/util/default_data_util.dart';
 import 'package:provider/provider.dart';
 
 class ActivityBottomWidget extends StatelessWidget {
@@ -53,13 +54,13 @@ class ActivityBottomWidget extends StatelessWidget {
     });
   }
 
-  int getTotalActivityForDay(DateTime date, List<HealthDataPoint> dataPoints,
+  int getTotalActivityForDay(DateTime date, List<DefaultDataPoint> dataPoints,
       HealthDataType activityType) {
     int totalActivity = 0;
     final startOfDay = DateTime(date.year, date.month, date.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));
 
-    for (HealthDataPoint dataPoint in dataPoints) {
+    for (DefaultDataPoint dataPoint in dataPoints) {
       if (dataPoint.dateFrom.isAfter(startOfDay) &&
           dataPoint.dateFrom.isBefore(endOfDay) &&
           dataPoint.type == activityType) {
@@ -71,7 +72,7 @@ class ActivityBottomWidget extends StatelessWidget {
   }
 
   int getMeanActivity(DateTime startDate, DateTime? endDate,
-      List<HealthDataPoint> dataPoints, HealthDataType activityType) {
+      List<DefaultDataPoint> dataPoints, HealthDataType activityType) {
     int totalActivity = 0;
     int daysCounted = 0;
     DateTime currentDate = startDate;
@@ -88,7 +89,7 @@ class ActivityBottomWidget extends StatelessWidget {
           DateTime(currentDate.year, currentDate.month, currentDate.day);
       final endOfDay = startOfDay.add(const Duration(days: 1));
 
-      for (HealthDataPoint dataPoint in dataPoints) {
+      for (DefaultDataPoint dataPoint in dataPoints) {
         if (dataPoint.dateFrom.isAfter(startOfDay) &&
             dataPoint.dateFrom.isBefore(endOfDay) &&
             dataPoint.type == activityType) {
