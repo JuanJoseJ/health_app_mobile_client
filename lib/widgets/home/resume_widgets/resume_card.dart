@@ -5,7 +5,8 @@ class ResumeCard extends StatelessWidget {
   final Icon myIcon;
   final StatefulWidget chart;
   final Widget bottomWidget;
-  final VoidCallback? notifyParent;
+  final dynamic Function(String)? notifyParent;
+  final String chartId;
 
   const ResumeCard(
       {Key? key,
@@ -13,7 +14,8 @@ class ResumeCard extends StatelessWidget {
       required this.myIcon,
       required this.chart,
       required this.bottomWidget,
-      required this.notifyParent})
+      required this.notifyParent,
+      required this.chartId})
       : super(key: key);
 
   @override
@@ -39,7 +41,7 @@ class ResumeCard extends StatelessWidget {
                               textStyle: const TextStyle(fontSize: 20),
                             ),
                             onPressed: () {
-                              notifyParent!();
+                              notifyParent!(chartId);
                             },
                             child: Text(
                               title,

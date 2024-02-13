@@ -12,7 +12,7 @@ import 'package:health_app_mobile_client/widgets/navigation/date_bar.dart';
 import 'package:provider/provider.dart';
 
 class CardsScafold extends StatelessWidget {
-  final VoidCallback? navigateFn;
+  final dynamic Function(String)? navigateFn;
   const CardsScafold({
     super.key,
     this.navigateFn,
@@ -68,6 +68,7 @@ class CardsScafold extends StatelessWidget {
                             bottomTittleWidget: dailyThirdsBTW,
                             nPeriods: getNumberOfPeriods(),
                           ),
+                          chartId: "Activity",
                           bottomWidget: ActivityBottomWidget(),
                           notifyParent: navigateFn,
                         )),
@@ -89,6 +90,7 @@ class CardsScafold extends StatelessWidget {
                             bottomTittleWidget: dailyThirdsBTW,
                             nPeriods: 3,
                           ),
+                          chartId: "Stress",
                           bottomWidget: Text("xxx activiti"),
                           notifyParent: navigateFn,
                         )),
@@ -105,12 +107,13 @@ class CardsScafold extends StatelessWidget {
                       children: [
                         Expanded(
                             child: ResumeCard(
-                          title: "Calories",
+                          title: "Food",
                           myIcon: const Icon(
                             Icons.local_fire_department,
                             color: Colors.redAccent,
                           ),
                           chart: CaloriesChart(),
+                          chartId: "Food",
                           bottomWidget: CaloriesBottomWidget(),
                           notifyParent: navigateFn,
                         )),
@@ -127,6 +130,7 @@ class CardsScafold extends StatelessWidget {
                             color: Colors.lightBlueAccent,
                           ),
                           chart: SleepChart(),
+                          chartId: "Sleep",
                           bottomWidget: SleepBottomWidget(),
                           notifyParent: navigateFn,
                         )),

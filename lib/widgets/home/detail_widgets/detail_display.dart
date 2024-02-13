@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:health_app_mobile_client/charts/chart_activity_by_time.dart';
-import 'package:health_app_mobile_client/charts/side_tittle_widgets/bottom_tittle_widgets.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/widgets/home/detail_widgets/detail_card.dart';
-import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/activity_bottom_widget.dart';
 import 'package:health_app_mobile_client/widgets/navigation/detail_top_bar.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class DetailScaffold extends StatelessWidget {
-  final VoidCallback? navigateFn;
+  final dynamic Function(String) navigateFn;
+  final StatefulWidget chart;
+  final Widget bottomWidget;
   const DetailScaffold({
     super.key,
-    this.navigateFn,
+    required this.navigateFn,
+    required this.chart,
+    required this.bottomWidget,
   });
 
   @override
@@ -48,6 +49,7 @@ class DetailScaffold extends StatelessWidget {
       return Scaffold(
         appBar: DetailTopBar(
           notifyParent: navigateFn,
+          chartId: "",
         ),
         backgroundColor: Theme.of(context).colorScheme.background,
         body: Padding(
@@ -59,12 +61,8 @@ class DetailScaffold extends StatelessWidget {
                 child: DetailCard(
                   changeDate: () {},
                   title: "Daily Activity",
-                  chart: ActivityChart(
-                    leftTitle: "Minutes of activity",
-                    bottomTittleWidget: dailyThirdsBTW,
-                    nPeriods: getNumberOfPeriods(),
-                  ),
-                  bottomWidget: const ActivityBottomWidget(),
+                  chart: chart,
+                  bottomWidget: bottomWidget,
                   date: dateText,
                 ),
               ),
