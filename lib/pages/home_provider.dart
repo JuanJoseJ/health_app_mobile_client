@@ -13,7 +13,7 @@ class HomeDataProvider extends ChangeNotifier {
   List<DefaultDataPoint> get currentActivityDataPoints =>
       _currentActivityDataPoints;
   void updateActivityDataPoints(List<DefaultDataPoint> newDataPoints) {
-    _currentActivityDataPoints.addAll(newDataPoints);
+    _currentActivityDataPoints = newDataPoints;
     notifyListeners();
   }
 
@@ -53,6 +53,7 @@ class HomeDataProvider extends ChangeNotifier {
         if (endDate.isAfter(currentMaxDate) || endDate.isBefore(tempMinDate)) {
           updateCurrentMaxDate(endDate);
         }
+        
       }
     }
   }
@@ -94,12 +95,12 @@ class HomeDataProvider extends ChangeNotifier {
     }
   }
 
-  DateTime _currentDate = DateTime(
+  DateTime _currentEndDate = DateTime(
           DateTime.now().year, DateTime.now().month, DateTime.now().day + 1)
       .subtract(const Duration(seconds: 1)); //Start at current date
-  DateTime get currentDate => _currentDate;
+  DateTime get currentDate => _currentEndDate;
   void updateCurrentDate(DateTime newDate) {
-    _currentDate = newDate;
+    _currentEndDate = newDate;
     notifyListeners();
   }
 
@@ -131,23 +132,23 @@ class HomeDataProvider extends ChangeNotifier {
   void updateCurrentTopBarSelect(String newTopBarSelect) {
     if (newTopBarSelect != _currentTopBarSelect) {
       _currentTopBarSelect = newTopBarSelect;
-      _currentDate = DateTime(
+      _currentEndDate = DateTime(
               DateTime.now().year, DateTime.now().month, DateTime.now().day + 1)
           .subtract(const Duration(minutes: 1));
       switch (newTopBarSelect) {
         case 'day':
           _currentMinDate = DateTime(
-              _currentDate.year, _currentDate.month, _currentDate.day - 10);
-          fetchActivityDataPoints(_currentMinDate, _currentDate);
+              _currentEndDate.year, _currentEndDate.month, _currentEndDate.day - 10);
+          fetchActivityDataPoints(_currentMinDate, _currentEndDate);
           break;
         case 'week':
-          int weekday = _currentDate.weekday;
-          _currentMinDate = _currentDate.subtract(Duration(days: weekday - 1));
-          fetchActivityDataPoints(_currentMinDate, _currentDate);
+          int weekday = _currentEndDate.weekday;
+          _currentMinDate = _currentEndDate.subtract(Duration(days: weekday)).add(const Duration(minutes: 1));
+          fetchActivityDataPoints(_currentMinDate, _currentEndDate);
           break;
         case 'month':
-          _currentMinDate = DateTime(_currentDate.year, _currentDate.month, 1);
-          fetchActivityDataPoints(_currentMinDate, _currentDate);
+          _currentMinDate = DateTime(_currentEndDate.year, _currentEndDate.month, 1);
+          fetchActivityDataPoints(_currentMinDate, _currentEndDate);
           break;
       }
       notifyListeners();

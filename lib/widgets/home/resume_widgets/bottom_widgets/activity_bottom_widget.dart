@@ -27,14 +27,14 @@ class ActivityBottomWidget extends StatelessWidget {
           endDate = startDate.add(const Duration(days: 7));
           activity = getMeanActivity(startDate, endDate,
               hDataProv.currentActivityDataPoints, HealthDataType.MOVE_MINUTES);
-          textSuffix = ' (avg)';
+          // textSuffix = ' (avg)';
           break;
         case 'month':
           startDate = DateTime(startDate.year, startDate.month, 1);
           endDate = DateTime(startDate.year, startDate.month + 1, 0);
           activity = getMeanActivity(startDate, endDate,
               hDataProv.currentActivityDataPoints, HealthDataType.MOVE_MINUTES);
-          textSuffix = ' (avg)';
+          // textSuffix = ' (avg)';
           break;
       }
 
@@ -102,6 +102,7 @@ class ActivityBottomWidget extends StatelessWidget {
     }
 
     // Calculate mean activity per day based on the actual number of days counted
-    return daysCounted > 0 ? totalActivity ~/ daysCounted : 0;
+    // return daysCounted > 0 ? totalActivity ~/ daysCounted : 0;
+    return totalActivity;
   }
 }

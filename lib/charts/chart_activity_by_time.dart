@@ -90,7 +90,8 @@ class _ActivityChartState extends State<ActivityChart> {
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
       // Determine the start and end dates based on the current selection
-      DateTime startDate = hDataProvider.currentDate;
+      DateTime startDate = DateTime(hDataProvider.currentDate.year,
+          hDataProvider.currentDate.month, hDataProvider.currentDate.day);
       DateTime? endDate;
 
       switch (hDataProvider.currentTopBarSelect) {
@@ -115,7 +116,7 @@ class _ActivityChartState extends State<ActivityChart> {
               days: 1)); // Default to one day if the selection is unrecognized
       }
       // Generate bar chart data groups based on the calculated start and end dates
-      
+
       List<BarChartGroupData> thisBarCharts = genBarChartDataGroups(
           hDataProvider.currentActivityDataPoints,
           widget.nPeriods,
@@ -164,7 +165,10 @@ BarTouchData? myBarTouchData(
       tooltipBgColor: const Color.fromARGB(255, 236, 236, 236).withOpacity(0.9),
       getTooltipItem: (group, groupIndex, rod, rodIndex) {
         String timeText = '';
-        DateTime startDate = hDataProvider.currentDate;
+        DateTime startDate = DateTime(
+            hDataProvider.currentMinDate.year,
+            hDataProvider.currentMinDate.month,
+            hDataProvider.currentMinDate.day);
 
         switch (hDataProvider.currentTopBarSelect) {
           case "day":
@@ -184,15 +188,11 @@ BarTouchData? myBarTouchData(
             }
             break;
           case "week":
-            DateTime weekDate =
-                DateTime(startDate.year, startDate.month, groupIndex - 2);
-            timeText = DateFormat('EEEE').format(weekDate);
+            timeText = DateFormat('EEEE').format(startDate.add(Duration(days: groupIndex)));
             break;
           case "month":
-            DateTime monthDate =
-                DateTime(startDate.year, startDate.month, groupIndex + 1);
             timeText = DateFormat('EEEE d')
-                .format(monthDate); // Just the day of the month
+                .format(startDate.add(Duration(days: groupIndex)));
             break;
         }
 

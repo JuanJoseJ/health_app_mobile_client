@@ -62,7 +62,8 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
         if (startDate.isBefore(provider.currentMinDate) ||
             endDate.isAfter(provider.currentMaxDate)) {
           provider.updateActivityDataPoints([]);
-          provider.fetchActivityDataPoints(startDate.subtract(const Duration(days: 5)),
+          provider.fetchActivityDataPoints(
+              startDate.subtract(const Duration(days: 5)),
               endDate.add(const Duration(days: 5)));
         }
         provider.updateCurrentDate(newDate);
@@ -73,23 +74,25 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
         // Adjust startOfWeek to ensure it doesn't start in the future
         DateTime startOfWeek =
             newDate.subtract(Duration(days: newDate.weekday - 1));
+        startDate =
+            DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
         if (startOfWeek.isAfter(startOfToday)) {
           newDate = startOfToday;
           startOfWeek =
               startOfToday.subtract(Duration(days: startOfToday.weekday - 1));
-          startDate = startOfWeek;
           endDate = today;
         } else {
-          startDate = startOfWeek;
           endDate = startDate
               .add(const Duration(days: 7))
               .subtract(const Duration(seconds: 1));
         }
-        startDate = DateTime(startDate.year, startDate.month, startDate.day);
+
+        provider.updateActivityDataPoints([]);
         provider.fetchActivityDataPoints(startDate, endDate);
         provider.updateCurrentMinDate(startDate);
         provider.updateCurrentMaxDate(endDate);
         provider.updateCurrentDate(startDate);
+
         break;
       case 'month':
         int monthsToAdjust = isForward ? 1 : -1;
@@ -102,10 +105,12 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
         startDate = DateTime(newDate.year, newDate.month, 1);
         endDate = DateTime(newDate.year, newDate.month + 1, 1)
             .subtract(const Duration(seconds: 1));
+        provider.updateActivityDataPoints([]);
         provider.fetchActivityDataPoints(startDate, endDate);
         provider.updateCurrentMinDate(startDate);
         provider.updateCurrentMaxDate(endDate);
         provider.updateCurrentDate(startDate);
+        print("MIN DATE: $startDate !!!!!!!!!!!!! MAX DATE: $endDate");
         break;
       default:
         return;

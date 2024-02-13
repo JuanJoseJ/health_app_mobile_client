@@ -67,6 +67,7 @@ class GoogleFitDataService {
         .where((element) => element.type == HealthDataType.MOVE_MINUTES)
         .toList();
 
+
     // Generate periods based on startDate and optional endDate
     final List<DateTime> periods = calcPeriods(nPeriods, startDate, endDate);
 
