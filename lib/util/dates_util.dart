@@ -1,3 +1,5 @@
+import 'package:health_app_mobile_client/util/default_data_util.dart';
+
 bool isSameDate(DateTime date1, DateTime date2) {
   return date1.year == date2.year &&
       date1.month == date2.month &&
@@ -21,4 +23,31 @@ List<DateTime> calcPeriods(int nPeriods, DateTime startDate,
     return startDate.add(Duration(seconds: periodDurationSeconds * i));
   });
   return periods;
+}
+
+bool isDataPointWithinRange({
+  required DefaultDataPoint dataPoint,
+  required DateTime rangeStart,
+  DateTime? rangeEnd,
+}) {
+  // Adjust rangeEnd if it's null to cover the whole day of rangeStart
+  rangeEnd ??=
+      DateTime(rangeStart.year, rangeStart.month, rangeStart.day, 23, 59, 59);
+
+  // If dateTo is not null, check if the range overlaps
+  if (dataPoint.dateTo != null) {
+    return dataPoint.dateFrom.isBefore(rangeEnd) &&
+        dataPoint.dateTo!.isAfter(rangeStart);
+  }
+
+  // If dateTo is null, check if dateFrom is within the range
+  return dataPoint.dateFrom.isAfter(rangeStart) &&
+      dataPoint.dateFrom.isBefore(rangeEnd);
+}
+
+String formatDuration(double totalMinutes) {
+  int hours = totalMinutes ~/ 60; // Use integer division to get the whole hours
+  double minutes = totalMinutes % 60; // Use modulo to get the remaining minutes
+
+  return "${hours}h ${minutes.toInt()}min";
 }

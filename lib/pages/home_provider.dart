@@ -69,7 +69,7 @@ class HomeDataProvider extends ChangeNotifier {
   List<DefaultDataPoint> _currentSleepDataPoints = [];
   List<DefaultDataPoint> get currentSleepDataPoints => _currentSleepDataPoints;
   void updateSleepDataPoints(List<DefaultDataPoint> newDataPoints) {
-    _currentSleepDataPoints.addAll(newDataPoints);
+    _currentSleepDataPoints = newDataPoints;
     notifyListeners();
   }
 
@@ -83,15 +83,6 @@ class HomeDataProvider extends ChangeNotifier {
       // Update your data points with the fetched data
       updateSleepDataPoints(fetchedData);
       updateCurrentAppState(AppState.DATA_READY);
-
-      DateTime tempMinDate = currentMinDate;
-      if (startDate.isBefore(currentMinDate) ||
-          startDate.isAfter(currentMaxDate)) {
-        updateCurrentMinDate(startDate);
-      }
-      if (endDate.isAfter(currentMaxDate) || endDate.isBefore(tempMinDate)) {
-        updateCurrentMaxDate(endDate);
-      }
     }
   }
 
@@ -140,15 +131,18 @@ class HomeDataProvider extends ChangeNotifier {
           _currentMinDate = DateTime(
               _currentEndDate.year, _currentEndDate.month, _currentEndDate.day - 10);
           fetchActivityDataPoints(_currentMinDate, _currentEndDate);
+          fetchSleepDataPoints(_currentMinDate, _currentEndDate);
           break;
         case 'week':
           int weekday = _currentEndDate.weekday;
           _currentMinDate = _currentEndDate.subtract(Duration(days: weekday)).add(const Duration(minutes: 1));
           fetchActivityDataPoints(_currentMinDate, _currentEndDate);
+          fetchSleepDataPoints(_currentMinDate, _currentEndDate);
           break;
         case 'month':
           _currentMinDate = DateTime(_currentEndDate.year, _currentEndDate.month, 1);
           fetchActivityDataPoints(_currentMinDate, _currentEndDate);
+          fetchSleepDataPoints(_currentMinDate, _currentEndDate);
           break;
       }
       notifyListeners();

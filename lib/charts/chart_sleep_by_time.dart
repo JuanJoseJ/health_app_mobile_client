@@ -16,8 +16,8 @@ class SleepChartState extends State {
   final double widthFraction = 1 / 2;
 
   List<PieChartSectionData> showingSections(
-      double widthFraction, double totSleepMinutes) {
-    double minutesOfDay = 24 * 60;
+      int nDays, double widthFraction, double totSleepMinutes) {
+    double minutesOfDay = 24 * 60 * nDays.toDouble();
 
     return [
       PieChartSectionData(
@@ -84,9 +84,31 @@ class SleepChartState extends State {
         screenWidth * centerSpaceRadiusPercentage * widthFraction;
 
     return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
+      DateTime startDate = hDataProvider.currentMinDate;
+      DateTime endDate = hDataProvider.currentMaxDate;
+      int nDays = 1;
+      switch (hDataProvider.currentTopBarSelect) {
+        case 'day':
+          startDate = DateTime(hDataProvider.currentDate.year,
+              hDataProvider.currentDate.month, hDataProvider.currentDate.day);
+          endDate = startDate.add(const Duration(days: 1, seconds: -1));
+          break;
+        case 'week':
+          nDays = 7;
+          break;
+        case 'month':
+          nDays = DateTime(hDataProvider.currentDate.year, hDataProvider.currentDate.month, 0).day;
+          break;
+        default:
+      }
+
       final FitBitDataService sleepDataService = FitBitDataService();
-      final double totSleepMinutes = sleepDataService.getSleepByDays(
-          1, hDataProvider.currentDate, hDataProvider.currentSleepDataPoints);
+
+      DateTime lastNightStart = startDate.subtract(const Duration(hours: 6));
+      DateTime lastNightEnd = endDate.subtract(const Duration(hours: 6));
+
+      final double totSleepMinutes = sleepDataService.getTotalSleepByPeriod(
+          hDataProvider.currentSleepDataPoints, lastNightStart, lastNightEnd);
       return PieChart(
         PieChartData(
             pieTouchData: nightPieTouchData(),
@@ -95,7 +117,7 @@ class SleepChartState extends State {
             ),
             sectionsSpace: 2,
             centerSpaceRadius: centerSpaceRadius,
-            sections: showingSections(widthFraction, totSleepMinutes),
+            sections: showingSections(nDays, widthFraction, totSleepMinutes),
             startDegreeOffset: 180),
       );
     });

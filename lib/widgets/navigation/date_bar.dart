@@ -50,68 +50,85 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
         newDate = isForward
             ? currentDate.add(Duration(days: 1))
             : currentDate.subtract(Duration(days: 1));
-        // Prevent newDate from exceeding today's date
-        if (newDate.isAfter(startOfToday)) {
-          newDate = startOfToday;
+        if (newDate.isBefore(DateTime.now().add(const Duration(days: 1)))) {
+          // Prevent newDate from exceeding today's date
+          if (newDate.isAfter(startOfToday)) {
+            newDate = startOfToday;
+          }
+          startDate = DateTime(newDate.year, newDate.month, newDate.day);
+          endDate = startDate
+              .add(const Duration(hours: 24))
+              .subtract(const Duration(seconds: 1));
+          //Fetch data if not present for the days
+          if (startDate.isBefore(provider.currentMinDate) ||
+              endDate.isAfter(provider.currentMaxDate)) {
+            provider.updateActivityDataPoints([]);
+            provider.updateSleepDataPoints([]);
+            provider.fetchActivityDataPoints(
+                startDate.subtract(const Duration(days: 5)),
+                endDate.add(const Duration(days: 5)));
+            provider.fetchSleepDataPoints(
+                startDate.subtract(const Duration(days: 5)),
+                endDate.add(const Duration(days: 5)));
+          }
+          provider.updateCurrentDate(newDate);
+        } else {
+          return;
         }
-        startDate = DateTime(newDate.year, newDate.month, newDate.day);
-        endDate = startDate
-            .add(const Duration(hours: 24))
-            .subtract(const Duration(seconds: 1));
-        //Fetch data if not present for the days
-        if (startDate.isBefore(provider.currentMinDate) ||
-            endDate.isAfter(provider.currentMaxDate)) {
-          provider.updateActivityDataPoints([]);
-          provider.fetchActivityDataPoints(
-              startDate.subtract(const Duration(days: 5)),
-              endDate.add(const Duration(days: 5)));
-        }
-        provider.updateCurrentDate(newDate);
         break;
       case 'week':
         int daysToAdjust = isForward ? 7 : -7;
         newDate = currentDate.add(Duration(days: daysToAdjust));
         // Adjust startOfWeek to ensure it doesn't start in the future
-        DateTime startOfWeek =
-            newDate.subtract(Duration(days: newDate.weekday - 1));
-        startDate =
-            DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
-        if (startOfWeek.isAfter(startOfToday)) {
-          newDate = startOfToday;
-          startOfWeek =
-              startOfToday.subtract(Duration(days: startOfToday.weekday - 1));
-          endDate = today;
+        if (newDate.isBefore(DateTime.now())) {
+          DateTime startOfWeek =
+              newDate.subtract(Duration(days: newDate.weekday - 1));
+          startDate =
+              DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
+          if (startOfWeek.isAfter(startOfToday)) {
+            newDate = startOfToday;
+            startOfWeek =
+                startOfToday.subtract(Duration(days: startOfToday.weekday - 1));
+            endDate = today;
+          } else {
+            endDate = startDate
+                .add(const Duration(days: 7))
+                .subtract(const Duration(seconds: 1));
+          }
+          provider.updateActivityDataPoints([]);
+          provider.updateSleepDataPoints([]);
+          provider.fetchActivityDataPoints(startDate, endDate);
+          provider.fetchSleepDataPoints(startDate, endDate);
+          provider.updateCurrentMinDate(startDate);
+          provider.updateCurrentMaxDate(endDate);
+          provider.updateCurrentDate(startDate);
         } else {
-          endDate = startDate
-              .add(const Duration(days: 7))
-              .subtract(const Duration(seconds: 1));
+          return;
         }
-
-        provider.updateActivityDataPoints([]);
-        provider.fetchActivityDataPoints(startDate, endDate);
-        provider.updateCurrentMinDate(startDate);
-        provider.updateCurrentMaxDate(endDate);
-        provider.updateCurrentDate(startDate);
-
         break;
       case 'month':
         int monthsToAdjust = isForward ? 1 : -1;
         newDate = DateTime(currentDate.year, currentDate.month + monthsToAdjust,
             currentDate.day);
-        // Prevent navigating to a future month
-        if (newDate.isAfter(DateTime(today.year, today.month + 1, 0))) {
-          newDate = DateTime(today.year, today.month, today.day);
+        if (newDate.isBefore(DateTime.now())) {
+          // Prevent navigating to a future month
+          if (newDate.isAfter(DateTime(today.year, today.month + 1, 0))) {
+            newDate = DateTime(today.year, today.month, today.day);
+          }
+          startDate = DateTime(newDate.year, newDate.month, 1);
+          endDate = DateTime(newDate.year, newDate.month + 1, 1)
+              .subtract(const Duration(seconds: 1));
+          provider.updateActivityDataPoints([]);
+          provider.updateSleepDataPoints([]);
+          provider.fetchActivityDataPoints(startDate, endDate);
+          provider.fetchSleepDataPoints(startDate, endDate);
+          provider.updateCurrentMinDate(startDate);
+          provider.updateCurrentMaxDate(endDate);
+          provider.updateCurrentDate(startDate);
+          break;
+        } else {
+          return;
         }
-        startDate = DateTime(newDate.year, newDate.month, 1);
-        endDate = DateTime(newDate.year, newDate.month + 1, 1)
-            .subtract(const Duration(seconds: 1));
-        provider.updateActivityDataPoints([]);
-        provider.fetchActivityDataPoints(startDate, endDate);
-        provider.updateCurrentMinDate(startDate);
-        provider.updateCurrentMaxDate(endDate);
-        provider.updateCurrentDate(startDate);
-        print("MIN DATE: $startDate !!!!!!!!!!!!! MAX DATE: $endDate");
-        break;
       default:
         return;
     }
@@ -156,9 +173,11 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
             break;
         }
         provider.updateActivityDataPoints([]);
+        provider.updateSleepDataPoints([]);
         provider.updateCurrentMinDate(startDate);
         provider.updateCurrentMaxDate(endDate);
         provider.fetchActivityDataPoints(startDate, endDate);
+        provider.fetchSleepDataPoints(startDate, endDate);
       }
     }
   }
@@ -205,13 +224,7 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
                       Icons.arrow_forward,
                       color: Colors.black,
                     ),
-                    onPressed: (hDP.currentDate.isAfter(DateTime(
-                                DateTime.now().year,
-                                DateTime.now().month,
-                                DateTime.now().day)
-                            .subtract(const Duration(seconds: 1))))
-                        ? null
-                        : () => _updateDate(context, hDP, isForward: true),
+                    onPressed: () => _updateDate(context, hDP, isForward: true),
                   ),
                   const VerticalDivider(),
                   const MyDropdownPage(),
