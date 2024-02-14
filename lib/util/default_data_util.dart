@@ -65,17 +65,8 @@ class DefaultDataPoint {
       case 'awake':
         sleepType = HealthDataType.SLEEP_AWAKE;
         break;
-      case 'light':
-        sleepType = HealthDataType.SLEEP_LIGHT;
-        break;
       case 'restless':
         sleepType = HealthDataType.SLEEP_LIGHT;
-        break;
-      case 'deep':
-        sleepType = HealthDataType.SLEEP_DEEP;
-        break;
-      case 'rem':
-        sleepType = HealthDataType.SLEEP_REM;
         break;
       default:
         sleepType = HealthDataType.SLEEP_ASLEEP;

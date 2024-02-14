@@ -193,7 +193,6 @@ class FitBitDataService {
           }
         }
       }
-      // print(defaultDataPoints[1].toJson());
       return defaultDataPoints;
     } catch (e) {
       print("An error occurred at fetch sleep: $e");

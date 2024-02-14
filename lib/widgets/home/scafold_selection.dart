@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/charts/chart_activity_by_time.dart';
-import 'package:health_app_mobile_client/charts/chart_sleep_by_time.dart';
+import 'package:health_app_mobile_client/charts/chart_sleep_states_by_time.dart';
 import 'package:health_app_mobile_client/charts/side_tittle_widgets/bottom_tittle_widgets.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/widgets/home/detail_widgets/detail_display.dart';
@@ -20,6 +20,7 @@ class _DataScafoldState extends State<DataScafold> {
   int _currentIndex = 0;
   StatefulWidget? chart;
   Widget? bottomWidget;
+  String? title;
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +56,12 @@ class _DataScafoldState extends State<DataScafold> {
               nPeriods: getNumberOfPeriods(),
             );
             bottomWidget = ActivityBottomWidget();
+            title = "Activity";
             break;
           case 'Sleep':
-            chart = const SleepChart();
+            chart = const SleepStatesChart();
             bottomWidget = SleepBottomWidget();
+            title = "Sleep";
             break;
           default:
             chart = ActivityChart(
@@ -67,6 +70,7 @@ class _DataScafoldState extends State<DataScafold> {
               nPeriods: getNumberOfPeriods(),
             );
             bottomWidget = ActivityBottomWidget();
+            title = "Activity";
             break;
         }
         setState(() {
@@ -82,6 +86,7 @@ class _DataScafoldState extends State<DataScafold> {
             break;
           case 1:
             page = DetailScaffold(
+              title: title!,
               navigateFn: navigate,
               chart: chart!,
               bottomWidget: bottomWidget!,
