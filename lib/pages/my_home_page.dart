@@ -51,7 +51,7 @@ class _MainPageState extends State<MainPage> {
     await fitBitDataService.initLinkListener(verifier);
     homeDataProvider.updatefitBitDataService(fitBitDataService);
     await homeDataProvider.fetchSleepDataPoints(startDate, endDate);
-
+    await homeDataProvider.fetchNutritionDataPoints(startDate);
   }
 
   @override

@@ -7,6 +7,7 @@ class DefaultDataPoint {
   HealthValue value;
   HealthDataType type;
   HealthDataUnit unit;
+  String? name;
 
   // Constructor
   DefaultDataPoint({
@@ -15,6 +16,7 @@ class DefaultDataPoint {
     required this.value,
     required this.type,
     required this.unit,
+    this.name,
   });
 
   Map<String, dynamic> toJson() {
@@ -79,6 +81,37 @@ class DefaultDataPoint {
       value: duration,
       type: sleepType,
       unit: HealthDataUnit.MINUTE, // Assuming duration is measured in minutes
+    );
+  }
+
+  // Factory constructor for nutrition data
+  factory DefaultDataPoint.fromNutritionData(
+      Map<String, dynamic> nutritionData) {
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+
+    DateTime date = nutritionData.containsKey('logDate')
+        ? dateFormat.parse(nutritionData['logDate'])
+        : dateFormat.parse(nutritionData['dateTime']);
+
+    HealthDataType type = HealthDataType.DIETARY_ENERGY_CONSUMED;
+
+    // Determine the value; assume calories for food and volume for water
+    num value = nutritionData.containsKey('loggedFood')
+        ? nutritionData['loggedFood']['calories'].toDouble()
+        : double.parse(nutritionData['value']);
+
+    HealthDataUnit unit = HealthDataUnit.KILOCALORIE;
+
+    String? name = nutritionData.containsKey('loggedFood')
+        ? nutritionData['loggedFood']['name']
+        : null;
+
+    return DefaultDataPoint(
+      dateFrom: date,
+      value: NumericHealthValue(value),
+      type: type,
+      unit: unit,
+      name: name,
     );
   }
 }

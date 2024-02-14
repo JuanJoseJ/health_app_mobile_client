@@ -72,6 +72,8 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
                 endDate.add(const Duration(days: 5)));
           }
           provider.updateCurrentDate(newDate);
+          provider.fetchNutritionDataPoints(startDate);
+          provider.updateNutritionDataPoints([]);
         } else {
           return;
         }
@@ -97,8 +99,10 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
           }
           provider.updateActivityDataPoints([]);
           provider.updateSleepDataPoints([]);
+          provider.updateNutritionDataPoints([]);
           provider.fetchActivityDataPoints(startDate, endDate);
           provider.fetchSleepDataPoints(startDate, endDate);
+          provider.fetchNutritionDataPoints(startDate, endDate: endDate);
           provider.updateCurrentMinDate(startDate);
           provider.updateCurrentMaxDate(endDate);
           provider.updateCurrentDate(startDate);
@@ -120,8 +124,10 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
               .subtract(const Duration(seconds: 1));
           provider.updateActivityDataPoints([]);
           provider.updateSleepDataPoints([]);
+          provider.updateNutritionDataPoints([]);
           provider.fetchActivityDataPoints(startDate, endDate);
           provider.fetchSleepDataPoints(startDate, endDate);
+          provider.fetchNutritionDataPoints(startDate, endDate: endDate);
           provider.updateCurrentMinDate(startDate);
           provider.updateCurrentMaxDate(endDate);
           provider.updateCurrentDate(startDate);
@@ -154,6 +160,8 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
           case 'day':
             startDate = picked.subtract(const Duration(days: 5));
             endDate = picked.add(const Duration(days: 5));
+            provider.fetchNutritionDataPoints(startDate);
+            provider.updateNutritionDataPoints([]);
             break;
           case 'week':
             startDate = DateTime(picked.year, picked.month, picked.day)
@@ -161,15 +169,21 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
             endDate = startDate
                 .add(const Duration(days: 7))
                 .subtract(const Duration(seconds: 1));
+            provider.fetchNutritionDataPoints(startDate, endDate: endDate);
+            provider.updateNutritionDataPoints([]);
             break;
           case 'month':
             startDate = DateTime(picked.year, picked.month, 1);
             endDate = DateTime(picked.year, picked.month + 1, 1)
                 .subtract(const Duration(seconds: 1));
+            provider.fetchNutritionDataPoints(startDate, endDate: endDate);
+            provider.updateNutritionDataPoints([]);
             break;
           default:
             startDate = picked.subtract(const Duration(days: 5));
             endDate = picked.add(const Duration(days: 5));
+            provider.fetchNutritionDataPoints(startDate, endDate: endDate);
+            provider.updateNutritionDataPoints([]);
             break;
         }
         provider.updateActivityDataPoints([]);

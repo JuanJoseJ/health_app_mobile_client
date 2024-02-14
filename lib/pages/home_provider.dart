@@ -59,8 +59,7 @@ class HomeDataProvider extends ChangeNotifier {
   }
 
   late FitBitDataService _fitBitDataService;
-  FitBitDataService get fitBitDataService =>
-      _fitBitDataService;
+  FitBitDataService get fitBitDataService => _fitBitDataService;
   void updatefitBitDataService(FitBitDataService fitBitDataService) {
     _fitBitDataService = fitBitDataService;
     notifyListeners();
@@ -76,12 +75,39 @@ class HomeDataProvider extends ChangeNotifier {
   Future<void> fetchSleepDataPoints(
       DateTime startDate, DateTime endDate) async {
     updateCurrentAppState(AppState.FETCHING_DATA);
-    List<DefaultDataPoint> fetchedData = await fitBitDataService.fetchFitBitSleepData(startDate, endDate: endDate);
+    List<DefaultDataPoint> fetchedData = await fitBitDataService
+        .fetchFitBitSleepData(startDate, endDate: endDate);
     if (fetchedData.isEmpty & currentSleepDataPoints.isEmpty) {
       updateCurrentAppState(AppState.NO_DATA);
     } else {
       // Update your data points with the fetched data
       updateSleepDataPoints(fetchedData);
+      updateCurrentAppState(AppState.DATA_READY);
+    }
+  }
+
+  List<DefaultDataPoint> _currentNutritionDataPoints = [];
+  List<DefaultDataPoint> get currentNutritionDataPoints =>
+      _currentNutritionDataPoints;
+  void updateNutritionDataPoints(List<DefaultDataPoint> newDataPoints) {
+    _currentNutritionDataPoints = newDataPoints;
+    notifyListeners();
+  }
+
+  Future<void> fetchNutritionDataPoints(DateTime startDate,
+      {DateTime? endDate}) async {
+    updateCurrentAppState(AppState.FETCHING_DATA);
+    DateTime fetchDate = currentDate;
+    if (endDate != null) {
+      fetchDate = startDate;
+    }
+    List<DefaultDataPoint> fetchedData = await fitBitDataService
+        .fetchFitBitNutritionData(fetchDate, endDate: endDate);
+    if (fetchedData.isEmpty & currentSleepDataPoints.isEmpty) {
+      // updateCurrentAppState(AppState.NO_DATA);
+    } else {
+      // Update your data points with the fetched data
+      updateNutritionDataPoints(fetchedData);
       updateCurrentAppState(AppState.DATA_READY);
     }
   }
@@ -128,21 +154,27 @@ class HomeDataProvider extends ChangeNotifier {
           .subtract(const Duration(minutes: 1));
       switch (newTopBarSelect) {
         case 'day':
-          _currentMinDate = DateTime(
-              _currentEndDate.year, _currentEndDate.month, _currentEndDate.day - 10);
+          _currentMinDate = DateTime(_currentEndDate.year,
+              _currentEndDate.month, _currentEndDate.day - 10);
           fetchActivityDataPoints(_currentMinDate, _currentEndDate);
           fetchSleepDataPoints(_currentMinDate, _currentEndDate);
+          fetchNutritionDataPoints(_currentMinDate);
           break;
         case 'week':
           int weekday = _currentEndDate.weekday;
-          _currentMinDate = _currentEndDate.subtract(Duration(days: weekday)).add(const Duration(minutes: 1));
+          _currentMinDate = _currentEndDate
+              .subtract(Duration(days: weekday))
+              .add(const Duration(minutes: 1));
           fetchActivityDataPoints(_currentMinDate, _currentEndDate);
           fetchSleepDataPoints(_currentMinDate, _currentEndDate);
+          fetchNutritionDataPoints(_currentMinDate, endDate: _currentEndDate);
           break;
         case 'month':
-          _currentMinDate = DateTime(_currentEndDate.year, _currentEndDate.month, 1);
+          _currentMinDate =
+              DateTime(_currentEndDate.year, _currentEndDate.month, 1);
           fetchActivityDataPoints(_currentMinDate, _currentEndDate);
           fetchSleepDataPoints(_currentMinDate, _currentEndDate);
+          fetchNutritionDataPoints(_currentMinDate, endDate: _currentEndDate);
           break;
       }
       notifyListeners();

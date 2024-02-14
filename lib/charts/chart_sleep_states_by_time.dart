@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:health/health.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
-import 'package:health_app_mobile_client/util/dates_util.dart';
 import 'package:health_app_mobile_client/util/default_data_util.dart';
 import 'package:provider/provider.dart';
 

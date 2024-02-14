@@ -160,7 +160,8 @@ class FitBitDataService {
 
   Future<List<DefaultDataPoint>> fetchFitBitSleepData(DateTime startDate,
       {DateTime? endDate}) async {
-    String start = DateFormat("yyyy-MM-dd") //Romeve a day so it is possible to calc the values for the edge date
+    String start = DateFormat(
+            "yyyy-MM-dd") //Romeve a day so it is possible to calc the values for the edge date
         .format(startDate.subtract(const Duration(days: 1)));
     String end = endDate != null
         ? DateFormat("yyyy-MM-dd").format(endDate)
@@ -227,21 +228,34 @@ class FitBitDataService {
     return totSleep;
   }
 
-  Future<dynamic> fetchNutritionData(DateTime startDate,
+  Future<List<DefaultDataPoint>> fetchFitBitNutritionData(DateTime startDate,
       {DateTime? endDate}) async {
     String start = DateFormat("yyyy-MM-dd").format(startDate);
-    String? end;
-    String? endPoint;
-    if (endDate == null) {
-      endPoint = "https://api.fitbit.com/1/user/-/foods/log/date/$start.json";
-      // endPoint = "https://api.fitbit.com/1/user/-/meals.json";
-    } else {
-      end = DateFormat("yyyy-MM-dd").format(endDate);
-      endPoint =
-          "https://api.fitbit.com/1/user/-/foods/log/caloriesIn/date/$start/$end.json";
-    }
+    String end = endDate != null
+        ? DateFormat("yyyy-MM-dd").format(endDate)
+        : DateFormat("yyyy-MM-dd")
+            .format(startDate.add(const Duration(hours: 24)));
+
+    // Food endpoint for a single day or a range
+    String foodEndPoint = endDate == null
+        ? "https://api.fitbit.com/1/user/-/foods/log/date/$start.json"
+        : "https://api.fitbit.com/1/user/-/foods/log/caloriesIn/date/$start/$end.json";
+
+    List<DefaultDataPoint> defaultDataPoints = [];
+
     try {
-      return await _fetchData(endPoint);
+      // Fetch and parse food data
+      var foodResponse = await _fetchData(foodEndPoint);
+      var decodedFoodResponse =
+          foodResponse is String ? json.decode(foodResponse) : foodResponse;
+      if (decodedFoodResponse['foods'] != null) {
+        for (var foodLog in decodedFoodResponse['foods']) {
+          defaultDataPoints.add(DefaultDataPoint.fromNutritionData(foodLog));
+        }
+      }
+      print("!!!!!!!!!!!!!!! FOOD FETCH !!!!!!!!!!!!!! END POINT: $foodEndPoint");
+      print(foodResponse);
+      return defaultDataPoints;
     } catch (e) {
       print("An error occurred at fetch nutrition: $e");
       rethrow;
