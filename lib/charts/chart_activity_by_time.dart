@@ -125,7 +125,7 @@ class _ActivityChartState extends State<ActivityChart> {
           endDate);
 
       return Padding(
-        padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+        padding: const EdgeInsets.fromLTRB(8, 0, 16, 0),
         child: BarChart(
           BarChartData(
             barGroups: thisBarCharts,

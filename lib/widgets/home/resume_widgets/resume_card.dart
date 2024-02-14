@@ -63,10 +63,7 @@ class ResumeCard extends StatelessWidget {
               Expanded(
                   child: AspectRatio(
                 aspectRatio: 1.0 / 1.0,
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(8, 16, 8, 0),
-                  child: chart,
-                ),
+                child: chart,
               )),
             ],
           ),

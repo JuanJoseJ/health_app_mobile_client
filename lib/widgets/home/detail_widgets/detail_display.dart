@@ -37,7 +37,6 @@ class DetailScaffold extends StatelessWidget {
         default:
       }
 
-      print("!!!!!!!!!!!!!!!!!!!!!!!!! $dateText");
       return Scaffold(
         appBar: DetailTopBar(
           notifyParent: navigateFn,

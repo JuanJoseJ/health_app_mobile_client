@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/charts/chart_activity_by_time.dart';
 import 'package:health_app_mobile_client/charts/chart_calories_by_time.dart';
+import 'package:health_app_mobile_client/charts/chart_food_list_by_day.dart';
 import 'package:health_app_mobile_client/charts/chart_sleep_by_time.dart';
 import 'package:health_app_mobile_client/charts/side_tittle_widgets/bottom_tittle_widgets.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/activity_bottom_widget.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/calories_bottom_widget.dart';
+import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/food_list_bottom_widget.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/sleep_bottom_widget.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/resume_card.dart';
 import 'package:health_app_mobile_client/widgets/navigation/date_bar.dart';
@@ -79,19 +81,14 @@ class CardsScafold extends StatelessWidget {
                       children: [
                         Expanded(
                             child: ResumeCard(
-                          title: "What?",
+                          title: "Food",
                           myIcon: const Icon(
-                            Icons.self_improvement,
+                            Icons.restaurant,
                             color: Colors.green,
                           ),
-                          chart: const ActivityChart(
-                            leftTitle: "Minutes of activity",
-                            bottomTitle: "",
-                            bottomTittleWidget: dailyThirdsBTW,
-                            nPeriods: 3,
-                          ),
-                          chartId: "Stress",
-                          bottomWidget: Text("xxx activiti"),
+                          chart: const FoodListChart(),
+                          chartId: "Food",
+                          bottomWidget: FoodListBottomWidget(),
                           notifyParent: navigateFn,
                         )),
                       ],
@@ -107,7 +104,7 @@ class CardsScafold extends StatelessWidget {
                       children: [
                         Expanded(
                             child: ResumeCard(
-                          title: "Food",
+                          title: "Stress",
                           myIcon: const Icon(
                             Icons.local_fire_department,
                             color: Colors.redAccent,
