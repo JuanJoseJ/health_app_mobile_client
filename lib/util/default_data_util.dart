@@ -114,4 +114,25 @@ class DefaultDataPoint {
       name: name,
     );
   }
+
+  factory DefaultDataPoint.fromHRVData(Map<String, dynamic> hrvData) {
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+    DateTime date = dateFormat.parse(hrvData['dateTime']);
+
+    // Use HEART_RATE_VARIABILITY_SDNN for HRV data
+    HealthDataType hrvType = HealthDataType.HEART_RATE_VARIABILITY_SDNN;
+
+    // Assume 'dailyRmssd' is the relevant value for HRV data points
+    num hrvValue = hrvData['value']['dailyRmssd'] != null
+        ? hrvData['value']['dailyRmssd'].toDouble()
+        : 0.0;
+
+    return DefaultDataPoint(
+      dateFrom: date,
+      value: NumericHealthValue(hrvValue),
+      type: hrvType,
+      unit: HealthDataUnit
+          .MILLISECOND, // Assuming RMSSD values are in milliseconds
+    );
+  }
 }

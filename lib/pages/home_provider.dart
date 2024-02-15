@@ -41,7 +41,6 @@ class HomeDataProvider extends ChangeNotifier {
       if (fetchedData.isEmpty & currentActivityDataPoints.isEmpty) {
         updateCurrentAppState(AppState.NO_DATA);
       } else {
-        // Update your data points with the fetched data
         updateActivityDataPoints(fetchedData);
         updateCurrentAppState(AppState.DATA_READY);
 
@@ -53,7 +52,6 @@ class HomeDataProvider extends ChangeNotifier {
         if (endDate.isAfter(currentMaxDate) || endDate.isBefore(tempMinDate)) {
           updateCurrentMaxDate(endDate);
         }
-        
       }
     }
   }
@@ -80,7 +78,6 @@ class HomeDataProvider extends ChangeNotifier {
     if (fetchedData.isEmpty & currentSleepDataPoints.isEmpty) {
       updateCurrentAppState(AppState.NO_DATA);
     } else {
-      // Update your data points with the fetched data
       updateSleepDataPoints(fetchedData);
       updateCurrentAppState(AppState.DATA_READY);
     }
@@ -106,8 +103,31 @@ class HomeDataProvider extends ChangeNotifier {
     if (fetchedData.isEmpty & currentSleepDataPoints.isEmpty) {
       // updateCurrentAppState(AppState.NO_DATA);
     } else {
-      // Update your data points with the fetched data
       updateNutritionDataPoints(fetchedData);
+      updateCurrentAppState(AppState.DATA_READY);
+    }
+  }
+
+  List<DefaultDataPoint> _currentHRVDataPoints = [];
+  List<DefaultDataPoint> get currentHRVDataPoints => _currentHRVDataPoints;
+  void updateHRVDataPoints(List<DefaultDataPoint> newDataPoints) {
+    _currentHRVDataPoints = newDataPoints;
+    notifyListeners();
+  }
+
+  Future<void> fetchHRVDataPoints(DateTime startDate,
+      {DateTime? endDate}) async {
+    updateCurrentAppState(AppState.FETCHING_DATA);
+    DateTime fetchDate = currentDate;
+    if (endDate != null) {
+      fetchDate = startDate;
+    }
+    List<DefaultDataPoint> fetchedData =
+        await fitBitDataService.fetchFitBitHRVData(fetchDate, endDate: endDate);
+    if (fetchedData.isEmpty & currentSleepDataPoints.isEmpty) {
+      // updateCurrentAppState(AppState.NO_DATA);
+    } else {
+      updateHRVDataPoints(fetchedData);
       updateCurrentAppState(AppState.DATA_READY);
     }
   }
@@ -159,6 +179,7 @@ class HomeDataProvider extends ChangeNotifier {
           fetchActivityDataPoints(_currentMinDate, _currentEndDate);
           fetchSleepDataPoints(_currentMinDate, _currentEndDate);
           fetchNutritionDataPoints(_currentMinDate);
+          fetchHRVDataPoints(_currentMinDate);
           break;
         case 'week':
           int weekday = _currentEndDate.weekday;
@@ -168,6 +189,7 @@ class HomeDataProvider extends ChangeNotifier {
           fetchActivityDataPoints(_currentMinDate, _currentEndDate);
           fetchSleepDataPoints(_currentMinDate, _currentEndDate);
           fetchNutritionDataPoints(_currentMinDate, endDate: _currentEndDate);
+          fetchHRVDataPoints(_currentMinDate, endDate: _currentEndDate);
           break;
         case 'month':
           _currentMinDate =
@@ -175,6 +197,7 @@ class HomeDataProvider extends ChangeNotifier {
           fetchActivityDataPoints(_currentMinDate, _currentEndDate);
           fetchSleepDataPoints(_currentMinDate, _currentEndDate);
           fetchNutritionDataPoints(_currentMinDate, endDate: _currentEndDate);
+          fetchHRVDataPoints(_currentMinDate, endDate: _currentEndDate);
           break;
       }
       notifyListeners();

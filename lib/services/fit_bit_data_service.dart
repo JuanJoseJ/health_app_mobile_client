@@ -253,11 +253,73 @@ class FitBitDataService {
           defaultDataPoints.add(DefaultDataPoint.fromNutritionData(foodLog));
         }
       }
-      print("!!!!!!!!!!!!!!! FOOD FETCH !!!!!!!!!!!!!! END POINT: $foodEndPoint");
-      print(foodResponse);
       return defaultDataPoints;
     } catch (e) {
       print("An error occurred at fetch nutrition: $e");
+      rethrow;
+    }
+  }
+
+  Future<List<DefaultDataPoint>> fetchFitBitHRVData(DateTime startDate,
+      {DateTime? endDate}) async {
+    String start = DateFormat("yyyy-MM-dd").format(startDate);
+    String end =
+        endDate != null ? DateFormat("yyyy-MM-dd").format(endDate) : start;
+
+    // Determine the endpoint based on whether an endDate is provided
+    String hrvEndPoint = endDate == null
+        ? "https://api.fitbit.com/1/user/-/hrv/date/$start.json"
+        : "https://api.fitbit.com/1/user/-/hrv/date/$start/$end.json";
+
+    List<DefaultDataPoint> defaultDataPoints = [];
+
+    try {
+      var response = await _fetchData(hrvEndPoint);
+
+      //!!!!!!!!!! MOCK DATA I USED AS I DONT OWN A SMARTWATCH TO RECORD THIS KIND OF DATA !!!!!!!!!!!!!!!!!!!!!!!!!!!
+      response = endDate == null
+          ? {
+              'hrv': [
+                {
+                  'value': {'dailyRmssd': 34.938, 'deepRmssd': 31.567},
+                  'dateTime': '2021-10-25'
+                }
+              ]
+            }
+          : {
+              'hrv': [
+                {
+                  'value': {'dailyRmssd': 62.887, 'deepRmssd': 64.887},
+                  'dateTime': '2021-10-25'
+                },
+                {
+                  'value': {'dailyRmssd': 61.887, 'deepRmssd': 64.887},
+                  'dateTime': '2021-10-26'
+                },
+                {
+                  'value': {'dailyRmssd': 60.887, 'deepRmssd': 64.887},
+                  'dateTime': '2021-10-27'
+                }
+              ]
+            };
+
+      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! REMOVE LATER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+      var decodedResponse =
+          response is String ? json.decode(response) : response;
+
+      print("!!!!!!!!!!!!!!!!!!!!!!!!!! FETC HHRV !!!!!!!!!!!!!!!!!!!!");
+      print(decodedResponse);
+
+      // Process HRV data
+      if (decodedResponse['hrv'] != null) {
+        for (var hrvRecord in decodedResponse['hrv']) {
+          defaultDataPoints.add(DefaultDataPoint.fromHRVData(hrvRecord));
+        }
+      }
+      return defaultDataPoints;
+    } catch (e) {
+      print("An error occurred at fetch HRV: $e");
       rethrow;
     }
   }
