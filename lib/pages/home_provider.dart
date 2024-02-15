@@ -43,15 +43,8 @@ class HomeDataProvider extends ChangeNotifier {
       } else {
         updateActivityDataPoints(fetchedData);
         updateCurrentAppState(AppState.DATA_READY);
-
-        DateTime tempMinDate = currentMinDate;
-        if (startDate.isBefore(currentMinDate) ||
-            startDate.isAfter(currentMaxDate)) {
-          updateCurrentMinDate(startDate);
-        }
-        if (endDate.isAfter(currentMaxDate) || endDate.isBefore(tempMinDate)) {
-          updateCurrentMaxDate(endDate);
-        }
+        updateCurrentMinDate(startDate);
+        updateCurrentMaxDate(endDate);
       }
     }
   }
@@ -179,7 +172,7 @@ class HomeDataProvider extends ChangeNotifier {
           fetchActivityDataPoints(_currentMinDate, _currentEndDate);
           fetchSleepDataPoints(_currentMinDate, _currentEndDate);
           fetchNutritionDataPoints(_currentMinDate);
-          fetchHRVDataPoints(_currentMinDate);
+          fetchHRVDataPoints(_currentMinDate, endDate: _currentEndDate);
           break;
         case 'week':
           int weekday = _currentEndDate.weekday;

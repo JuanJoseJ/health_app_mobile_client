@@ -282,7 +282,7 @@ class FitBitDataService {
               'hrv': [
                 {
                   'value': {'dailyRmssd': 34.938, 'deepRmssd': 31.567},
-                  'dateTime': '2021-10-25'
+                  'dateTime': '2024-02-15'
                 }
               ]
             }
@@ -290,15 +290,39 @@ class FitBitDataService {
               'hrv': [
                 {
                   'value': {'dailyRmssd': 62.887, 'deepRmssd': 64.887},
-                  'dateTime': '2021-10-25'
+                  'dateTime': '2024-02-15'
                 },
                 {
                   'value': {'dailyRmssd': 61.887, 'deepRmssd': 64.887},
-                  'dateTime': '2021-10-26'
+                  'dateTime': '2024-02-14'
                 },
                 {
                   'value': {'dailyRmssd': 60.887, 'deepRmssd': 64.887},
-                  'dateTime': '2021-10-27'
+                  'dateTime': '2024-02-13'
+                },
+                {
+                  'value': {'dailyRmssd': 62.887, 'deepRmssd': 64.887},
+                  'dateTime': '2024-02-12'
+                },
+                {
+                  'value': {'dailyRmssd': 61.887, 'deepRmssd': 64.887},
+                  'dateTime': '2024-02-11'
+                },
+                {
+                  'value': {'dailyRmssd': 60.887, 'deepRmssd': 64.887},
+                  'dateTime': '2024-02-10'
+                },
+                {
+                  'value': {'dailyRmssd': 62.887, 'deepRmssd': 64.887},
+                  'dateTime': '2024-02-09'
+                },
+                {
+                  'value': {'dailyRmssd': 61.887, 'deepRmssd': 64.887},
+                  'dateTime': '2024-02-08'
+                },
+                {
+                  'value': {'dailyRmssd': 60.887, 'deepRmssd': 64.887},
+                  'dateTime': '2024-02-07'
                 }
               ]
             };

@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/charts/chart_activity_by_time.dart';
 import 'package:health_app_mobile_client/charts/chart_food_list_by_day.dart';
 import 'package:health_app_mobile_client/charts/chart_sleep_states_by_time.dart';
+import 'package:health_app_mobile_client/charts/chart_stress_by_day.dart';
 import 'package:health_app_mobile_client/charts/side_tittle_widgets/bottom_tittle_widgets.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/widgets/home/detail_widgets/detail_display.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/activity_bottom_widget.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/food_list_bottom_widget.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/sleep_bottom_widget.dart';
+import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/stress_bottom_widget.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/cards_display.dart';
 import 'package:provider/provider.dart';
 
@@ -69,6 +71,11 @@ class _DataScafoldState extends State<DataScafold> {
             chart = const FoodListChart();
             bottomWidget = const FoodListBottomWidget();
             title = "Food";
+            break;
+          case 'Stress':
+            chart = const StressChart();
+            bottomWidget = const StressBottomWidget();
+            title = "Stress";
             break;
           default:
             chart = ActivityChart(

@@ -52,7 +52,7 @@ class _MainPageState extends State<MainPage> {
     homeDataProvider.updatefitBitDataService(fitBitDataService);
     await homeDataProvider.fetchSleepDataPoints(startDate, endDate);
     await homeDataProvider.fetchNutritionDataPoints(startDate);
-    await homeDataProvider.fetchHRVDataPoints(startDate);
+    await homeDataProvider.fetchHRVDataPoints(startDate, endDate: endDate);
   }
 
   @override

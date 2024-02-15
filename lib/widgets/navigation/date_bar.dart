@@ -51,7 +51,6 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
             ? currentDate.add(Duration(days: 1))
             : currentDate.subtract(Duration(days: 1));
         if (newDate.isBefore(DateTime.now().add(const Duration(days: 1)))) {
-          // Prevent newDate from exceeding today's date
           if (newDate.isAfter(startOfToday)) {
             newDate = startOfToday;
           }
@@ -60,21 +59,20 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
               .add(const Duration(hours: 24))
               .subtract(const Duration(seconds: 1));
           //Fetch data if not present for the days
-          if (startDate.isBefore(provider.currentMinDate) ||
-              endDate.isAfter(provider.currentMaxDate)) {
-            provider.updateActivityDataPoints([]);
-            provider.updateSleepDataPoints([]);
+          if (newDate.isBefore(provider.currentMinDate) ||
+              newDate.isAfter(provider.currentMaxDate)) {
             provider.fetchActivityDataPoints(
                 startDate.subtract(const Duration(days: 5)),
                 endDate.add(const Duration(days: 5)));
             provider.fetchSleepDataPoints(
                 startDate.subtract(const Duration(days: 5)),
                 endDate.add(const Duration(days: 5)));
+            provider.fetchHRVDataPoints(
+                startDate.subtract(const Duration(days: 5)),
+                endDate: endDate.add(const Duration(days: 5)));
           }
           provider.updateCurrentDate(newDate);
           provider.fetchNutritionDataPoints(startDate);
-          provider.fetchHRVDataPoints(startDate);
-          provider.updateNutritionDataPoints([]);
         } else {
           return;
         }
@@ -98,9 +96,6 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
                 .add(const Duration(days: 7))
                 .subtract(const Duration(seconds: 1));
           }
-          provider.updateActivityDataPoints([]);
-          provider.updateSleepDataPoints([]);
-          provider.updateNutritionDataPoints([]);
           provider.fetchActivityDataPoints(startDate, endDate);
           provider.fetchSleepDataPoints(startDate, endDate);
           provider.fetchNutritionDataPoints(startDate, endDate: endDate);
@@ -124,9 +119,6 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
           startDate = DateTime(newDate.year, newDate.month, 1);
           endDate = DateTime(newDate.year, newDate.month + 1, 1)
               .subtract(const Duration(seconds: 1));
-          provider.updateActivityDataPoints([]);
-          provider.updateSleepDataPoints([]);
-          provider.updateNutritionDataPoints([]);
           provider.fetchActivityDataPoints(startDate, endDate);
           provider.fetchSleepDataPoints(startDate, endDate);
           provider.fetchNutritionDataPoints(startDate, endDate: endDate);
@@ -164,8 +156,7 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
             startDate = picked.subtract(const Duration(days: 5));
             endDate = picked.add(const Duration(days: 5));
             provider.fetchNutritionDataPoints(startDate);
-            provider.fetchHRVDataPoints(startDate);
-            provider.updateNutritionDataPoints([]);
+            provider.fetchHRVDataPoints(startDate, endDate: endDate);
             break;
           case 'week':
             startDate = DateTime(picked.year, picked.month, picked.day)
@@ -175,7 +166,6 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
                 .subtract(const Duration(seconds: 1));
             provider.fetchNutritionDataPoints(startDate, endDate: endDate);
             provider.fetchHRVDataPoints(startDate,  endDate: endDate);
-            provider.updateNutritionDataPoints([]);
             break;
           case 'month':
             startDate = DateTime(picked.year, picked.month, 1);
@@ -183,18 +173,14 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
                 .subtract(const Duration(seconds: 1));
             provider.fetchNutritionDataPoints(startDate, endDate: endDate);
             provider.fetchHRVDataPoints(startDate,  endDate: endDate);
-            provider.updateNutritionDataPoints([]);
             break;
           default:
             startDate = picked.subtract(const Duration(days: 5));
             endDate = picked.add(const Duration(days: 5));
             provider.fetchNutritionDataPoints(startDate, endDate: endDate);
             provider.fetchHRVDataPoints(startDate,  endDate: endDate);
-            provider.updateNutritionDataPoints([]);
             break;
         }
-        provider.updateActivityDataPoints([]);
-        provider.updateSleepDataPoints([]);
         provider.updateCurrentMinDate(startDate);
         provider.updateCurrentMaxDate(endDate);
         provider.fetchActivityDataPoints(startDate, endDate);

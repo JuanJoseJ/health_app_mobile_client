@@ -93,7 +93,11 @@ class _ActivityChartState extends State<ActivityChart> {
       DateTime startDate = DateTime(hDataProvider.currentDate.year,
           hDataProvider.currentDate.month, hDataProvider.currentDate.day);
       DateTime? endDate;
-
+      print(
+          "!!!!!!!!!!!!!!!!!! CURRENT MIN DATE ${hDataProvider.currentMinDate}");
+      print("!!!!!!!!!!!!!!!!!! CURRENT DATE ${hDataProvider.currentDate}");
+      print(
+          "!!!!!!!!!!!!!!!!!! CURRENT MAX DATE ${hDataProvider.currentMaxDate}");
       switch (hDataProvider.currentTopBarSelect) {
         case 'day':
           startDate = DateTime(startDate.year, startDate.month, startDate.day);
@@ -117,13 +121,14 @@ class _ActivityChartState extends State<ActivityChart> {
       }
       // Generate bar chart data groups based on the calculated start and end dates
 
+      print("!!!!!!!!!!!!!!! START DATE: ${startDate} !!!! END DATE: $endDate");
+
       List<BarChartGroupData> thisBarCharts = genBarChartDataGroups(
           hDataProvider.currentActivityDataPoints,
           widget.nPeriods,
           startDate,
           dailyActivityRodColors,
           endDate);
-
       return Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 16, 0),
         child: BarChart(
@@ -188,7 +193,8 @@ BarTouchData? myBarTouchData(
             }
             break;
           case "week":
-            timeText = DateFormat('EEEE').format(startDate.add(Duration(days: groupIndex)));
+            timeText = DateFormat('EEEE')
+                .format(startDate.add(Duration(days: groupIndex)));
             break;
           case "month":
             timeText = DateFormat('EEEE d')
