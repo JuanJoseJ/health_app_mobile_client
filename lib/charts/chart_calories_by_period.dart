@@ -2,50 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:health_app_mobile_client/charts/side_tittle_widgets/bottom_tittle_widgets.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
-import 'package:health_app_mobile_client/services/google_fit_data_service.dart';
 import 'package:health_app_mobile_client/util/default_data_util.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class ActivityChart extends StatefulWidget {
-  final String? leftTitle;
-  final String? bottomTitle;
+class CaloriesByPeriodChart extends StatefulWidget {
   final Widget Function(double, TitleMeta)? bottomTittleWidget;
   final int nPeriods;
-  const ActivityChart(
-      {super.key,
-      this.leftTitle,
-      this.bottomTitle,
-      this.bottomTittleWidget,
-      required this.nPeriods});
+  const CaloriesByPeriodChart(
+      {super.key, this.bottomTittleWidget, required this.nPeriods});
 
   @override
-  State<ActivityChart> createState() => _ActivityChartState();
+  State<CaloriesByPeriodChart> createState() => _CaloriesByPeriodChartState();
 }
 
-class _ActivityChartState extends State<ActivityChart> {
-  // final hds = HealthDataService();
-  final List<MaterialAccentColor> dailyActivityRodColors = [
-    Colors.orangeAccent,
-    Colors.redAccent,
-    Colors.blueAccent
+class _CaloriesByPeriodChartState extends State<CaloriesByPeriodChart> {
+  final List<Color> dailyActivityRodColors = [
+    Colors.lightGreen,
+    Colors.green,
+    Colors.blueGrey,
   ];
 
   FlTitlesData? myTitlesData(BuildContext context, HomeDataProvider hdp) {
     return FlTitlesData(
       leftTitles: AxisTitles(
-        axisNameWidget: widget.leftTitle != null
-            ? FittedBox(
-                fit: BoxFit.scaleDown,
-                child: IntrinsicWidth(
-                  child: Text(
-                    widget.leftTitle!,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                    overflow: TextOverflow.visible,
-                  ),
-                ),
-              )
-            : const Row(),
+        axisNameWidget: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: IntrinsicWidth(
+            child: Text(
+              "Calories",
+              style: Theme.of(context).textTheme.bodyLarge,
+              overflow: TextOverflow.visible,
+            ),
+          ),
+        ),
         sideTitles: const SideTitles(
           getTitlesWidget: leftTitleWidgets,
           showTitles: true,
@@ -88,16 +78,12 @@ class _ActivityChartState extends State<ActivityChart> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
+    return Consumer<HomeDataProvider>(builder: (context, hdp, child) {
       // Determine the start and end dates based on the current selection
-      DateTime startDate = DateTime(hDataProvider.currentDate.year,
-          hDataProvider.currentDate.month, hDataProvider.currentDate.day);
-      DateTime? endDate;
-      switch (hDataProvider.currentTopBarSelect) {
-        case 'day':
-          startDate = DateTime(startDate.year, startDate.month, startDate.day);
-          endDate = null;
-          break;
+      DateTime startDate = DateTime(
+          hdp.currentDate.year, hdp.currentDate.month, hdp.currentDate.day);
+      DateTime endDate;
+      switch (hdp.currentTopBarSelect) {
         case 'week':
           int weekday = startDate.weekday;
           startDate = startDate.subtract(Duration(days: weekday - 1));
@@ -111,24 +97,21 @@ class _ActivityChartState extends State<ActivityChart> {
               .subtract(const Duration(seconds: 1));
           break;
         default:
-          endDate = startDate.add(const Duration(
-              days: 1)); // Default to one day if the selection is unrecognized
+          endDate = startDate.add(const Duration(days: 1));
       }
-      // Generate bar chart data groups based on the calculated start and end dates
-
       List<BarChartGroupData> thisBarCharts = genBarChartDataGroups(
-          hDataProvider.currentActivityDataPoints,
+          hdp.currentNutritionDataPoints,
           widget.nPeriods,
           startDate,
-          dailyActivityRodColors,
-          endDate);
+          endDate,
+          dailyActivityRodColors);
       return Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 16, 0),
         child: BarChart(
           BarChartData(
             barGroups: thisBarCharts,
-            titlesData: myTitlesData(context, hDataProvider),
-            barTouchData: myBarTouchData(context, hDataProvider),
+            titlesData: myTitlesData(context, hdp),
+            // barTouchData: myBarTouchData(context, hDataProvider),
             borderData: FlBorderData(
               show: false,
             ),
@@ -204,43 +187,29 @@ BarTouchData? myBarTouchData(
   );
 }
 
-/// Generates a list of `BarChartGroupData` for use in a bar chart, based on health data points.
-///
-/// This function takes a list of `HealthDataPoint` objects, a number of periods to divide the data into,
-/// a start date, and optionally, a list of colors for the bars and an end date. It divides the time range
-/// between the start and end dates (or the 24 hours starting from the start date if no end date is provided)
-/// into the specified number of periods. It then calculates the activity level for each period based on the
-/// health data points provided. Each period's activity level is represented as a bar in the bar chart.
-///
-/// The bars are colored using the provided list of colors, cycling through the list if there are more bars
-/// than colors. If no colors are provided, a default color of `Colors.blueAccent` is used for all bars.
-///
-/// Parameters:
-/// - `hDataPoints`: The list of `HealthDataPoint` objects containing the health data to be represented.
-/// - `nPeriods`: The number of periods to divide the data into. Each period will correspond to one bar in the bar chart.
-/// - `startDate`: The start date of the range of data to be represented.
-/// - `barColors` (optional): A list of `Color` objects to use for coloring the bars in the bar chart. If not provided,
-///   a default color is used.
-/// - `endDate` (optional): The end date of the range of data to be represented. If not provided, the range is assumed
-///   to be 24 hours starting from `startDate`.
-///
-/// Returns:
-/// A list of `BarChartGroupData` objects, each representing a bar in the bar chart for a specific period,
-/// with its height corresponding to the activity level calculated for that period.
 List<BarChartGroupData> genBarChartDataGroups(
-    List<DefaultDataPoint> hDataPoints, int nPeriods, DateTime startDate,
-    [List<Color>? barColors, DateTime? endDate]) {
+    List<DefaultDataPoint> caloriesDataPoints,
+    int nPeriods,
+    DateTime startDate,
+    DateTime endDate,
+    [List<Color>? barColors]) {
   List<BarChartGroupData> tempBarCharts = [];
-  List<int> periods = GoogleFitDataService()
-      .getActivityByPeriods(nPeriods, hDataPoints, startDate, endDate);
+  List<double> calList = List<double>.filled(nPeriods, 0);
 
-  // Default color if barColors is not provided
-  barColors ??= [Colors.blueAccent];
+  int i = 0;
+  for (DefaultDataPoint p in caloriesDataPoints) {
+    if (p.dateFrom.isAfter(startDate.subtract(const Duration(seconds: 1))) &&
+        p.dateFrom.isBefore(endDate)) {
+      calList[i] = double.parse(p.value.toString());
+      i++;
+    }
+  }
 
-  for (int i = 0; i < periods.length; i++) {
-    var value = periods[i];
-    var color =
-        barColors[i % barColors.length];
+  barColors ??= [Colors.greenAccent];
+
+  for (int i = 0; i < calList.length; i++) {
+    var value = calList[i];
+    var color = barColors[i % barColors.length];
 
     tempBarCharts.add(
       BarChartGroupData(

@@ -14,7 +14,8 @@ class _FoodListChartState extends State<FoodListChart> {
   List<Widget> getFoodCards(List<DefaultDataPoint> foodDataPoints) {
     List<Widget> foodCards = [];
     for (DefaultDataPoint point in foodDataPoints) {
-      foodCards.add(FoodCard(name: point.name!, value: point.value.toString()));
+      String name = point.name != null ? point.name! : " ";
+      foodCards.add(FoodCard(name: name, value: point.value.toString()));
     }
     return foodCards;
   }
@@ -91,4 +92,3 @@ class FoodCard extends StatelessWidget {
     );
   }
 }
-

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/charts/chart_activity_by_time.dart';
+import 'package:health_app_mobile_client/charts/chart_calories_by_period.dart';
+import 'package:health_app_mobile_client/charts/chart_calories_by_time.dart';
 import 'package:health_app_mobile_client/charts/chart_food_list_by_day.dart';
 import 'package:health_app_mobile_client/charts/chart_sleep_states_by_time.dart';
 import 'package:health_app_mobile_client/charts/chart_stress_by_day.dart';
@@ -28,15 +30,15 @@ class _DataScafoldState extends State<DataScafold> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeDataProvider>(builder: (context, hDP, child) {
+    return Consumer<HomeDataProvider>(builder: (context, hdp, child) {
       int getNumberOfPeriods() {
-        switch (hDP.currentTopBarSelect) {
+        switch (hdp.currentTopBarSelect) {
           case "day":
             return 3;
           case "week":
             return 7;
           case "month":
-            DateTime date = hDP.currentDate;
+            DateTime date = hdp.currentDate;
             DateTime firstDayNextMonth;
             if (date.month < 12) {
               firstDayNextMonth = DateTime(date.year, date.month + 1, 1);
@@ -68,7 +70,11 @@ class _DataScafoldState extends State<DataScafold> {
             title = "Sleep";
             break;
           case 'Food':
-            chart = const FoodListChart();
+            chart = hdp.currentTopBarSelect == 'day'
+                ? const FoodListChart()
+                : CaloriesByPeriodChart(
+                    nPeriods: getNumberOfPeriods(),
+                  );
             bottomWidget = const FoodListBottomWidget();
             title = "Food";
             break;

@@ -248,8 +248,14 @@ class FitBitDataService {
       var foodResponse = await _fetchData(foodEndPoint);
       var decodedFoodResponse =
           foodResponse is String ? json.decode(foodResponse) : foodResponse;
+      print("!!!!!!!!!!!!!!!!!!!!!!!!!!!! FETCH FOOD");
+      print(decodedFoodResponse);
       if (decodedFoodResponse['foods'] != null) {
         for (var foodLog in decodedFoodResponse['foods']) {
+          defaultDataPoints.add(DefaultDataPoint.fromNutritionData(foodLog));
+        }
+      }else if(decodedFoodResponse['foods-log-caloriesIn'] != null){
+        for (var foodLog in decodedFoodResponse['foods-log-caloriesIn']) {
           defaultDataPoints.add(DefaultDataPoint.fromNutritionData(foodLog));
         }
       }
@@ -331,10 +337,6 @@ class FitBitDataService {
 
       var decodedResponse =
           response is String ? json.decode(response) : response;
-
-      print("!!!!!!!!!!!!!!!!!!!!!!!!!! FETC HHRV !!!!!!!!!!!!!!!!!!!!");
-      print(decodedResponse);
-
       // Process HRV data
       if (decodedResponse['hrv'] != null) {
         for (var hrvRecord in decodedResponse['hrv']) {

@@ -41,7 +41,7 @@ class _MainPageState extends State<MainPage> {
             DateTime.now().year, DateTime.now().month, DateTime.now().day + 1)
         .subtract(const Duration(seconds: 1));
     DateTime startDate = endDate
-        .subtract(const Duration(days: 10))
+        .subtract(const Duration(days: 30))
         .add(const Duration(seconds: 1));
     await homeDataProvider.fetchActivityDataPoints(startDate, endDate);
 

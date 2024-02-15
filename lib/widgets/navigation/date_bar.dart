@@ -62,14 +62,14 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
           if (newDate.isBefore(provider.currentMinDate) ||
               newDate.isAfter(provider.currentMaxDate)) {
             provider.fetchActivityDataPoints(
-                startDate.subtract(const Duration(days: 5)),
-                endDate.add(const Duration(days: 5)));
+                startDate.subtract(const Duration(days: 15)),
+                endDate.add(const Duration(days: 15)));
             provider.fetchSleepDataPoints(
-                startDate.subtract(const Duration(days: 5)),
-                endDate.add(const Duration(days: 5)));
+                startDate.subtract(const Duration(days: 15)),
+                endDate.add(const Duration(days: 15)));
             provider.fetchHRVDataPoints(
-                startDate.subtract(const Duration(days: 5)),
-                endDate: endDate.add(const Duration(days: 5)));
+                startDate.subtract(const Duration(days: 15)),
+                endDate: endDate.add(const Duration(days: 15)));
           }
           provider.updateCurrentDate(newDate);
           provider.fetchNutritionDataPoints(startDate);
@@ -153,8 +153,8 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
       if (picked.isBefore(currentDate) || picked.isAfter(currentDate)) {
         switch (provider.currentTopBarSelect) {
           case 'day':
-            startDate = picked.subtract(const Duration(days: 5));
-            endDate = picked.add(const Duration(days: 5));
+            startDate = picked.subtract(const Duration(days: 15));
+            endDate = picked.add(const Duration(days: 15));
             provider.fetchNutritionDataPoints(startDate);
             provider.fetchHRVDataPoints(startDate, endDate: endDate);
             break;
@@ -175,8 +175,8 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
             provider.fetchHRVDataPoints(startDate,  endDate: endDate);
             break;
           default:
-            startDate = picked.subtract(const Duration(days: 5));
-            endDate = picked.add(const Duration(days: 5));
+            startDate = picked.subtract(const Duration(days: 15));
+            endDate = picked.add(const Duration(days: 15));
             provider.fetchNutritionDataPoints(startDate, endDate: endDate);
             provider.fetchHRVDataPoints(startDate,  endDate: endDate);
             break;
