@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/charts/chart_activity_by_period.dart';
 import 'package:health_app_mobile_client/charts/chart_calories_by_period.dart';
 import 'package:health_app_mobile_client/charts/chart_food_list_by_day.dart';
+import 'package:health_app_mobile_client/charts/chart_sleep_by_period.dart';
 import 'package:health_app_mobile_client/charts/chart_sleep_by_time.dart';
 import 'package:health_app_mobile_client/charts/chart_stress_by_day.dart';
 import 'package:health_app_mobile_client/charts/chart_stress_by_period.dart';
@@ -115,9 +116,12 @@ class CardsScafold extends StatelessWidget {
                             Icons.hotel,
                             color: Colors.lightBlueAccent,
                           ),
-                          chart: SleepChart(),
+                          chart: hdp.currentTopBarSelect == 'day'
+                              ? const SleepChart()
+                              : SleepByPeriodChart(
+                                  nPeriods: getNumberOfPeriods()),
                           chartId: "Sleep",
-                          bottomWidget: SleepBottomWidget(),
+                          bottomWidget: const SleepBottomWidget(),
                           notifyParent: navigateFn,
                         )),
                       ],

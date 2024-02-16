@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/charts/chart_activity_by_period.dart';
 import 'package:health_app_mobile_client/charts/chart_calories_by_period.dart';
 import 'package:health_app_mobile_client/charts/chart_food_list_by_day.dart';
+import 'package:health_app_mobile_client/charts/chart_sleep_by_period.dart';
 import 'package:health_app_mobile_client/charts/chart_sleep_states_by_time.dart';
 import 'package:health_app_mobile_client/charts/chart_stress_by_day.dart';
 import 'package:health_app_mobile_client/charts/chart_stress_by_period.dart';
@@ -66,7 +67,9 @@ class _DataScafoldState extends State<DataScafold> {
             title = "Activity";
             break;
           case 'Sleep':
-            chart = const SleepStatesChart();
+            chart = hdp.currentTopBarSelect == 'day'
+                ? const SleepStatesChart()
+                : SleepByPeriodChart(nPeriods: getNumberOfPeriods());
             bottomWidget = const SleepBottomWidget();
             title = "Sleep";
             break;

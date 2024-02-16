@@ -294,7 +294,7 @@ class FitBitDataService {
               'hrv': [
                 {
                   'value': {'dailyRmssd': 62.887, 'deepRmssd': 64.887},
-                  'dateTime': '2024-02-15'
+                  'dateTime': '2024-02-16'
                 },
                 {
                   'value': {'dailyRmssd': 61.887, 'deepRmssd': 64.887},

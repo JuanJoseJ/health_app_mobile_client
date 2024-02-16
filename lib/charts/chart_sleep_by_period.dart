@@ -1,29 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:health_app_mobile_client/charts/chart_stress_by_day.dart';
 import 'package:health_app_mobile_client/charts/side_tittle_widgets/bottom_tittle_widgets.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/services/fit_bit_data_service.dart';
-import 'package:health_app_mobile_client/services/google_fit_data_service.dart';
 import 'package:health_app_mobile_client/util/default_data_util.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class StressByPeriodChart extends StatefulWidget {
-  final Widget Function(double, TitleMeta)? bottomTittleWidget;
+class SleepByPeriodChart extends StatefulWidget {
   final int nPeriods;
-  const StressByPeriodChart(
-      {super.key, this.bottomTittleWidget, required this.nPeriods});
+  const SleepByPeriodChart({super.key, required this.nPeriods});
 
   @override
-  State<StressByPeriodChart> createState() => _StressByPeriodChartState();
+  State<SleepByPeriodChart> createState() => _SleepByPeriodChartState();
 }
 
-class _StressByPeriodChartState extends State<StressByPeriodChart> {
+class _SleepByPeriodChartState extends State<SleepByPeriodChart> {
   final List<Color> dailyActivityRodColors = [
-    Colors.deepPurple,
-    Colors.deepPurpleAccent,
-    Colors.deepOrange,
+    Colors.blueAccent,
+    Colors.lightBlueAccent,
+    Colors.orange,
   ];
 
   FlTitlesData? myTitlesData(BuildContext context, HomeDataProvider hdp) {
@@ -33,7 +29,7 @@ class _StressByPeriodChartState extends State<StressByPeriodChart> {
           fit: BoxFit.scaleDown,
           child: IntrinsicWidth(
             child: Text(
-              "Points",
+              "Minutes of Sleep",
               style: Theme.of(context).textTheme.bodyLarge,
               overflow: TextOverflow.visible,
             ),
@@ -82,7 +78,6 @@ class _StressByPeriodChartState extends State<StressByPeriodChart> {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hdp, child) {
-      // Determine the start and end dates based on the current selection
       DateTime startDate = DateTime(
           hdp.currentDate.year, hdp.currentDate.month, hdp.currentDate.day);
       DateTime endDate;
@@ -105,6 +100,7 @@ class _StressByPeriodChartState extends State<StressByPeriodChart> {
 
       List<BarChartGroupData> thisBarCharts = genBarChartDataGroups(
           hdp, widget.nPeriods, startDate, endDate, dailyActivityRodColors);
+
       return Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 16, 0),
         child: BarChart(
@@ -191,29 +187,14 @@ List<BarChartGroupData> genBarChartDataGroups(
     HomeDataProvider hdp, int nPeriods, DateTime startDate, DateTime endDate,
     [List<Color>? barColors]) {
   List<BarChartGroupData> tempBarCharts = [];
-  List<double> pointsList = List<double>.filled(nPeriods, 0);
 
-  final activityList = GoogleFitDataService().getActivityByPeriods(
-      nPeriods, hdp.currentActivityDataPoints, startDate, endDate);
   final sleepList =
       getSleepByPeriods(nPeriods, hdp.currentSleepDataPoints, startDate);
-  final caloriesList = getCaloriesByPeriod(
-      nPeriods, hdp.currentNutritionDataPoints, startDate, endDate);
-  final hrvList =
-      getHRVByPeriod(nPeriods, hdp.currentHRVDataPoints, startDate, endDate);
-
-  for (var i = 0; i < pointsList.length; i++) {
-    pointsList[i] = calcStressPoints(
-        activityList[i].toDouble(),
-        sleepList[i].toDouble(),
-        caloriesList[i].toDouble(),
-        hrvList[i].toDouble());
-  }
 
   barColors ??= [Colors.deepPurpleAccent];
 
-  for (int i = 0; i < pointsList.length; i++) {
-    var value = pointsList[i];
+  for (int i = 0; i < sleepList.length; i++) {
+    var value = sleepList[i];
     var color = barColors[i % barColors.length];
 
     tempBarCharts.add(
@@ -221,7 +202,7 @@ List<BarChartGroupData> genBarChartDataGroups(
         x: i,
         barRods: [
           BarChartRodData(
-            toY: value,
+            toY: value.toDouble(),
             color: color,
           ),
         ],
@@ -249,42 +230,4 @@ List<int> getSleepByPeriods(
   }
 
   return sleepList;
-}
-
-List<int> getCaloriesByPeriod(
-  int nPeriods,
-  List<DefaultDataPoint> caloriesDataPoints,
-  DateTime startDate,
-  DateTime endDate,
-) {
-  List<int> calList = List<int>.filled(nPeriods, 0);
-  int i = 0;
-  for (DefaultDataPoint p in caloriesDataPoints) {
-    if (p.dateFrom.isAfter(startDate.subtract(const Duration(seconds: 1))) &&
-        p.dateFrom.isBefore(endDate)) {
-      calList[i] = double.parse(p.value.toString()).toInt();
-      i++;
-    }
-  }
-
-  return calList;
-}
-
-List<int> getHRVByPeriod(
-  int nPeriods,
-  List<DefaultDataPoint> hrvDataPoints,
-  DateTime startDate,
-  DateTime endDate,
-) {
-  List<int> hrvList = List<int>.filled(nPeriods, 0);
-  int i = 0;
-  for (DefaultDataPoint p in hrvDataPoints) {
-    if (p.dateFrom.isAfter(startDate.subtract(const Duration(seconds: 1))) &&
-        p.dateFrom.isBefore(endDate)) {
-      hrvList[i] = double.parse(p.value.toString()).toInt();
-      i++;
-    }
-  }
-
-  return hrvList;
 }
