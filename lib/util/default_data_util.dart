@@ -54,9 +54,8 @@ class DefaultDataPoint {
     DateFormat dateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
     DateTime dateFrom = dateFormat.parse(sleepData['startTime']);
     DateTime dateTo = dateFormat.parse(sleepData['endTime']);
-    NumericHealthValue duration = NumericHealthValue(sleepData['seconds']
-            .toDouble() /
-        60); // Assuming duration is provided in seconds, converting to minutes
+    NumericHealthValue duration =
+        NumericHealthValue(sleepData['seconds'].toDouble() / 60);
 
     // Determine the HealthDataType based on the 'level' field in sleepData
     HealthDataType sleepType;
@@ -108,7 +107,7 @@ class DefaultDataPoint {
 
     return DefaultDataPoint(
       dateFrom: date,
-      value: NumericHealthValue(value),
+      value: NumericHealthValue(value.toDouble()),
       type: type,
       unit: unit,
       name: name,

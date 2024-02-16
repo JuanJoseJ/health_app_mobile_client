@@ -138,8 +138,11 @@ double calcStressPoints(double totalActivityMinutes, double totalSleepMinutes,
   double caloriesWeight = -0.5;
   double hrvWeight = 1;
 
+  double count = totalHRV == 0 ? 0 : 1;
+
   // Calculate stress score as an average of the normalized metrics, subtracted from 1
-  double stressScore = (normalizedActivity * activityWeight +
+  double stressScore = count *
+      (normalizedActivity * activityWeight +
           normalizedSleep * sleepWeight +
           normalizedCalories * caloriesWeight +
           normalizedHRV * hrvWeight) /

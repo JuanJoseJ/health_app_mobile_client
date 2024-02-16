@@ -248,13 +248,11 @@ class FitBitDataService {
       var foodResponse = await _fetchData(foodEndPoint);
       var decodedFoodResponse =
           foodResponse is String ? json.decode(foodResponse) : foodResponse;
-      print("!!!!!!!!!!!!!!!!!!!!!!!!!!!! FETCH FOOD");
-      print(decodedFoodResponse);
       if (decodedFoodResponse['foods'] != null) {
         for (var foodLog in decodedFoodResponse['foods']) {
           defaultDataPoints.add(DefaultDataPoint.fromNutritionData(foodLog));
         }
-      }else if(decodedFoodResponse['foods-log-caloriesIn'] != null){
+      } else if (decodedFoodResponse['foods-log-caloriesIn'] != null) {
         for (var foodLog in decodedFoodResponse['foods-log-caloriesIn']) {
           defaultDataPoints.add(DefaultDataPoint.fromNutritionData(foodLog));
         }
@@ -326,10 +324,6 @@ class FitBitDataService {
                   'value': {'dailyRmssd': 61.887, 'deepRmssd': 64.887},
                   'dateTime': '2024-02-08'
                 },
-                {
-                  'value': {'dailyRmssd': 60.887, 'deepRmssd': 64.887},
-                  'dateTime': '2024-02-07'
-                }
               ]
             };
 
