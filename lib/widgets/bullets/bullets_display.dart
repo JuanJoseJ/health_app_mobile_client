@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/util/app_states.dart';
 import 'package:health_app_mobile_client/widgets/bullets/bullets_scafold.dart';
+import 'package:health_app_mobile_client/widgets/bullets/lesson_scafold.dart';
 import 'package:provider/provider.dart';
 
 class BulletsDisplay extends StatefulWidget {
@@ -20,10 +21,12 @@ class _BulletsDisplayState extends State<BulletsDisplay> {
     });
   }
 
-  StatelessWidget selectBulletPage() {
+  Widget selectBulletPage() {
     switch (page) {
       case "bullets":
         return BulletsScafold(setPage: setPage);
+      case "lesson":
+        return LessonScafold(setPage: setPage);
       default:
         return BulletsScafold(setPage: setPage);
     }
@@ -73,14 +76,14 @@ class _BulletsDisplayState extends State<BulletsDisplay> {
   }
 
   Widget _content(BuildContext context) {
-    return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
-      if (hDataProvider.currentAppState == AppState.FETCHING_DATA) {
+    return Consumer<HomeDataProvider>(builder: (context, hdp, child) {
+      if (hdp.currentAppState == AppState.FETCHING_DATA) {
         return _loading();
-      } else if (hDataProvider.currentAppState == AppState.DATA_NOT_FETCHED) {
+      } else if (hdp.currentAppState == AppState.DATA_NOT_FETCHED) {
         return _contentNotFetched();
-      } else if (hDataProvider.currentAppState == AppState.NO_DATA) {
+      } else if (hdp.currentAppState == AppState.NO_DATA) {
         return _contentNoData();
-      } else if (hDataProvider.currentAppState == AppState.AUTH_NOT_GRANTED) {
+      } else if (hdp.currentAppState == AppState.AUTH_NOT_GRANTED) {
         return _notAuthorized();
       } else {
         return selectBulletPage();

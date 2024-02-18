@@ -56,7 +56,7 @@ class _MainPageState extends State<MainPage> {
     await homeDataProvider.fetchSleepDataPoints(startDate, endDate);
     await homeDataProvider.fetchNutritionDataPoints(startDate);
     await homeDataProvider.fetchHRVDataPoints(startDate, endDate: endDate);
-    await homeDataProvider.fetchDaysLesson(date: DateTime.now());
+    await homeDataProvider.getTodayLesson(date: DateTime.now());
   }
 
   @override

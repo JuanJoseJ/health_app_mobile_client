@@ -208,31 +208,40 @@ class HomeDataProvider extends ChangeNotifier {
 
   FireStoreDataService fireStoreDataService = FireStoreDataService();
 
+  DateTime _currentBulletDate = DateTime(DateTime.now().year,
+      DateTime.now().month, DateTime.now().day); //Start at current date
+  DateTime get currentBulletDate => _currentBulletDate;
+  void updateCurrentBulletDate(DateTime newDate) {
+    _currentBulletDate = newDate;
+    notifyListeners();
+  }
+
   Map<String, dynamic> _currentLesson = {};
   Map<String, dynamic> get currentLesson => _currentLesson;
-  void updateCurrentLessons(Map<String, dynamic> newLesson) {
+  void updateCurrentLesson(Map<String, dynamic> newLesson) {
     _currentLesson = newLesson;
     notifyListeners();
   }
 
-  Future<Map<String, dynamic>?> fetchDaysLesson({DateTime? date}) async {
+  Future<Map<String, dynamic>> getTodayLesson({DateTime? date}) async {
     updateCurrentAppState(AppState.FETCHING_DATA);
-    // late String actualDate;
-    // if (date == null) {
-    //   actualDate = DateFormat("yyyy-mm-dd").format(DateTime.now());
-    // } else {
-    //   actualDate = date;
-    // }
+    late DateTime actualDate;
+    if (date == null) {
+      actualDate = DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    } else {
+      actualDate = date;
+    }
     try {
       Map<String, dynamic> newLesson =
-          await fireStoreDataService.getTodayLesson(_uid);
-      updateCurrentLessons(newLesson);
+          await fireStoreDataService.getTodayLesson(_uid, date: actualDate);
+      updateCurrentLesson(newLesson);
       updateCurrentAppState(AppState.DATA_READY);
       return newLesson;
     } catch (e) {
       updateCurrentAppState(AppState.NO_DATA);
       print(e);
-      return null;
+      return {};
     }
   }
 }

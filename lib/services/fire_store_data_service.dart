@@ -60,63 +60,65 @@ class FireStoreDataService {
       List<Map<String, dynamic>> userLessons = await fetchUsersLessons(userId);
       List<Map<String, dynamic>> allLessons = await fetchLessons();
 
-      // Check for a completed lesson for the target date
-      var userLessonForDate = userLessons.firstWhere((ul) {
-        if (ul['completed']) {
-          DateTime lessonDate = (ul['date'] as Timestamp).toDate();
-          return lessonDate.year == targetDate.year &&
-              lessonDate.month == targetDate.month &&
-              lessonDate.day == targetDate.day;
-        }
-        return false;
-      }, orElse: () => {});
+      // Filter out lessons for the specific target date
+      List<Map<String, dynamic>> lessonsForTargetDate = userLessons.where((ul) {
+        DateTime lessonDate = (ul['date'] as Timestamp).toDate();
+        return lessonDate.year == targetDate.year &&
+            lessonDate.month == targetDate.month &&
+            lessonDate.day == targetDate.day;
+      }).toList();
 
-      // Check for any incomplete lessons
-      var incompleteUserLesson = userLessons.firstWhere(
-        (ul) => !ul['completed'],
-        orElse: () => {},
+      // Find a completed lesson for the target date, if any
+      var completedLessonForDate = lessonsForTargetDate.firstWhere(
+        (ul) => ul['completed'],
+        orElse: () => <String, dynamic>{},
       );
 
-      // Retrieve the full lesson details from allLessons
-      Map<String, dynamic>? fullLessonDetails;
-      if (userLessonForDate.isNotEmpty || incompleteUserLesson.isNotEmpty) {
-        String lessonIdToFind = userLessonForDate.isNotEmpty
-            ? userLessonForDate['lessonId']
-            : incompleteUserLesson['lessonId'];
-        fullLessonDetails = allLessons.firstWhere(
-          (lesson) => lesson['id'] == lessonIdToFind,
-          orElse: () =>
-              <String, dynamic>{}, // Return an empty map instead of null
+      // Find an incomplete lesson for the target date, if any
+      var incompleteLessonForDate = lessonsForTargetDate.firstWhere(
+        (ul) => !ul['completed'],
+        orElse: () => <String, dynamic>{},
+      );
+
+      if (completedLessonForDate.isNotEmpty) {
+        // Retrieve full lesson details for a completed lesson
+        lessonToReturn = allLessons.firstWhere(
+          (lesson) => lesson['id'] == completedLessonForDate['lessonId'],
+          orElse: () => <String, dynamic>{},
         );
-      }
+        lessonToReturn['completed'] = true;
+        print("!!!!!!!!!!!!!! COMPLETE LESSON TO RETURN: $lessonToReturn");
+      } else if (incompleteLessonForDate.isNotEmpty) {
+        // Retrieve full lesson details for an incomplete lesson
+        lessonToReturn = allLessons.firstWhere(
+          (lesson) => lesson['id'] == incompleteLessonForDate['lessonId'],
+          orElse: () => <String, dynamic>{},
+        );
+        lessonToReturn['completed'] = false;
+        print("!!!!!!!!!!!!!! INCOMPLETE LESSON TO RETURN: $lessonToReturn");
+      } else {
+        // If no lesson was assigned for the target date, assign a new one
+        List<Map<String, dynamic>> candidateLessons = allLessons
+            .where((lesson) =>
+                (!userLessons.any((ul) => (ul['lessonId'] == lesson['id'] && ul["completed"] == true))))
+            .toList();
 
-      if (fullLessonDetails != null) {
-        lessonToReturn = fullLessonDetails;
-        lessonToReturn['completed'] = userLessonForDate
-            .isNotEmpty; // Set based on whether it was a completed lesson for the date
-        return lessonToReturn;
-      }
-
-      // If no incomplete or completed lesson for the date, find a new lesson to assign
-      List<Map<String, dynamic>> candidateLessons = allLessons
-          .where((lesson) =>
-              !userLessons.any((ul) => ul['lessonId'] == lesson['id']))
-          .toList();
-
-      if (candidateLessons.isNotEmpty) {
-        Map<String, dynamic> newUserLesson = {
-          "date": targetDate,
-          "userId": userId,
-          "lessonId": candidateLessons.first["id"],
-          "completed": false,
-        };
-        await addUserLesson(newUserLesson);
-        lessonToReturn = candidateLessons.first;
-        lessonToReturn['completed'] =
-            false; // Explicitly set 'completed' to false
+        if (candidateLessons.isNotEmpty) {
+          Map<String, dynamic> newUserLesson = {
+            "date": targetDate,
+            "userId": userId,
+            "lessonId": candidateLessons.first["id"],
+            "completed": false,
+          };
+          await addUserLesson(
+              newUserLesson); // Function to assign the new lesson to the user
+          lessonToReturn = candidateLessons.first;
+          lessonToReturn['completed'] = false;
+          print("!!!!!!!!!!!!!! NEW LESSON TO RETURN: $lessonToReturn");
+        }
       }
     } catch (e) {
-      print("Error getting incomplete or priority new lesson: $e");
+      print("Error getting today's lesson: $e");
       rethrow;
     }
 

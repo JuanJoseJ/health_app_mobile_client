@@ -26,7 +26,7 @@ class DetailTopBar extends StatelessWidget implements PreferredSizeWidget {
           textDirection: TextDirection.rtl,
           children: [
             Text(
-              "Activity in Detail",
+              "",
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ],

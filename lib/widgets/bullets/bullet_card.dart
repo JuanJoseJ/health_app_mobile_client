@@ -7,6 +7,7 @@ class BulletCard extends StatefulWidget {
   final bool completed;
   final List<dynamic> sections;
   final String? source;
+  final Function(String) setPage;
   const BulletCard(
       {super.key,
       this.cardMainColor,
@@ -14,6 +15,7 @@ class BulletCard extends StatefulWidget {
       required this.description,
       required this.completed,
       required this.sections,
+      required this.setPage,
       this.source});
 
   @override
@@ -66,17 +68,18 @@ class _BulletCardState extends State<BulletCard> {
       checkIcon = Icons.radio_button_unchecked;
     }
     return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Icon(checkIcon, color: cardMainColor, size: 50.0),
-              ),
-              Icon(Icons.arrow_forward, color: cardMainColor, size: 50.0)
-            ],
+          Expanded(
+            child: Icon(checkIcon, color: cardMainColor, size: 50.0),
           ),
+          Expanded(
+            child: IconButton(
+              icon: Icon(Icons.arrow_forward, color: cardMainColor),
+              onPressed: () => widget.setPage("lesson"),
+              iconSize: 50.0,
+            ),
+          )
         ],
       ),
     );

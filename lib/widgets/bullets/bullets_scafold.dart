@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/widgets/bullets/bullet_card.dart';
-import 'package:health_app_mobile_client/widgets/navigation/date_bar.dart';
+import 'package:health_app_mobile_client/widgets/navigation/bullets_top_bar.dart';
 import 'package:provider/provider.dart';
 
 class BulletsScafold extends StatelessWidget {
@@ -12,8 +12,10 @@ class BulletsScafold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hdp, child) {
       Map<String, dynamic> currentLesson = hdp.currentLesson;
+      print(
+          "!!!!!!!!!!!! BULLET SCAFILD LESSON: Name:${hdp.currentLesson["name"]} completed: ${hdp.currentLesson["completed"]}}");
       return Scaffold(
-        appBar: const DateBar(),
+        appBar: const BulletsTopBar(),
         backgroundColor: Theme.of(context).colorScheme.background,
         body: Padding(
           padding: EdgeInsets.all(8.0),
@@ -21,11 +23,12 @@ class BulletsScafold extends StatelessWidget {
             children: [
               BulletCard(
                 cardMainColor: Colors.blueAccent,
-                title: "Lesson: ${currentLesson["name"]}",
-                description: currentLesson["description"],
-                completed: currentLesson["completed"],
-                sections: currentLesson["sections"]["sections"],
-                source: currentLesson["source"],
+                title: "Lesson: ${hdp.currentLesson["name"]}",
+                description: hdp.currentLesson["description"],
+                completed: hdp.currentLesson["completed"],
+                sections: hdp.currentLesson["sections"]["sections"],
+                source: hdp.currentLesson["source"],
+                setPage: setPage,
               ),
               BulletCard(
                 cardMainColor: Colors.orangeAccent,
@@ -34,6 +37,7 @@ class BulletsScafold extends StatelessWidget {
                     "This should be a description about the function of clicking this",
                 completed: true,
                 sections: [],
+                setPage: setPage,
               ),
               BulletCard(
                 cardMainColor: Colors.red,
@@ -42,6 +46,7 @@ class BulletsScafold extends StatelessWidget {
                     "This should be a description about the function of clicking this",
                 completed: true,
                 sections: [],
+                setPage: setPage,
               ),
               BulletCard(
                 cardMainColor: Colors.green,
@@ -50,6 +55,7 @@ class BulletsScafold extends StatelessWidget {
                     "This should be a description about the function of clicking this",
                 completed: true,
                 sections: [],
+                setPage: setPage,
               ),
             ],
           ),

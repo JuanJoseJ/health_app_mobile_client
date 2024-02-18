@@ -75,6 +75,7 @@ class ActivityBottomWidget extends StatelessWidget {
   int getMeanActivity(DateTime startDate, DateTime? endDate,
       List<DefaultDataPoint> dataPoints, HealthDataType activityType) {
     int totalActivity = 0;
+    // ignore: unused_local_variable
     int daysCounted = 0;
     DateTime currentDate = startDate;
 
