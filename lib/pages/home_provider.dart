@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:health/health.dart';
+import 'package:health_app_mobile_client/services/fire_store_data_service.dart';
 import 'package:health_app_mobile_client/services/fit_bit_data_service.dart';
 import 'package:health_app_mobile_client/services/google_fit_data_service.dart';
 import 'package:health_app_mobile_client/util/app_states.dart';
 import 'package:health_app_mobile_client/util/default_data_util.dart';
+import 'package:intl/intl.dart';
 
 class HomeDataProvider extends ChangeNotifier {
-  String _uid = "";
-  String get uid => _uid;
-  void updateUid(String newUid) {
-    _uid = newUid;
-    notifyListeners();
-  }
-
   final GoogleFitDataService googleFitHealthDataService =
       GoogleFitDataService();
 
@@ -201,6 +196,43 @@ class HomeDataProvider extends ChangeNotifier {
           break;
       }
       notifyListeners();
+    }
+  }
+
+  String _uid = "";
+  String get uid => _uid;
+  void updateUid(String newUid) {
+    _uid = newUid;
+    notifyListeners();
+  }
+
+  FireStoreDataService fireStoreDataService = FireStoreDataService();
+
+  Map<String, dynamic> _currentLesson = {};
+  Map<String, dynamic> get currentLesson => _currentLesson;
+  void updateCurrentLessons(Map<String, dynamic> newLesson) {
+    _currentLesson = newLesson;
+    notifyListeners();
+  }
+
+  Future<Map<String, dynamic>?> fetchDaysLesson({DateTime? date}) async {
+    updateCurrentAppState(AppState.FETCHING_DATA);
+    // late String actualDate;
+    // if (date == null) {
+    //   actualDate = DateFormat("yyyy-mm-dd").format(DateTime.now());
+    // } else {
+    //   actualDate = date;
+    // }
+    try {
+      Map<String, dynamic> newLesson =
+          await fireStoreDataService.getTodayLesson(_uid);
+      updateCurrentLessons(newLesson);
+      updateCurrentAppState(AppState.DATA_READY);
+      return newLesson;
+    } catch (e) {
+      updateCurrentAppState(AppState.NO_DATA);
+      print(e);
+      return null;
     }
   }
 }

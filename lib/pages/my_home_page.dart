@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
-import 'package:health_app_mobile_client/services/fire_store_data_service.dart';
 import 'package:health_app_mobile_client/services/fit_bit_data_service.dart';
 import 'package:health_app_mobile_client/widgets/bullets/bullets_display.dart';
 import 'package:health_app_mobile_client/widgets/home/home_display.dart';
@@ -57,9 +56,7 @@ class _MainPageState extends State<MainPage> {
     await homeDataProvider.fetchSleepDataPoints(startDate, endDate);
     await homeDataProvider.fetchNutritionDataPoints(startDate);
     await homeDataProvider.fetchHRVDataPoints(startDate, endDate: endDate);
-
-    FireStoreDataService fds = FireStoreDataService();
-    fds.fetchQuestionaryByLesson("HwIaJ4vrzlxMi1fifWbV");
+    await homeDataProvider.fetchDaysLesson(date: DateTime.now());
   }
 
   @override

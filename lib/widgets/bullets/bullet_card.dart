@@ -4,11 +4,17 @@ class BulletCard extends StatefulWidget {
   final Color? cardMainColor;
   final String title;
   final String description;
+  final bool completed;
+  final List<dynamic> sections;
+  final String? source;
   const BulletCard(
       {super.key,
-      required this.cardMainColor,
+      this.cardMainColor,
       required this.title,
-      required this.description});
+      required this.description,
+      required this.completed,
+      required this.sections,
+      this.source});
 
   @override
   State<BulletCard> createState() => _BulletCardState();
@@ -20,7 +26,7 @@ class _BulletCardState extends State<BulletCard> {
   late String title;
   late String description;
 
-@override
+  @override
   void initState() {
     super.initState();
     cardMainColor = widget.cardMainColor;
@@ -54,7 +60,7 @@ class _BulletCardState extends State<BulletCard> {
 
   Widget rightBulletCard() {
     late IconData? checkIcon;
-    if (checked) {
+    if (widget.completed) {
       checkIcon = Icons.check_circle;
     } else {
       checkIcon = Icons.radio_button_unchecked;
@@ -95,4 +101,3 @@ class _BulletCardState extends State<BulletCard> {
     );
   }
 }
-

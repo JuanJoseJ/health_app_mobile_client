@@ -4,8 +4,30 @@ import 'package:health_app_mobile_client/util/app_states.dart';
 import 'package:health_app_mobile_client/widgets/bullets/bullets_scafold.dart';
 import 'package:provider/provider.dart';
 
-class BulletsDisplay extends StatelessWidget {
+class BulletsDisplay extends StatefulWidget {
   const BulletsDisplay({super.key});
+
+  @override
+  State<BulletsDisplay> createState() => _BulletsDisplayState();
+}
+
+class _BulletsDisplayState extends State<BulletsDisplay> {
+  String page = "bullets";
+
+  void setPage(String newPage) {
+    setState(() {
+      page = newPage;
+    });
+  }
+
+  StatelessWidget selectBulletPage() {
+    switch (page) {
+      case "bullets":
+        return BulletsScafold(setPage: setPage);
+      default:
+        return BulletsScafold(setPage: setPage);
+    }
+  }
 
   Widget _loading() {
     return Center(
@@ -51,21 +73,19 @@ class BulletsDisplay extends StatelessWidget {
   }
 
   Widget _content(BuildContext context) {
-    return Consumer<HomeDataProvider>(
-      builder: (context, hDataProvider, child){
-        if (hDataProvider.currentAppState == AppState.FETCHING_DATA) {
-          return _loading();
-        } else if (hDataProvider.currentAppState == AppState.DATA_NOT_FETCHED) {
-          return _contentNotFetched();
-        } else if (hDataProvider.currentAppState == AppState.NO_DATA) {
-          return _contentNoData();
-        } else if (hDataProvider.currentAppState == AppState.AUTH_NOT_GRANTED) {
-          return _notAuthorized();
-        } else {
-          return const  BulletsScafold();
-        }
+    return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
+      if (hDataProvider.currentAppState == AppState.FETCHING_DATA) {
+        return _loading();
+      } else if (hDataProvider.currentAppState == AppState.DATA_NOT_FETCHED) {
+        return _contentNotFetched();
+      } else if (hDataProvider.currentAppState == AppState.NO_DATA) {
+        return _contentNoData();
+      } else if (hDataProvider.currentAppState == AppState.AUTH_NOT_GRANTED) {
+        return _notAuthorized();
+      } else {
+        return selectBulletPage();
       }
-    );
+    });
   }
 
   @override
