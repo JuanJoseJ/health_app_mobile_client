@@ -6,6 +6,13 @@ import 'package:health_app_mobile_client/util/app_states.dart';
 import 'package:health_app_mobile_client/util/default_data_util.dart';
 
 class HomeDataProvider extends ChangeNotifier {
+  String _uid = "";
+  String get uid => _uid;
+  void updateUid(String newUid) {
+    _uid = newUid;
+    notifyListeners();
+  }
+
   final GoogleFitDataService googleFitHealthDataService =
       GoogleFitDataService();
 

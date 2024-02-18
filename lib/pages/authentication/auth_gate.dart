@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
@@ -17,7 +18,9 @@ class AuthGate extends StatelessWidget {
           return SignInScreen(
             providers: [
               EmailAuthProvider(),
-              GoogleProvider(clientId: "696677775400-q2irlnlk9k74dtqdphoocv9cr6l4hq37.apps.googleusercontent.com"),
+              GoogleProvider(
+                  clientId:
+                      "696677775400-q2irlnlk9k74dtqdphoocv9cr6l4hq37.apps.googleusercontent.com"),
             ],
             headerBuilder: (context, constraints, shrinkOffset) {
               return AspectRatio(
@@ -45,8 +48,15 @@ class AuthGate extends StatelessWidget {
           );
         }
 
-        return const MainPage(
+        FirebaseFirestore db = FirebaseFirestore.instance;
+        User user = snapshot.data!;
+        db.collection("users").doc(user.uid).set({
+          "UID": user.uid,
+        }, SetOptions(merge: true));
+
+        return MainPage(
           title: "Health Application",
+          uid: user.uid,
         );
       },
     );

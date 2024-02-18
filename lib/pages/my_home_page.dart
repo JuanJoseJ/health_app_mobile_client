@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
+import 'package:health_app_mobile_client/services/fire_store_data_service.dart';
 import 'package:health_app_mobile_client/services/fit_bit_data_service.dart';
 import 'package:health_app_mobile_client/widgets/bullets/bullets_display.dart';
 import 'package:health_app_mobile_client/widgets/home/home_display.dart';
@@ -11,9 +12,11 @@ import 'package:provider/provider.dart';
 import '../widgets/navigation/bottom_bar.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key, required this.title}) : super(key: key);
-
   final String title;
+  final String uid;
+
+  const MainPage({Key? key, required this.title, required this.uid})
+      : super(key: key);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -37,6 +40,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> fetchInitialData() async {
+    homeDataProvider.updateUid(widget.uid);
     DateTime endDate = DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day + 1)
         .subtract(const Duration(seconds: 1));
@@ -53,6 +57,9 @@ class _MainPageState extends State<MainPage> {
     await homeDataProvider.fetchSleepDataPoints(startDate, endDate);
     await homeDataProvider.fetchNutritionDataPoints(startDate);
     await homeDataProvider.fetchHRVDataPoints(startDate, endDate: endDate);
+
+    FireStoreDataService fds = FireStoreDataService();
+    fds.fetchQuestionaryByLesson("HwIaJ4vrzlxMi1fifWbV");
   }
 
   @override

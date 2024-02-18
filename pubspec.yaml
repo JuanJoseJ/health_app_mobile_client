@@ -51,6 +51,7 @@ dependencies:
   crypto: ^3.0.3
   http: ^1.1.0
   flutter_custom_tabs: ^2.0.0+1
+  cloud_firestore: ^4.14.0
 
 
 dev_dependencies:
