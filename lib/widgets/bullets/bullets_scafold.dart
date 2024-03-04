@@ -11,9 +11,6 @@ class BulletsScafold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hdp, child) {
-      Map<String, dynamic> currentLesson = hdp.currentLesson;
-      print(
-          "!!!!!!!!!!!! BULLET SCAFILD LESSON: Name:${hdp.currentLesson["name"]} completed: ${hdp.currentLesson["completed"]}}");
       return Scaffold(
         appBar: const BulletsTopBar(),
         backgroundColor: Theme.of(context).colorScheme.background,
@@ -23,40 +20,38 @@ class BulletsScafold extends StatelessWidget {
             children: [
               BulletCard(
                 cardMainColor: Colors.blueAccent,
-                title: "Lesson: ${hdp.currentLesson["name"]}",
+                title: "${hdp.currentLesson["name"]}",
                 description: hdp.currentLesson["description"],
                 completed: hdp.currentLesson["completed"],
-                sections: hdp.currentLesson["sections"]["sections"],
                 source: hdp.currentLesson["source"],
                 setPage: setPage,
+                pageName: "lesson",
               ),
               BulletCard(
                 cardMainColor: Colors.orangeAccent,
-                title: "SOME TITLE",
+                title: "Test: ${hdp.currentLesson["name"]}",
                 description:
-                    "This should be a description about the function of clicking this",
-                completed: true,
-                sections: [],
+                    "Test for the topic of: ${hdp.currentLesson["name"]}",
+                completed: hdp.currentLesson["completed"],
                 setPage: setPage,
+                pageName: "quiz",
               ),
-              BulletCard(
-                cardMainColor: Colors.red,
-                title: "SOME TITLE",
-                description:
-                    "This should be a description about the function of clicking this",
-                completed: true,
-                sections: [],
-                setPage: setPage,
-              ),
-              BulletCard(
-                cardMainColor: Colors.green,
-                title: "SOME TITLE",
-                description:
-                    "This should be a description about the function of clicking this",
-                completed: true,
-                sections: [],
-                setPage: setPage,
-              ),
+              // BulletCard(
+              //   cardMainColor: Colors.red,
+              //   title: "SOME TITLE",
+              //   description:
+              //       "This should be a description about the function of clicking this",
+              //   completed: true,
+              //   setPage: setPage,
+              // ),
+              // BulletCard(
+              //   cardMainColor: Colors.green,
+              //   title: "SOME TITLE",
+              //   description:
+              //       "This should be a description about the function of clicking this",
+              //   completed: true,
+              //   setPage: setPage,
+              // ),
             ],
           ),
         ),

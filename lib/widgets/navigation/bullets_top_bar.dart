@@ -19,8 +19,6 @@ class BulletsTopBar extends StatelessWidget implements PreferredSizeWidget {
   void _updateDate(BuildContext context, HomeDataProvider provider,
       {required bool isForward}) async {
     DateTime newDate;
-    FireStoreDataService fds = FireStoreDataService();
-    String userId = provider.uid;
 
     final currentDate = provider.currentBulletDate;
 

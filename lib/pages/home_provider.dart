@@ -5,7 +5,6 @@ import 'package:health_app_mobile_client/services/fit_bit_data_service.dart';
 import 'package:health_app_mobile_client/services/google_fit_data_service.dart';
 import 'package:health_app_mobile_client/util/app_states.dart';
 import 'package:health_app_mobile_client/util/default_data_util.dart';
-import 'package:intl/intl.dart';
 
 class HomeDataProvider extends ChangeNotifier {
   final GoogleFitDataService googleFitHealthDataService =

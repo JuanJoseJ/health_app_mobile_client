@@ -17,8 +17,8 @@ class MyBottomBar extends StatelessWidget {
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.directions_run),
-          label: 'Statistics',
+          icon: Icon(Icons.menu_book),
+          label: 'Learn',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_circle),

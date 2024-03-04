@@ -87,7 +87,6 @@ class FireStoreDataService {
           orElse: () => <String, dynamic>{},
         );
         lessonToReturn['completed'] = true;
-        print("!!!!!!!!!!!!!! COMPLETE LESSON TO RETURN: $lessonToReturn");
       } else if (incompleteLessonForDate.isNotEmpty) {
         // Retrieve full lesson details for an incomplete lesson
         lessonToReturn = allLessons.firstWhere(
@@ -95,12 +94,11 @@ class FireStoreDataService {
           orElse: () => <String, dynamic>{},
         );
         lessonToReturn['completed'] = false;
-        print("!!!!!!!!!!!!!! INCOMPLETE LESSON TO RETURN: $lessonToReturn");
       } else {
         // If no lesson was assigned for the target date, assign a new one
         List<Map<String, dynamic>> candidateLessons = allLessons
-            .where((lesson) =>
-                (!userLessons.any((ul) => (ul['lessonId'] == lesson['id'] && ul["completed"] == true))))
+            .where((lesson) => (!userLessons.any((ul) =>
+                (ul['lessonId'] == lesson['id'] && ul["completed"] == true))))
             .toList();
 
         if (candidateLessons.isNotEmpty) {
@@ -114,9 +112,14 @@ class FireStoreDataService {
               newUserLesson); // Function to assign the new lesson to the user
           lessonToReturn = candidateLessons.first;
           lessonToReturn['completed'] = false;
-          print("!!!!!!!!!!!!!! NEW LESSON TO RETURN: $lessonToReturn");
         }
       }
+
+      List<Map<String, dynamic>> questions =
+          await fetchQuestionaryByLesson(lessonToReturn["id"]);
+
+      lessonToReturn["questions"] = questions;
+
     } catch (e) {
       print("Error getting today's lesson: $e");
       rethrow;

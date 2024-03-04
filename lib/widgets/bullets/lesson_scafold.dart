@@ -114,6 +114,7 @@ class _LessonScafoldState extends State<LessonScafold> {
                                     widget.setPage("bullets");
                                     Map<String, dynamic> newCurrentLesson =
                                         currentLesson;
+                                        // newCurrentLesson["completed"] = true;
                                     hdp.updateCurrentLesson(newCurrentLesson);
                                   },
                                 ),

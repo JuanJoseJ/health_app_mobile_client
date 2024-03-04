@@ -5,18 +5,18 @@ class BulletCard extends StatefulWidget {
   final String title;
   final String description;
   final bool completed;
-  final List<dynamic> sections;
   final String? source;
   final Function(String) setPage;
+  final String pageName;
   const BulletCard(
       {super.key,
       this.cardMainColor,
       required this.title,
       required this.description,
       required this.completed,
-      required this.sections,
       required this.setPage,
-      this.source});
+      this.source,
+      required this.pageName});
 
   @override
   State<BulletCard> createState() => _BulletCardState();
@@ -76,7 +76,7 @@ class _BulletCardState extends State<BulletCard> {
           Expanded(
             child: IconButton(
               icon: Icon(Icons.arrow_forward, color: cardMainColor),
-              onPressed: () => widget.setPage("lesson"),
+              onPressed: () => widget.setPage(widget.pageName),
               iconSize: 50.0,
             ),
           )
@@ -89,7 +89,7 @@ class _BulletCardState extends State<BulletCard> {
   Widget build(BuildContext context) {
     return Card(
       child: SizedBox(
-        height: MediaQuery.of(context).size.height / 8,
+        // height: MediaQuery.of(context).size.height / 8,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(

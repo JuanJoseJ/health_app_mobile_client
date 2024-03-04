@@ -3,6 +3,7 @@ import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/util/app_states.dart';
 import 'package:health_app_mobile_client/widgets/bullets/bullets_scafold.dart';
 import 'package:health_app_mobile_client/widgets/bullets/lesson_scafold.dart';
+import 'package:health_app_mobile_client/widgets/bullets/quiz_scaffold.dart';
 import 'package:provider/provider.dart';
 
 class BulletsDisplay extends StatefulWidget {
@@ -27,6 +28,8 @@ class _BulletsDisplayState extends State<BulletsDisplay> {
         return BulletsScafold(setPage: setPage);
       case "lesson":
         return LessonScafold(setPage: setPage);
+      case "quiz":
+        return QuizScaffold(setPage: setPage);
       default:
         return BulletsScafold(setPage: setPage);
     }
