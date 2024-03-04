@@ -55,6 +55,8 @@ class FireStoreDataService {
       {DateTime? date}) async {
     DateTime targetDate = date ?? DateTime.now();
     Map<String, dynamic> lessonToReturn = {};
+    print("TARGET DATE: $targetDate");
+    // print("INCOMPLETED LESSONS: $incompleteLessonForDate");
 
     try {
       List<Map<String, dynamic>> userLessons = await fetchUsersLessons(userId);
@@ -67,13 +69,15 @@ class FireStoreDataService {
             lessonDate.month == targetDate.month &&
             lessonDate.day == targetDate.day;
       }).toList();
+      print("COMPLETED LESSON IN SERVICE: $lessonsForTargetDate");
 
       // Find a completed lesson for the target date, if any
       var completedLessonForDate = lessonsForTargetDate.firstWhere(
         (ul) => ul['completed'],
         orElse: () => <String, dynamic>{},
       );
-
+      
+      
       // Find an incomplete lesson for the target date, if any
       var incompleteLessonForDate = lessonsForTargetDate.firstWhere(
         (ul) => !ul['completed'],
@@ -81,19 +85,20 @@ class FireStoreDataService {
       );
 
       if (completedLessonForDate.isNotEmpty) {
-        // Retrieve full lesson details for a completed lesson
         lessonToReturn = allLessons.firstWhere(
           (lesson) => lesson['id'] == completedLessonForDate['lessonId'],
           orElse: () => <String, dynamic>{},
         );
         lessonToReturn['completed'] = true;
-      } else if (incompleteLessonForDate.isNotEmpty) {
-        // Retrieve full lesson details for an incomplete lesson
+        // print("COMPLETED LESSON: $lessonToReturn");
+      } else if (incompleteLessonForDate.isNotEmpty &&
+          completedLessonForDate.isEmpty) {
         lessonToReturn = allLessons.firstWhere(
           (lesson) => lesson['id'] == incompleteLessonForDate['lessonId'],
           orElse: () => <String, dynamic>{},
         );
         lessonToReturn['completed'] = false;
+        // print("NON-COMPLETED LESSON: $lessonToReturn");
       } else {
         // If no lesson was assigned for the target date, assign a new one
         List<Map<String, dynamic>> candidateLessons = allLessons
@@ -112,6 +117,7 @@ class FireStoreDataService {
               newUserLesson); // Function to assign the new lesson to the user
           lessonToReturn = candidateLessons.first;
           lessonToReturn['completed'] = false;
+          // print("NEW ASSIGNED LESSON: $lessonToReturn");
         }
       }
 
@@ -119,10 +125,9 @@ class FireStoreDataService {
           await fetchQuestionaryByLesson(lessonToReturn["id"]);
 
       lessonToReturn["questions"] = questions;
-
     } catch (e) {
       print("Error getting today's lesson: $e");
-      rethrow;
+      Map<String, dynamic> lessonToReturn = {};
     }
 
     return lessonToReturn;
@@ -147,5 +152,20 @@ class FireStoreDataService {
       throw e;
     }));
     return questions;
+  }
+
+  Future<void> completeQuiz(String lessonId, String userId) async {
+    // Query the 'user_lesson' collection for documents that match the criteria
+    QuerySnapshot querySnapshot = await db
+        .collection('user_lesson')
+        .where('lessonId', isEqualTo: lessonId)
+        .where('userId', isEqualTo: userId)
+        .where('completed', isEqualTo: false)
+        .get();
+
+    // Iterate over the documents and delete each one
+    for (var doc in querySnapshot.docs) {
+      await db.collection('user_lesson').doc(doc.id).delete();
+    }
   }
 }

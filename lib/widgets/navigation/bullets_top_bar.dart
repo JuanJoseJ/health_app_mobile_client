@@ -31,13 +31,10 @@ class BulletsTopBar extends StatelessWidget implements PreferredSizeWidget {
       newDate = DateTime.now();
     }
 
-    // Fetch or assign a lesson for the new date
-    Map<String, dynamic> lessonForNewDate =
-        await provider.getTodayLesson(date: newDate);
-
     // Update the provider with the new date and lesson
     provider.updateCurrentBulletDate(newDate);
-    provider.updateCurrentLesson(lessonForNewDate);
+    // Fetch or assign a lesson for the new date
+    await provider.getTodayLesson();
   }
 
   Future<void> _selectDate(

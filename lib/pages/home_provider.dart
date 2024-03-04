@@ -222,18 +222,13 @@ class HomeDataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Map<String, dynamic>> getTodayLesson({DateTime? date}) async {
+  Future<Map<String, dynamic>> getTodayLesson() async {
     updateCurrentAppState(AppState.FETCHING_DATA);
-    late DateTime actualDate;
-    if (date == null) {
-      actualDate = DateTime(
-          DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    } else {
-      actualDate = date;
-    }
     try {
       Map<String, dynamic> newLesson =
-          await fireStoreDataService.getTodayLesson(_uid, date: actualDate);
+          await fireStoreDataService.getTodayLesson(_uid, date: _currentBulletDate);
+                print("CURRENT LESSON IN PROVIDER: ${newLesson}");
+
       updateCurrentLesson(newLesson);
       updateCurrentAppState(AppState.DATA_READY);
       return newLesson;
@@ -241,6 +236,13 @@ class HomeDataProvider extends ChangeNotifier {
       updateCurrentAppState(AppState.NO_DATA);
       print(e);
       return {};
+    }
+  }
+  Future<void> completeQuiz(String lessonId) async{
+    try {
+      await fireStoreDataService.completeQuiz(lessonId, uid);
+    } catch (e) {
+      print("Error while ending the quiz: $e");
     }
   }
 }

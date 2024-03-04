@@ -97,13 +97,15 @@ class _QuizScaffoldState extends State<QuizScaffold> {
                         int points = calculatePoints();
                         if (points >=
                             (currentLesson["questions"].length * 0.6)) {
+                              DateTime currentDate = DateTime(hdp.currentBulletDate.year, hdp.currentBulletDate.month, hdp.currentBulletDate.day);
                           Map<String, dynamic> newUserLesson = {
-                            "date": hdp.currentDate,
+                            "date": currentDate,
                             "userId": hdp.uid,
                             "lessonId": currentLesson["id"],
                             "completed": true,
                           };
                           hdp.fireStoreDataService.addUserLesson(newUserLesson);
+                          hdp.completeQuiz(currentLesson["id"]);
                           hdp.currentLesson["completed"] = true;
                           setState(() {
                             selectedAnswer = null;
