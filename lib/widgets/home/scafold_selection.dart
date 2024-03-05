@@ -40,7 +40,8 @@ class _DataScafoldState extends State<DataScafold> {
           case "week":
             return 7;
           case "month":
-            DateTime date = hdp.currentDate;
+            DateTime date = DateTime(hdp.currentDate.year,
+                hdp.currentDate.month, hdp.currentDate.day);
             DateTime firstDayNextMonth;
             if (date.month < 12) {
               firstDayNextMonth = DateTime(date.year, date.month + 1, 1);
@@ -49,13 +50,14 @@ class _DataScafoldState extends State<DataScafold> {
             }
             DateTime lastDayOfMonth =
                 firstDayNextMonth.subtract(Duration(days: 1));
+
             return lastDayOfMonth.day;
           default:
             return 3;
         }
       }
 
-      navigate(String chartId) {
+      navigate(String chartId) async {
         switch (chartId) {
           case 'Activity':
             chart = ActivityChart(
@@ -82,6 +84,16 @@ class _DataScafoldState extends State<DataScafold> {
             bottomWidget = const FoodListBottomWidget();
             title = "Food";
             break;
+          // case 'Add Food':
+          // // await hdp.fetchUserFood();
+          //   chart = hdp.currentTopBarSelect == 'day'
+          //       ? const FoodListChart()
+          //       : CaloriesByPeriodChart(
+          //           nPeriods: getNumberOfPeriods(),
+          //         );
+          //   bottomWidget = const FoodListBottomWidget();
+          //   title = "ADD FOOD";
+          //   break;
           case 'Stress':
             chart = hdp.currentTopBarSelect == 'day'
                 ? const StressChart()

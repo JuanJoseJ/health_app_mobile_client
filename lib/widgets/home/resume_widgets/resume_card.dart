@@ -49,8 +49,10 @@ class ResumeCard extends StatelessWidget {
                 ),
               ),
             ),
-            if (title == "Food")
-              IconButton(onPressed: () {}, icon: Icon(Icons.add)),
+            // if (title == "Food")
+            //   IconButton(onPressed: () {
+            //     notifyParent!("Add Food");
+            //   }, icon: Icon(Icons.add)),
           ],
         ),
         Expanded(

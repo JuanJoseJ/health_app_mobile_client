@@ -55,8 +55,6 @@ class FireStoreDataService {
       {DateTime? date}) async {
     DateTime targetDate = date ?? DateTime.now();
     Map<String, dynamic> lessonToReturn = {};
-    print("TARGET DATE: $targetDate");
-    // print("INCOMPLETED LESSONS: $incompleteLessonForDate");
 
     try {
       List<Map<String, dynamic>> userLessons = await fetchUsersLessons(userId);
@@ -69,7 +67,6 @@ class FireStoreDataService {
             lessonDate.month == targetDate.month &&
             lessonDate.day == targetDate.day;
       }).toList();
-      print("COMPLETED LESSON IN SERVICE: $lessonsForTargetDate");
 
       // Find a completed lesson for the target date, if any
       var completedLessonForDate = lessonsForTargetDate.firstWhere(
@@ -88,7 +85,6 @@ class FireStoreDataService {
           orElse: () => <String, dynamic>{},
         );
         lessonToReturn['completed'] = true;
-        // print("COMPLETED LESSON: $lessonToReturn");
       } else if (incompleteLessonForDate.isNotEmpty &&
           completedLessonForDate.isEmpty) {
         lessonToReturn = allLessons.firstWhere(
@@ -96,7 +92,6 @@ class FireStoreDataService {
           orElse: () => <String, dynamic>{},
         );
         lessonToReturn['completed'] = false;
-        // print("NON-COMPLETED LESSON: $lessonToReturn");
       } else {
         // If no lesson was assigned for the target date, assign a new one
         List<Map<String, dynamic>> candidateLessons = allLessons
@@ -115,7 +110,6 @@ class FireStoreDataService {
               newUserLesson); // Function to assign the new lesson to the user
           lessonToReturn = candidateLessons.first;
           lessonToReturn['completed'] = false;
-          // print("NEW ASSIGNED LESSON: $lessonToReturn");
         }
       }
 
@@ -218,7 +212,6 @@ class FireStoreDataService {
     final userFoodCol = db.collection("user_food");
     try {
       await userFoodCol.add(userFood);
-      print("User food added successfully.");
     } catch (e) {
       print("Error adding user food: $e");
       rethrow;

@@ -327,8 +327,6 @@ class FitBitDataService {
               ]
             };
 
-      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! REMOVE LATER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
       var decodedResponse =
           response is String ? json.decode(response) : response;
       // Process HRV data

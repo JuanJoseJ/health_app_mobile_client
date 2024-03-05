@@ -195,7 +195,7 @@ List<BarChartGroupData> genBarChartDataGroups(
     [List<Color>? barColors]) {
   List<BarChartGroupData> tempBarCharts = [];
   List<double> calList = List<double>.filled(nPeriods, 0);
-
+  
   int i = 0;
   for (DefaultDataPoint p in caloriesDataPoints) {
     if (p.dateFrom.isAfter(startDate.subtract(const Duration(seconds: 1))) &&

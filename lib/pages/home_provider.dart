@@ -70,7 +70,6 @@ class HomeDataProvider extends ChangeNotifier {
     List<DefaultDataPoint> fetchedData = await fitBitDataService
         .fetchFitBitSleepData(startDate, endDate: endDate);
     if (fetchedData.isEmpty & currentSleepDataPoints.isEmpty) {
-      updateCurrentAppState(AppState.NO_DATA);
     } else {
       updateSleepDataPoints(fetchedData);
       updateCurrentAppState(AppState.DATA_READY);
@@ -82,6 +81,8 @@ class HomeDataProvider extends ChangeNotifier {
       _currentNutritionDataPoints;
   void updateNutritionDataPoints(List<DefaultDataPoint> newDataPoints) {
     _currentNutritionDataPoints = newDataPoints;
+    print(
+        "CURRENT NUT DATA POINTS IN PROVIDER: ${_currentNutritionDataPoints.length}");
     notifyListeners();
   }
 
@@ -94,12 +95,8 @@ class HomeDataProvider extends ChangeNotifier {
     }
     List<DefaultDataPoint> fetchedData = await fitBitDataService
         .fetchFitBitNutritionData(fetchDate, endDate: endDate);
-    if (fetchedData.isEmpty & currentSleepDataPoints.isEmpty) {
-      // updateCurrentAppState(AppState.NO_DATA);
-    } else {
-      updateNutritionDataPoints(fetchedData);
-      updateCurrentAppState(AppState.DATA_READY);
-    }
+    updateNutritionDataPoints(fetchedData);
+    updateCurrentAppState(AppState.DATA_READY);
   }
 
   List<DefaultDataPoint> _currentHRVDataPoints = [];
@@ -227,13 +224,11 @@ class HomeDataProvider extends ChangeNotifier {
     try {
       Map<String, dynamic> newLesson = await fireStoreDataService
           .getTodayLesson(_uid, date: _currentBulletDate);
-      print("CURRENT LESSON IN PROVIDER: ${newLesson}");
 
       updateCurrentLesson(newLesson);
       updateCurrentAppState(AppState.DATA_READY);
       return newLesson;
     } catch (e) {
-      updateCurrentAppState(AppState.NO_DATA);
       print(e);
       return {};
     }
@@ -247,26 +242,25 @@ class HomeDataProvider extends ChangeNotifier {
     }
   }
 
-  Map<String, dynamic> _currentUsersFood = {};
-  Map<String, dynamic> get currentUsersFood => _currentUsersFood;
-  void updateCurrentUsersFood(Map<String, dynamic> newUsersFood) {
-    _currentUsersFood = newUsersFood;
-    notifyListeners();
-  }
+  // Map<String, dynamic> _currentUsersFood = {};
+  // Map<String, dynamic> get currentUsersFood => _currentUsersFood;
+  // void updateCurrentUsersFood(Map<String, dynamic> newUsersFood) {
+  //   _currentUsersFood = newUsersFood;
+  //   notifyListeners();
+  // }
 
-  Future<List<Map<String, dynamic>>> fetchUserFood(
-      {DateTime? startDate, DateTime? endDate}) async {
-    if (startDate != null && endDate == null) {
-      endDate =
-          DateTime(startDate.year, startDate.month, startDate.day, 23, 59, 59);
-    }
-    List<Map<String, dynamic>> usersFoods = await fireStoreDataService
-        .fetchUsersFood(uid, startDate: startDate, endDate: endDate);
-    return usersFoods;
-  }
+  // Future<List<Map<String, dynamic>>> fetchUserFood(
+  //     {DateTime? startDate, DateTime? endDate}) async {
+  //   if (startDate != null && endDate == null) {
+  //     endDate =
+  //         DateTime(startDate.year, startDate.month, startDate.day, 23, 59, 59);
+  //   }
+  //   List<Map<String, dynamic>> usersFoods = await fireStoreDataService
+  //       .fetchUsersFood(uid, startDate: startDate, endDate: endDate);
+  //   return usersFoods;
+  // }
 
-  Future<void> addUserFood(Map<String, dynamic> userFood) async {
-    await fireStoreDataService.addUserFood(userFood);
-  }
-  
+  // Future<void> addUserFood(Map<String, dynamic> userFood) async {
+  //   await fireStoreDataService.addUserFood(userFood);
+  // }
 }
