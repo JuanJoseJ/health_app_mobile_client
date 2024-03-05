@@ -76,8 +76,6 @@ class FireStoreDataService {
         (ul) => ul['completed'],
         orElse: () => <String, dynamic>{},
       );
-      
-      
       // Find an incomplete lesson for the target date, if any
       var incompleteLessonForDate = lessonsForTargetDate.firstWhere(
         (ul) => !ul['completed'],
@@ -127,6 +125,7 @@ class FireStoreDataService {
       lessonToReturn["questions"] = questions;
     } catch (e) {
       print("Error getting today's lesson: $e");
+      // ignore: unused_local_variable
       Map<String, dynamic> lessonToReturn = {};
     }
 
@@ -166,6 +165,63 @@ class FireStoreDataService {
     // Iterate over the documents and delete each one
     for (var doc in querySnapshot.docs) {
       await db.collection('user_lesson').doc(doc.id).delete();
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchUsersFood(String userId,
+      {DateTime? startDate, DateTime? endDate}) async {
+    List<Map<String, dynamic>> userFood = [];
+    final userFoodCol = db.collection("user_food");
+
+    // If only startDate is provided, set endDate to the end of startDate day
+    if (startDate != null && endDate == null) {
+      endDate =
+          DateTime(startDate.year, startDate.month, startDate.day, 23, 59, 59);
+    }
+
+    // Prepare the query with optional date range filtering
+    Query query = userFoodCol.where("userId", isEqualTo: userId);
+
+    // Apply date range filtering if dates are provided
+    if (startDate != null) {
+      query = query.where("date", isGreaterThanOrEqualTo: startDate);
+    }
+    if (endDate != null) {
+      // Adjust to include the end of the day for endDate, if not already adjusted
+      query = query.where("date", isLessThanOrEqualTo: endDate);
+    }
+
+    // Execute the query
+    await query.get().then((value) {
+      for (var doc in value.docs) {
+        var foodRegister = doc["food_register"] as List;
+        userFood.add({
+          "date": doc["date"],
+          "food_register": foodRegister.map((fr) {
+            return {
+              "amount": fr["amount"],
+              "group": fr["group"],
+              "name": fr["name"],
+              "unit": fr["unit"],
+            };
+          }).toList(),
+        });
+      }
+    }, onError: (e) {
+      throw e;
+    });
+
+    return userFood;
+  }
+
+  Future<void> addUserFood(Map<String, dynamic> userFood) async {
+    final userFoodCol = db.collection("user_food");
+    try {
+      await userFoodCol.add(userFood);
+      print("User food added successfully.");
+    } catch (e) {
+      print("Error adding user food: $e");
+      rethrow;
     }
   }
 }

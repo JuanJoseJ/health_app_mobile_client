@@ -225,9 +225,9 @@ class HomeDataProvider extends ChangeNotifier {
   Future<Map<String, dynamic>> getTodayLesson() async {
     updateCurrentAppState(AppState.FETCHING_DATA);
     try {
-      Map<String, dynamic> newLesson =
-          await fireStoreDataService.getTodayLesson(_uid, date: _currentBulletDate);
-                print("CURRENT LESSON IN PROVIDER: ${newLesson}");
+      Map<String, dynamic> newLesson = await fireStoreDataService
+          .getTodayLesson(_uid, date: _currentBulletDate);
+      print("CURRENT LESSON IN PROVIDER: ${newLesson}");
 
       updateCurrentLesson(newLesson);
       updateCurrentAppState(AppState.DATA_READY);
@@ -238,11 +238,35 @@ class HomeDataProvider extends ChangeNotifier {
       return {};
     }
   }
-  Future<void> completeQuiz(String lessonId) async{
+
+  Future<void> completeQuiz(String lessonId) async {
     try {
       await fireStoreDataService.completeQuiz(lessonId, uid);
     } catch (e) {
       print("Error while ending the quiz: $e");
     }
   }
+
+  Map<String, dynamic> _currentUsersFood = {};
+  Map<String, dynamic> get currentUsersFood => _currentUsersFood;
+  void updateCurrentUsersFood(Map<String, dynamic> newUsersFood) {
+    _currentUsersFood = newUsersFood;
+    notifyListeners();
+  }
+
+  Future<List<Map<String, dynamic>>> fetchUserFood(
+      {DateTime? startDate, DateTime? endDate}) async {
+    if (startDate != null && endDate == null) {
+      endDate =
+          DateTime(startDate.year, startDate.month, startDate.day, 23, 59, 59);
+    }
+    List<Map<String, dynamic>> usersFoods = await fireStoreDataService
+        .fetchUsersFood(uid, startDate: startDate, endDate: endDate);
+    return usersFoods;
+  }
+
+  Future<void> addUserFood(Map<String, dynamic> userFood) async {
+    await fireStoreDataService.addUserFood(userFood);
+  }
+  
 }
