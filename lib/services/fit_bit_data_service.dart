@@ -341,4 +341,66 @@ class FitBitDataService {
       rethrow;
     }
   }
+  // !!! I WANT TO REGISTER FOOD FROM THE APP, BUT I WONT WORK IN THAT FOR NOW AS IT IS NOT VERY IMPORTANT.
+  // Future<void> createFoodLog({
+  //   required String foodId, // or foodName
+  //   // 	Numerical value representing the meal type. Supported: 1=Breakfast | 2=Morning Snack | 3=Lunch | 4=Afternoon Snack | 5=Dinner | 7=Anytime
+  //   required String mealTypeId,
+  //   required String unitId,
+  //   required double amount,
+  //   required DateTime date,
+  //   bool favorite = false, // Optional, defaults to false
+  //   String? foodName, // Optional if foodId is provided
+  //   String? brandName, // Optional, used with foodName
+  //   int? calories, // Optional, used with foodName
+  //   // Add more optional parameters for additional nutritional information if needed
+  // }) async {
+  //   // Format the date parameter
+  //   String formattedDate = DateFormat("yyyy-MM-dd").format(date);
+
+  //   // Prepare the URI
+  //   String requestUri = 'https://api.fitbit.com/1/user/-/foods/log.json';
+
+  //   // Prepare the headers
+  //   Map<String, String> headers = {
+  //     'Authorization': 'Bearer $accessToken',
+  //     'Content-Type': 'application/json',
+  //     // Add more headers as required by the API
+  //   };
+
+  //   // Prepare the body. Ensure either foodId or foodName is provided.
+  //   Map<String, dynamic> body = {
+  //     if (foodId.isNotEmpty) 'foodId': foodId,
+  //     if (foodName != null && foodName.isNotEmpty) 'foodName': foodName,
+  //     'mealTypeId': mealTypeId,
+  //     'unitId': unitId,
+  //     'amount': amount.toString(),
+  //     'date': formattedDate,
+  //     'favorite': favorite.toString(),
+  //     if (brandName != null) 'brandName': brandName,
+  //     if (calories != null) 'calories': calories,
+  //     // Include additional nutritional information if necessary
+  //   };
+
+  //   try {
+  //     // Make the POST request
+  //     var response = await http.post(
+  //       Uri.parse(requestUri),
+  //       headers: headers,
+  //       body: json.encode(body),
+  //     );
+
+  //     // Check the response
+  //     if (response.statusCode == 201) {
+  //       // Success
+  //       print("Food log created successfully.");
+  //     } else {
+  //       // Handle errors
+  //       print("Failed to create food log: ${response.body}");
+  //     }
+  //   } catch (e) {
+  //     print("An error occurred while creating food log: $e");
+  //     rethrow;
+  //   }
+  // }
 }

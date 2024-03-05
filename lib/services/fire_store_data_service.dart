@@ -162,59 +162,60 @@ class FireStoreDataService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchUsersFood(String userId,
-      {DateTime? startDate, DateTime? endDate}) async {
-    List<Map<String, dynamic>> userFood = [];
-    final userFoodCol = db.collection("user_food");
+  // !!! I WANT TO REGISTER FOOD FROM THE APP, BUT I WONT WORK IN THAT FOR NOW AS IT IS NOT VERY IMPORTANT.
+  // Future<List<Map<String, dynamic>>> fetchUsersFood(String userId,
+  //     {DateTime? startDate, DateTime? endDate}) async {
+  //   List<Map<String, dynamic>> userFood = [];
+  //   final userFoodCol = db.collection("user_food");
 
-    // If only startDate is provided, set endDate to the end of startDate day
-    if (startDate != null && endDate == null) {
-      endDate =
-          DateTime(startDate.year, startDate.month, startDate.day, 23, 59, 59);
-    }
+  //   // If only startDate is provided, set endDate to the end of startDate day
+  //   if (startDate != null && endDate == null) {
+  //     endDate =
+  //         DateTime(startDate.year, startDate.month, startDate.day, 23, 59, 59);
+  //   }
 
-    // Prepare the query with optional date range filtering
-    Query query = userFoodCol.where("userId", isEqualTo: userId);
+  //   // Prepare the query with optional date range filtering
+  //   Query query = userFoodCol.where("userId", isEqualTo: userId);
 
-    // Apply date range filtering if dates are provided
-    if (startDate != null) {
-      query = query.where("date", isGreaterThanOrEqualTo: startDate);
-    }
-    if (endDate != null) {
-      // Adjust to include the end of the day for endDate, if not already adjusted
-      query = query.where("date", isLessThanOrEqualTo: endDate);
-    }
+  //   // Apply date range filtering if dates are provided
+  //   if (startDate != null) {
+  //     query = query.where("date", isGreaterThanOrEqualTo: startDate);
+  //   }
+  //   if (endDate != null) {
+  //     // Adjust to include the end of the day for endDate, if not already adjusted
+  //     query = query.where("date", isLessThanOrEqualTo: endDate);
+  //   }
 
-    // Execute the query
-    await query.get().then((value) {
-      for (var doc in value.docs) {
-        var foodRegister = doc["food_register"] as List;
-        userFood.add({
-          "date": doc["date"],
-          "food_register": foodRegister.map((fr) {
-            return {
-              "amount": fr["amount"],
-              "group": fr["group"],
-              "name": fr["name"],
-              "unit": fr["unit"],
-            };
-          }).toList(),
-        });
-      }
-    }, onError: (e) {
-      throw e;
-    });
+  //   // Execute the query
+  //   await query.get().then((value) {
+  //     for (var doc in value.docs) {
+  //       var foodRegister = doc["food_register"] as List;
+  //       userFood.add({
+  //         "date": doc["date"],
+  //         "food_register": foodRegister.map((fr) {
+  //           return {
+  //             "amount": fr["amount"],
+  //             "group": fr["group"],
+  //             "name": fr["name"],
+  //             "unit": fr["unit"],
+  //           };
+  //         }).toList(),
+  //       });
+  //     }
+  //   }, onError: (e) {
+  //     throw e;
+  //   });
 
-    return userFood;
-  }
+  //   return userFood;
+  // }
 
-  Future<void> addUserFood(Map<String, dynamic> userFood) async {
-    final userFoodCol = db.collection("user_food");
-    try {
-      await userFoodCol.add(userFood);
-    } catch (e) {
-      print("Error adding user food: $e");
-      rethrow;
-    }
-  }
+  // Future<void> addUserFood(Map<String, dynamic> userFood) async {
+  //   final userFoodCol = db.collection("user_food");
+  //   try {
+  //     await userFoodCol.add(userFood);
+  //   } catch (e) {
+  //     print("Error adding user food: $e");
+  //     rethrow;
+  //   }
+  // }
 }
