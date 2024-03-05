@@ -81,8 +81,6 @@ class HomeDataProvider extends ChangeNotifier {
       _currentNutritionDataPoints;
   void updateNutritionDataPoints(List<DefaultDataPoint> newDataPoints) {
     _currentNutritionDataPoints = newDataPoints;
-    print(
-        "CURRENT NUT DATA POINTS IN PROVIDER: ${_currentNutritionDataPoints.length}");
     notifyListeners();
   }
 

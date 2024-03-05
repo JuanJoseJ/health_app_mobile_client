@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/app.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:health_app_mobile_client/services/notifications_service.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -10,5 +11,6 @@ void main() async {
     name: "health_app_mobile_client",
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseApi().initNotifications();
   runApp(const MyApp());
 }
