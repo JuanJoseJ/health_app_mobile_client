@@ -16,37 +16,38 @@ class BulletsScafold extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.background,
         body: Padding(
           padding: EdgeInsets.all(8.0),
-          child: hdp.currentLesson.isNotEmpty
-              ? ListView(
-                  children: [
-                    BulletCard(
-                      cardMainColor: Colors.blueAccent,
-                      title: "${hdp.currentLesson["name"]}",
-                      description: hdp.currentLesson["description"],
-                      completed: hdp.currentLesson["completed"],
-                      source: hdp.currentLesson["source"],
-                      setPage: setPage,
-                      pageName: "lesson",
-                    ),
-                    BulletCard(
-                      cardMainColor: Colors.orangeAccent,
-                      title: "Test: ${hdp.currentLesson["name"]}",
-                      description:
-                          "Test for the topic of: ${hdp.currentLesson["name"]}",
-                      completed: hdp.currentLesson["completed"],
-                      setPage: setPage,
-                      pageName: "quiz",
-                    ),
-                  ],
-                )
-              : const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text('All the lessons have been completed...')
-                    ],
-                  ),
+          child: ListView(
+            children: <Widget>[
+              if (hdp.currentLesson.isNotEmpty)
+                BulletCard(
+                  cardMainColor: Colors.blueAccent,
+                  title: "${hdp.currentLesson["name"]}",
+                  description: hdp.currentLesson["description"],
+                  completed: hdp.currentLesson["completed"],
+                  source: hdp.currentLesson["source"],
+                  setPage: setPage,
+                  pageName: "lesson",
                 ),
+              if (hdp.currentLesson.isNotEmpty)
+                BulletCard(
+                  cardMainColor: Colors.orangeAccent,
+                  title: "Test: ${hdp.currentLesson["name"]}",
+                  description:
+                      "Test for the topic of: ${hdp.currentLesson["name"]}",
+                  completed: hdp.currentLesson["completed"],
+                  setPage: setPage,
+                  pageName: "quiz",
+                ),
+              BulletCard(
+                cardMainColor: Colors.deepPurple,
+                title: "Output Variables",
+                description:
+                    "",
+                setPage: setPage,
+                pageName: "outputs",
+              )
+            ],
+          ),
         ),
       );
     });

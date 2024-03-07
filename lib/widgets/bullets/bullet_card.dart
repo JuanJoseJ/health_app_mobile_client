@@ -4,7 +4,7 @@ class BulletCard extends StatefulWidget {
   final Color? cardMainColor;
   final String title;
   final String description;
-  final bool completed;
+  final bool? completed;
   final String? source;
   final Function(String) setPage;
   final String pageName;
@@ -13,7 +13,7 @@ class BulletCard extends StatefulWidget {
       this.cardMainColor,
       required this.title,
       required this.description,
-      required this.completed,
+      this.completed,
       required this.setPage,
       this.source,
       required this.pageName});
@@ -48,13 +48,14 @@ class _BulletCardState extends State<BulletCard> {
                 fontWeight: FontWeight.bold,
                 fontSize: Theme.of(context).textTheme.titleLarge?.fontSize),
           ),
-          Text(
-            description,
-            style: TextStyle(
-                // color: cardMainColor,
-                fontSize: Theme.of(context).textTheme.bodySmall?.fontSize),
-            textAlign: TextAlign.center,
-          ),
+          if (widget.completed != null)
+            Text(
+              description,
+              style: TextStyle(
+                  // color: cardMainColor,
+                  fontSize: Theme.of(context).textTheme.bodySmall?.fontSize),
+              textAlign: TextAlign.center,
+            ),
         ],
       ),
     );
@@ -62,17 +63,21 @@ class _BulletCardState extends State<BulletCard> {
 
   Widget rightBulletCard() {
     late IconData? checkIcon;
-    if (widget.completed) {
-      checkIcon = Icons.check_circle;
-    } else {
-      checkIcon = Icons.radio_button_unchecked;
+    if (widget.completed != null) {
+      if (widget.completed!) {
+        checkIcon = Icons.check_circle;
+      } else {
+        checkIcon = Icons.radio_button_unchecked;
+      }
     }
     return Expanded(
       child: Row(
         children: [
-          Expanded(
-            child: Icon(checkIcon, color: cardMainColor, size: 50.0),
-          ),
+          widget.completed != null
+              ? Expanded(
+                  child: Icon(checkIcon, color: cardMainColor, size: 50.0),
+                )
+              : const Spacer(),
           Expanded(
             child: IconButton(
               icon: Icon(Icons.arrow_forward, color: cardMainColor),

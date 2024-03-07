@@ -57,6 +57,7 @@ class _MainPageState extends State<MainPage> {
     await homeDataProvider.fetchNutritionDataPoints(startDate);
     await homeDataProvider.fetchHRVDataPoints(startDate, endDate: endDate);
     await homeDataProvider.getTodayLesson();
+    await homeDataProvider.fetchOutputVariables();
   }
 
   @override
@@ -66,7 +67,6 @@ class _MainPageState extends State<MainPage> {
         return homeDataProvider;
       },
       child: Scaffold(
-        appBar: const MyTopBar(),
         // body: HealthApp(),
         body: pageSelector(_currentIndex),
         // body: ExampleWidget(),

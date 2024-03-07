@@ -341,6 +341,197 @@ class FitBitDataService {
       rethrow;
     }
   }
+
+  Future<DefaultDataPoint> fetchFitBitBreathingRateData(DateTime date) async {
+    String start = DateFormat("yyyy-MM-dd").format(date);
+
+    // Determine the endpoint based on whether an endDate is provided
+    String hrvEndPoint = "https://api.fitbit.com/1/user/-/br/date/$start.json";
+
+    List<DefaultDataPoint> defaultDataPoints = [];
+
+    try {
+      var response = await _fetchData(hrvEndPoint);
+      /////////////////////////////////////////////////////////////////////
+      response = {
+        "br": [
+          {
+            "value": {"breathingRate": 17.8},
+            "dateTime": "2021-10-25"
+          }
+        ]
+      };
+
+      var decodedResponse =
+          response is String ? json.decode(response) : response;
+      // Process HRV data
+      if (decodedResponse['br'] != null) {
+        for (var brRecord in decodedResponse['br']) {
+          defaultDataPoints
+              .add(DefaultDataPoint.fromBreathingRateData(brRecord));
+        }
+      }
+      return defaultDataPoints.first;
+    } catch (e) {
+      print("An error occurred at fetch breathing rate: $e");
+      rethrow;
+    }
+  }
+
+  Future<DefaultDataPoint> fetchFitBitSkinTemperatureData(DateTime date) async {
+    String start = DateFormat("yyyy-MM-dd").format(date);
+
+    String hrvEndPoint =
+        "https://api.fitbit.com/1/user/-/temp/skin/date/$start.json";
+
+    List<DefaultDataPoint> defaultDataPoints = [];
+
+    try {
+      var response = await _fetchData(hrvEndPoint);
+
+      response = {
+        "tempSkin": [
+          {
+            "dateTime": "2019-12-10",
+            "value": {"nightlyRelative": 0.3},
+            "logType": "dedicated_temp_sensor"
+          }
+        ]
+      };
+
+      var decodedResponse =
+          response is String ? json.decode(response) : response;
+      if (decodedResponse['tempSkin'] != null) {
+        for (var tempSkin in decodedResponse['tempSkin']) {
+          defaultDataPoints
+              .add(DefaultDataPoint.fromSkinTemperatureData(tempSkin));
+        }
+      }
+      return defaultDataPoints.first;
+    } catch (e) {
+      print("An error occurred at fetch skin temperature: $e");
+      rethrow;
+    }
+  }
+
+  Future<DefaultDataPoint> fetchFitBitAVGSpO2Data(DateTime date) async {
+    String start = DateFormat("yyyy-MM-dd").format(date);
+
+    String hrvEndPoint =
+        "https://api.fitbit.com/1/user/-/spo2/date/$start.json";
+
+    List<DefaultDataPoint> defaultDataPoints = [];
+
+    try {
+      var response = await _fetchData(hrvEndPoint);
+
+      response = {
+        "dateTime": "2021-10-04",
+        "value": {"avg": 97.5, "min": 94.0, "max": 100.0}
+      };
+
+      var decodedResponse =
+          response is String ? json.decode(response) : response;
+      if (decodedResponse['value'] != null) {
+        defaultDataPoints
+            .add(DefaultDataPoint.fromAVGSpO2Data(decodedResponse));
+      }
+      return defaultDataPoints.first;
+    } catch (e) {
+      print("An error occurred at fetch SpO2 data: $e");
+      rethrow;
+    }
+  }
+
+  Future<DefaultDataPoint> fetchFitBitHeartRateAtRestData(DateTime date) async {
+    String start = DateFormat("yyyy-MM-dd").format(date);
+
+    String hrvEndPoint =
+        "https://api.fitbit.com/1/user/-/activities/heart/date/$start/1d.json";
+
+    List<DefaultDataPoint> defaultDataPoints = [];
+
+    try {
+      var response = await _fetchData(hrvEndPoint);
+
+      response = {
+        "activities-heart": [
+          {
+            "dateTime": "2019-05-08",
+            "value": {
+              "customHeartRateZones": [
+                {
+                  "caloriesOut": 1164.09312,
+                  "max": 90,
+                  "min": 30,
+                  "minutes": 718,
+                  "name": "Below"
+                },
+                {
+                  "caloriesOut": 203.65344,
+                  "max": 110,
+                  "min": 90,
+                  "minutes": 74,
+                  "name": "Custom Zone"
+                },
+                {
+                  "caloriesOut": 330.76224,
+                  "max": 220,
+                  "min": 110,
+                  "minutes": 42,
+                  "name": "Above"
+                }
+              ],
+              "heartRateZones": [
+                {
+                  "caloriesOut": 979.43616,
+                  "max": 86,
+                  "min": 30,
+                  "minutes": 626,
+                  "name": "Out of Range"
+                },
+                {
+                  "caloriesOut": 514.16208,
+                  "max": 121,
+                  "min": 86,
+                  "minutes": 185,
+                  "name": "Fat Burn"
+                },
+                {
+                  "caloriesOut": 197.92656,
+                  "max": 147,
+                  "min": 121,
+                  "minutes": 18,
+                  "name": "Cardio"
+                },
+                {
+                  "caloriesOut": 6.984,
+                  "max": 220,
+                  "min": 147,
+                  "minutes": 5,
+                  "name": "Peak"
+                }
+              ],
+              "restingHeartRate": 76
+            }
+          }
+        ]
+      };
+
+      var decodedResponse =
+          response is String ? json.decode(response) : response;
+      if (decodedResponse['activities-heart'] != null) {
+        for (var hr in decodedResponse['activities-heart']) {
+          defaultDataPoints.add(DefaultDataPoint.fromHeartRateData(hr));
+        }
+      }
+      return defaultDataPoints.first;
+    } catch (e) {
+      print("An error occurred at fetch skin temperature: $e");
+      rethrow;
+    }
+  }
+
   // !!! I WANT TO REGISTER FOOD FROM THE APP, BUT I WONT WORK IN THAT FOR NOW AS IT IS NOT VERY IMPORTANT.
   // Future<void> createFoodLog({
   //   required String foodId, // or foodName

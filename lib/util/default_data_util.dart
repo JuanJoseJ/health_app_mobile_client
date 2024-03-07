@@ -134,4 +134,73 @@ class DefaultDataPoint {
           .MILLISECOND, // Assuming RMSSD values are in milliseconds
     );
   }
+
+  factory DefaultDataPoint.fromBreathingRateData(Map<String, dynamic> brData) {
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+    DateTime date = dateFormat.parse(brData['dateTime']);
+
+    HealthDataType brType = HealthDataType.RESPIRATORY_RATE;
+
+    num brValue = brData['value']['breathingRate'] != null
+        ? brData['value']['breathingRate'].toDouble()
+        : 0.0;
+
+    return DefaultDataPoint(
+        dateFrom: date,
+        value: NumericHealthValue(brValue),
+        type: brType,
+        unit: HealthDataUnit.NO_UNIT);
+  }
+
+  factory DefaultDataPoint.fromSkinTemperatureData(
+      Map<String, dynamic> tsData) {
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+    DateTime date = dateFormat.parse(tsData['dateTime']);
+
+    HealthDataType brType = HealthDataType.BODY_TEMPERATURE;
+
+    num tsValue = tsData['value']['nightlyRelative'] != null
+        ? tsData['value']['nightlyRelative'].toDouble()
+        : 0.0;
+
+    return DefaultDataPoint(
+        dateFrom: date,
+        value: NumericHealthValue(tsValue),
+        type: brType,
+        unit: HealthDataUnit.DEGREE_CELSIUS);
+  }
+
+  factory DefaultDataPoint.fromAVGSpO2Data(Map<String, dynamic> spO2Data) {
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+    DateTime date = dateFormat.parse(spO2Data['dateTime']);
+
+    HealthDataType brType = HealthDataType.BLOOD_OXYGEN;
+
+    num spO2Value = spO2Data['value']['avg'] != null
+        ? spO2Data['value']['avg'].toDouble()
+        : 0.0;
+
+    return DefaultDataPoint(
+        dateFrom: date,
+        value: NumericHealthValue(spO2Value),
+        type: brType,
+        unit: HealthDataUnit.PERCENT);
+  }
+
+  factory DefaultDataPoint.fromHeartRateData(Map<String, dynamic> hrData) {
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+    DateTime date = dateFormat.parse(hrData['dateTime']);
+
+    HealthDataType hrType = HealthDataType.HEART_RATE;
+
+    num hrValue = hrData['value']['restingHeartRate'] != null
+        ? hrData['value']['restingHeartRate'].toDouble()
+        : 0.0;
+
+    return DefaultDataPoint(
+        dateFrom: date,
+        value: NumericHealthValue(hrValue),
+        type: hrType,
+        unit: HealthDataUnit.MILLISECOND);
+  }
 }

@@ -232,6 +232,39 @@ class HomeDataProvider extends ChangeNotifier {
     }
   }
 
+  Map<String, DefaultDataPoint> _currentOutputVariables = {};
+  Map<String, DefaultDataPoint> get currentOutputVariables => _currentOutputVariables;
+  void updateCurrentCurrentOutputVariables(Map<String, DefaultDataPoint> newOutputVariables) {
+    _currentOutputVariables = newOutputVariables;
+    notifyListeners();
+  }
+
+  Future<Map<String, DefaultDataPoint>> fetchOutputVariables() async {
+    updateCurrentAppState(AppState.FETCHING_DATA);
+    try {
+      DefaultDataPoint newBreathingRate = await fitBitDataService.fetchFitBitBreathingRateData(_currentBulletDate);
+      DefaultDataPoint newSkinTemperature = await fitBitDataService.fetchFitBitSkinTemperatureData(_currentBulletDate);
+      DefaultDataPoint newAVGSpO2= await fitBitDataService.fetchFitBitAVGSpO2Data(_currentBulletDate);
+      DefaultDataPoint newHeartRateAtRest = await fitBitDataService.fetchFitBitHeartRateAtRestData(_currentBulletDate);
+      DefaultDataPoint newHRV = [...await fitBitDataService.fetchFitBitHRVData(_currentBulletDate)].first;
+
+    Map<String, DefaultDataPoint> newCurrentOutputVariables = {
+      "Breathing Rate":newBreathingRate,
+      "Average Skin Temperature":newSkinTemperature,
+      "Average SpO2":newAVGSpO2,
+      "Heart Rate at Reast":newHeartRateAtRest,
+      "Heart Rate Variation":newHRV
+    };
+
+      updateCurrentCurrentOutputVariables(newCurrentOutputVariables);
+      updateCurrentAppState(AppState.DATA_READY);
+      return newCurrentOutputVariables;
+    } catch (e) {
+      print(e);
+      return {};
+    }
+  }
+
   Future<void> completeQuiz(String lessonId) async {
     try {
       await fireStoreDataService.completeQuiz(lessonId, uid);
