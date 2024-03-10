@@ -5,7 +5,6 @@ import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/services/fit_bit_data_service.dart';
 import 'package:health_app_mobile_client/widgets/bullets/bullets_display.dart';
 import 'package:health_app_mobile_client/widgets/home/home_display.dart';
-import 'package:health_app_mobile_client/widgets/navigation/top_bar.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/navigation/bottom_bar.dart';

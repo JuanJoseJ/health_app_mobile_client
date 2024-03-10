@@ -15,7 +15,9 @@ class _FoodListChartState extends State<FoodListChart> {
     List<Widget> foodCards = [];
     for (DefaultDataPoint point in foodDataPoints) {
       String name = point.name != null ? point.name! : " ";
-      foodCards.add(FoodCard(name: name, value: point.value.toString()));
+      foodCards.add(FoodCard(
+        point: point,
+      ));
     }
     return foodCards;
   }
@@ -49,12 +51,10 @@ class NoFoodWidget extends StatelessWidget {
 }
 
 class FoodCard extends StatelessWidget {
-  final String name;
-  final String value;
+  final DefaultDataPoint point;
   const FoodCard({
     super.key,
-    required this.name,
-    required this.value,
+    required this.point,
   });
 
   @override
@@ -76,12 +76,12 @@ class FoodCard extends StatelessWidget {
                       child: Padding(
                     padding: const EdgeInsets.fromLTRB(4, 0, 4, 0),
                     child: Text(
-                      "$name",
+                      "${point.name}",
                       overflow: TextOverflow.ellipsis,
                     ),
                   )),
                   Text(
-                    "${value}cal",
+                    "${point.value}${point.unitName}",
                   ),
                 ],
               )),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:health_app_mobile_client/util/default_data_util.dart';
 
 class FireStoreDataService {
   FirebaseFirestore db = FirebaseFirestore.instance;
@@ -162,60 +163,45 @@ class FireStoreDataService {
     }
   }
 
-  // !!! I WANT TO REGISTER FOOD FROM THE APP, BUT I WONT WORK IN THAT FOR NOW AS IT IS NOT VERY IMPORTANT.
-  // Future<List<Map<String, dynamic>>> fetchUsersFood(String userId,
-  //     {DateTime? startDate, DateTime? endDate}) async {
-  //   List<Map<String, dynamic>> userFood = [];
-  //   final userFoodCol = db.collection("user_food");
+  Future<List<DefaultDataPoint>> fetchUsersFood(
+      String userId, DateTime startDate,
+      {DateTime? endDate}) async {
+    List<DefaultDataPoint> userFood = [];
+    final userFoodCol = db.collection("user_food");
 
-  //   // If only startDate is provided, set endDate to the end of startDate day
-  //   if (startDate != null && endDate == null) {
-  //     endDate =
-  //         DateTime(startDate.year, startDate.month, startDate.day, 23, 59, 59);
-  //   }
+    Query query = userFoodCol.where("userId", isEqualTo: userId);
 
-  //   // Prepare the query with optional date range filtering
-  //   Query query = userFoodCol.where("userId", isEqualTo: userId);
+    await query.get().then((value) {
+      for (var doc in value.docs) {
+        var date = doc["date"] as Timestamp;
+        var foodRegister = doc["food_register"] as List;
+        print("START DATE AT SERVICE: $startDate");
+        print("END DATE AT SERVICE: $endDate");
 
-  //   // Apply date range filtering if dates are provided
-  //   if (startDate != null) {
-  //     query = query.where("date", isGreaterThanOrEqualTo: startDate);
-  //   }
-  //   if (endDate != null) {
-  //     // Adjust to include the end of the day for endDate, if not already adjusted
-  //     query = query.where("date", isLessThanOrEqualTo: endDate);
-  //   }
-
-  //   // Execute the query
-  //   await query.get().then((value) {
-  //     for (var doc in value.docs) {
-  //       var foodRegister = doc["food_register"] as List;
-  //       userFood.add({
-  //         "date": doc["date"],
-  //         "food_register": foodRegister.map((fr) {
-  //           return {
-  //             "amount": fr["amount"],
-  //             "group": fr["group"],
-  //             "name": fr["name"],
-  //             "unit": fr["unit"],
-  //           };
-  //         }).toList(),
-  //       });
-  //     }
-  //   }, onError: (e) {
-  //     throw e;
-  //   });
-
-  //   return userFood;
-  // }
-
-  // Future<void> addUserFood(Map<String, dynamic> userFood) async {
-  //   final userFoodCol = db.collection("user_food");
-  //   try {
-  //     await userFoodCol.add(userFood);
-  //   } catch (e) {
-  //     print("Error adding user food: $e");
-  //     rethrow;
-  //   }
-  // }
+        DateTime docDate = date.toDate();
+        print("DOC DATE AT SERVICE: $docDate");
+        if ((docDate.isAfter(startDate) ||
+                docDate.isAtSameMomentAs(startDate)) &&
+            (endDate == null ||
+                docDate.isBefore(endDate) ||
+                docDate.isAtSameMomentAs(endDate))) {
+          for (Map fr in foodRegister) {
+            print("FR IN SERVICE: $fr");
+            userFood.add(DefaultDataPoint.fromNutritionData({
+              "logDate": docDate.toString(),
+              "id": doc.id,
+              "amount": fr["amount"],
+              "group": fr["group"],
+              "name": fr["name"],
+              "unit": fr["unit"],
+            }));
+          }
+        }
+      }
+    }, onError: (e) {
+      throw e;
+    });
+    print("USER FOOF IN FS SERVICE: $userFood");
+    return userFood;
+  }
 }

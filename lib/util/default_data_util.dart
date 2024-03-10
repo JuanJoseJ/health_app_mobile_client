@@ -8,6 +8,7 @@ class DefaultDataPoint {
   HealthDataType type;
   HealthDataUnit unit;
   String? name;
+  String? unitName;
 
   // Constructor
   DefaultDataPoint({
@@ -17,6 +18,7 @@ class DefaultDataPoint {
     required this.type,
     required this.unit,
     this.name,
+    this.unitName,
   });
 
   Map<String, dynamic> toJson() {
@@ -94,16 +96,27 @@ class DefaultDataPoint {
 
     HealthDataType type = HealthDataType.DIETARY_ENERGY_CONSUMED;
 
-    // Determine the value; assume calories for food and volume for water
+    print("NUTRITION DATA IN UTIL: ${nutritionData['food_register']}");
     num value = nutritionData.containsKey('loggedFood')
         ? nutritionData['loggedFood']['calories'].toDouble()
-        : double.parse(nutritionData['value']);
+        : nutritionData.containsKey("group")
+            ? nutritionData["amount"]
+            : double.parse(nutritionData['value']);
 
-    HealthDataUnit unit = HealthDataUnit.KILOCALORIE;
+    HealthDataUnit unit = nutritionData.containsKey("group")
+        ? HealthDataUnit.NO_UNIT
+        : HealthDataUnit.KILOCALORIE;
 
     String? name = nutritionData.containsKey('loggedFood')
         ? nutritionData['loggedFood']['name']
         : null;
+
+    name = nutritionData.containsKey("group")
+        ? nutritionData["name"]
+        : name;
+
+    String? unitName = nutritionData.containsKey("group") ?
+    nutritionData["unit"] : null;
 
     return DefaultDataPoint(
       dateFrom: date,
@@ -111,6 +124,7 @@ class DefaultDataPoint {
       type: type,
       unit: unit,
       name: name,
+      unitName: unitName,
     );
   }
 

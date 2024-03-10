@@ -88,11 +88,15 @@ class HomeDataProvider extends ChangeNotifier {
       {DateTime? endDate}) async {
     updateCurrentAppState(AppState.FETCHING_DATA);
     DateTime fetchDate = currentDate;
+    List<DefaultDataPoint> fetchedData;
     if (endDate != null) {
       fetchDate = startDate;
+      fetchedData = await fitBitDataService.fetchFitBitNutritionData(fetchDate,
+          endDate: endDate);
+    } else {
+      fetchedData = await fireStoreDataService.fetchUsersFood(uid, startDate);
     }
-    List<DefaultDataPoint> fetchedData = await fitBitDataService
-        .fetchFitBitNutritionData(fetchDate, endDate: endDate);
+
     updateNutritionDataPoints(fetchedData);
     updateCurrentAppState(AppState.DATA_READY);
   }
@@ -233,8 +237,10 @@ class HomeDataProvider extends ChangeNotifier {
   }
 
   Map<String, DefaultDataPoint> _currentOutputVariables = {};
-  Map<String, DefaultDataPoint> get currentOutputVariables => _currentOutputVariables;
-  void updateCurrentCurrentOutputVariables(Map<String, DefaultDataPoint> newOutputVariables) {
+  Map<String, DefaultDataPoint> get currentOutputVariables =>
+      _currentOutputVariables;
+  void updateCurrentCurrentOutputVariables(
+      Map<String, DefaultDataPoint> newOutputVariables) {
     _currentOutputVariables = newOutputVariables;
     notifyListeners();
   }
@@ -242,19 +248,25 @@ class HomeDataProvider extends ChangeNotifier {
   Future<Map<String, DefaultDataPoint>> fetchOutputVariables() async {
     updateCurrentAppState(AppState.FETCHING_DATA);
     try {
-      DefaultDataPoint newBreathingRate = await fitBitDataService.fetchFitBitBreathingRateData(_currentBulletDate);
-      DefaultDataPoint newSkinTemperature = await fitBitDataService.fetchFitBitSkinTemperatureData(_currentBulletDate);
-      DefaultDataPoint newAVGSpO2= await fitBitDataService.fetchFitBitAVGSpO2Data(_currentBulletDate);
-      DefaultDataPoint newHeartRateAtRest = await fitBitDataService.fetchFitBitHeartRateAtRestData(_currentBulletDate);
-      DefaultDataPoint newHRV = [...await fitBitDataService.fetchFitBitHRVData(_currentBulletDate)].first;
+      DefaultDataPoint newBreathingRate = await fitBitDataService
+          .fetchFitBitBreathingRateData(_currentBulletDate);
+      DefaultDataPoint newSkinTemperature = await fitBitDataService
+          .fetchFitBitSkinTemperatureData(_currentBulletDate);
+      DefaultDataPoint newAVGSpO2 =
+          await fitBitDataService.fetchFitBitAVGSpO2Data(_currentBulletDate);
+      DefaultDataPoint newHeartRateAtRest = await fitBitDataService
+          .fetchFitBitHeartRateAtRestData(_currentBulletDate);
+      DefaultDataPoint newHRV = [
+        ...await fitBitDataService.fetchFitBitHRVData(_currentBulletDate)
+      ].first;
 
-    Map<String, DefaultDataPoint> newCurrentOutputVariables = {
-      "Breathing Rate":newBreathingRate,
-      "Average Skin Temperature":newSkinTemperature,
-      "Average SpO2":newAVGSpO2,
-      "Heart Rate at Reast":newHeartRateAtRest,
-      "Heart Rate Variation":newHRV
-    };
+      Map<String, DefaultDataPoint> newCurrentOutputVariables = {
+        "Breathing Rate": newBreathingRate,
+        "Average Skin Temperature": newSkinTemperature,
+        "Average SpO2": newAVGSpO2,
+        "Heart Rate at Reast": newHeartRateAtRest,
+        "Heart Rate Variation": newHRV
+      };
 
       updateCurrentCurrentOutputVariables(newCurrentOutputVariables);
       updateCurrentAppState(AppState.DATA_READY);
