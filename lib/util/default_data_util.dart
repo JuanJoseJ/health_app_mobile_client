@@ -9,6 +9,7 @@ class DefaultDataPoint {
   HealthDataUnit unit;
   String? name;
   String? unitName;
+  String? foodGroup;
 
   // Constructor
   DefaultDataPoint({
@@ -19,6 +20,7 @@ class DefaultDataPoint {
     required this.unit,
     this.name,
     this.unitName,
+    this.foodGroup,
   });
 
   Map<String, dynamic> toJson() {
@@ -110,12 +112,13 @@ class DefaultDataPoint {
         ? nutritionData['loggedFood']['name']
         : null;
 
-    name = nutritionData.containsKey("group")
-        ? nutritionData["name"]
-        : name;
+    name = nutritionData.containsKey("group") ? nutritionData["name"] : name;
 
-    String? unitName = nutritionData.containsKey("group") ?
-    nutritionData["unit"] : null;
+    String? unitName =
+        nutritionData.containsKey("group") ? nutritionData["unit"] : null;
+
+    String? foodGroup =
+        nutritionData.containsKey("group") ? nutritionData["group"] : null;
 
     return DefaultDataPoint(
       dateFrom: date,
@@ -124,6 +127,7 @@ class DefaultDataPoint {
       unit: unit,
       name: name,
       unitName: unitName,
+      foodGroup: foodGroup,
     );
   }
 

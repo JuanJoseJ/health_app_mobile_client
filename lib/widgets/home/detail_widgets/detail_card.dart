@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:health_app_mobile_client/pages/home_provider.dart';
+import 'package:provider/provider.dart';
 
 class DetailCard extends StatelessWidget {
   final String title;
@@ -57,9 +59,12 @@ class DetailCard extends StatelessWidget {
           child: Card(
             child: Column(
               children: [
-                // topCardTitle(context),
-                // dateSubTitle(context),
-                FoodGroupDropdown(),
+                title != "Food"
+                    ? Column(children: [
+                        topCardTitle(context),
+                        dateSubTitle(context)
+                      ])
+                    : FoodGroupDropdown(),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(8, 0, 16, 0),
@@ -101,33 +106,38 @@ class _FoodGroupDropdownState extends State<FoodGroupDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-            child: Padding(
-          padding: const EdgeInsets.fromLTRB(8, 0, 16, 0),
-          child: Row(
-            children: [
-              Text('Group: '),
-              DropdownButton<String>(
-                value: selectedValue,
-                hint: Text('Select group'),
-                onChanged: (value) {
-                  setState(() {
-                    selectedValue = value;
-                  });
-                },
-                items: foodGroups.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
-        ))
-      ],
-    );
+    return Consumer<HomeDataProvider>(builder: (context, hdp, child) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Expanded(
+              child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+            child: Row(
+              children: [
+                Spacer(),
+                DropdownButton<String>(
+                  value: selectedValue,
+                  hint: Text('Select group'),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedValue = value;
+                    });
+                    hdp.updateFoodFilter(selectedValue);
+                  },
+                  items:
+                      foodGroups.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ))
+        ],
+      );
+    });
   }
 }

@@ -5,19 +5,21 @@ import 'package:provider/provider.dart';
 class DetailTopBar extends StatelessWidget implements PreferredSizeWidget {
   final dynamic Function(String)? notifyParent;
   final String chartId;
-  const DetailTopBar({Key? key, required this.notifyParent, required this.chartId});
+  const DetailTopBar(
+      {Key? key, required this.notifyParent, required this.chartId});
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
+    return Consumer<HomeDataProvider>(builder: (context, hdp, child) {
       return AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         elevation: 1,
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
+            hdp.updateFoodFilter("");
             notifyParent!(chartId);
           },
           icon: Icon(Icons.arrow_back, color: Colors.black),

@@ -175,15 +175,10 @@ class FireStoreDataService {
       for (var doc in value.docs) {
         var date = doc["date"] as Timestamp;
         var foodRegister = doc["food_register"] as List;
-        print("START DATE AT SERVICE: $startDate");
-        print("END DATE AT SERVICE: $endDate");
-
         DateTime docDate = date.toDate();
-        print("DOC DATE AT SERVICE: $docDate");
         if (docDate.isAfter(startDate) &&
             (endDate == null || docDate.isBefore(endDate))) {
           for (Map fr in foodRegister) {
-            print("FR IN SERVICE: $fr");
             userFood.add(DefaultDataPoint.fromNutritionData({
               "logDate": docDate.toString(),
               "id": doc.id,

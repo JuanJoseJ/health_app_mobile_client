@@ -284,4 +284,11 @@ class HomeDataProvider extends ChangeNotifier {
       print("Error while ending the quiz: $e");
     }
   }
+
+  String _foodFilter = "";
+  String get foodFilter => _foodFilter;
+  void updateFoodFilter(String? newFoodFilter) {
+    newFoodFilter != null ? _foodFilter = newFoodFilter : _foodFilter = "";
+    notifyListeners();
+  }
 }

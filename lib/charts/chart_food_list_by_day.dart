@@ -14,6 +14,7 @@ class _FoodListChartState extends State<FoodListChart> {
   List<Widget> getFoodCards(List<DefaultDataPoint> foodDataPoints) {
     List<Widget> foodCards = [];
     for (DefaultDataPoint point in foodDataPoints) {
+      // ignore: unused_local_variable
       String name = point.name != null ? point.name! : " ";
       foodCards.add(FoodCard(
         point: point,
@@ -24,11 +25,14 @@ class _FoodListChartState extends State<FoodListChart> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeDataProvider>(builder: (context, hDataProvider, child) {
+    return Consumer<HomeDataProvider>(builder: (context, hdp, child) {
+      List<DefaultDataPoint> filteredFoods = hdp.currentNutritionDataPoints
+          .where((element) => (element.foodGroup == hdp.foodFilter) || hdp.foodFilter == "")
+          .toList();
       return ListView(
-        children: hDataProvider.currentNutritionDataPoints.isEmpty
+        children: hdp.currentNutritionDataPoints.isEmpty
             ? [NoFoodWidget()]
-            : getFoodCards(hDataProvider.currentNutritionDataPoints),
+            : getFoodCards(filteredFoods),
       );
     });
   }
