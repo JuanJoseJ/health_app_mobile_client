@@ -180,11 +180,8 @@ class FireStoreDataService {
 
         DateTime docDate = date.toDate();
         print("DOC DATE AT SERVICE: $docDate");
-        if ((docDate.isAfter(startDate) ||
-                docDate.isAtSameMomentAs(startDate)) &&
-            (endDate == null ||
-                docDate.isBefore(endDate) ||
-                docDate.isAtSameMomentAs(endDate))) {
+        if (docDate.isAfter(startDate) &&
+            (endDate == null || docDate.isBefore(endDate))) {
           for (Map fr in foodRegister) {
             print("FR IN SERVICE: $fr");
             userFood.add(DefaultDataPoint.fromNutritionData({
@@ -201,7 +198,6 @@ class FireStoreDataService {
     }, onError: (e) {
       throw e;
     });
-    print("USER FOOF IN FS SERVICE: $userFood");
     return userFood;
   }
 }

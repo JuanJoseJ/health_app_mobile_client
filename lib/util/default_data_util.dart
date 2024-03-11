@@ -96,7 +96,6 @@ class DefaultDataPoint {
 
     HealthDataType type = HealthDataType.DIETARY_ENERGY_CONSUMED;
 
-    print("NUTRITION DATA IN UTIL: ${nutritionData['food_register']}");
     num value = nutritionData.containsKey('loggedFood')
         ? nutritionData['loggedFood']['calories'].toDouble()
         : nutritionData.containsKey("group")

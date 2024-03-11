@@ -42,9 +42,7 @@ class _MainPageState extends State<MainPage> {
     DateTime endDate = DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day + 1)
         .subtract(const Duration(seconds: 1));
-    DateTime startDate = endDate
-        .subtract(const Duration(days: 30))
-        .add(const Duration(seconds: 1));
+    DateTime startDate = DateTime(endDate.year, endDate.month, 1);
     await homeDataProvider.fetchActivityDataPoints(startDate, endDate);
 
     //FETCH FOR FITBIT
@@ -53,7 +51,8 @@ class _MainPageState extends State<MainPage> {
     await fitBitDataService.initLinkListener(verifier);
     homeDataProvider.updatefitBitDataService(fitBitDataService);
     await homeDataProvider.fetchSleepDataPoints(startDate, endDate);
-    await homeDataProvider.fetchNutritionDataPoints(startDate);
+    await homeDataProvider.fetchNutritionDataPoints(DateTime(
+        DateTime.now().year, DateTime.now().month, DateTime.now().day));
     await homeDataProvider.fetchHRVDataPoints(startDate, endDate: endDate);
     await homeDataProvider.getTodayLesson();
     await homeDataProvider.fetchOutputVariables();
