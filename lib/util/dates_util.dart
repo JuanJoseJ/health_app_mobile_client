@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:health_app_mobile_client/util/default_data_util.dart';
+import 'package:intl/intl.dart';
 
 bool isSameDate(DateTime date1, DateTime date2) {
   return date1.year == date2.year &&
@@ -50,4 +52,20 @@ String formatDuration(double totalMinutes) {
   double minutes = totalMinutes % 60; // Use modulo to get the remaining minutes
 
   return "${hours}h ${minutes.toInt()}min";
+}
+
+Timestamp parseCustomDateString(String dateString) {
+  // Adjust the pattern to match your date string format as closely as possible
+  // Assuming "EEEE dd, yyyy" is the pattern that matches "Tuesday 12, 2024"
+  // Note: This example might need adjustments based on the specifics of your date format
+  DateFormat format = DateFormat("EEEE dd, yyyy");
+  
+  try {
+    // Parsing the date string without the time part (" at 0")
+    DateTime dateTime = format.parseStrict(dateString.split(' at ')[0]);
+    return Timestamp.fromDate(dateTime);
+  } on FormatException catch (e) {
+    print("Error parsing date string: $e");
+    throw e; // Re-throw or handle as needed
+  }
 }

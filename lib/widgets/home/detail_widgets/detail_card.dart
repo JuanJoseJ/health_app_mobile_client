@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
+import 'package:health_app_mobile_client/widgets/home/detail_widgets/add_food_form.dart';
 import 'package:provider/provider.dart';
 
 class DetailCard extends StatelessWidget {
   final String title;
   final VoidCallback changeDate;
   final Widget chart;
-  final Widget bottomWidget;
   final String date;
   const DetailCard({
     super.key,
     required this.title,
     required this.changeDate,
     required this.chart,
-    required this.bottomWidget,
     required this.date,
   });
 
@@ -71,11 +70,20 @@ class DetailCard extends StatelessWidget {
                     child: chart,
                   ),
                 ),
-                bottomWidget,
               ],
             ),
           ),
         ),
+        title == "Food"
+            ? Expanded(
+              flex: 2,
+                child: Card(
+                  child: FoodFormCard(
+                    date: date,
+                  ),
+                ),
+              )
+            : Spacer(),
       ],
     );
   }

@@ -47,17 +47,16 @@ class DetailScaffold extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: <Widget>[
-              Flexible(
-                flex: 2, // This makes the DetailCard take 1/3 of the space
+              Expanded(
+                // flex: 3, // This makes the DetailCard take 1/3 of the space
                 child: DetailCard(
                   changeDate: () {},
                   title: title,
                   chart: chart,
-                  bottomWidget: bottomWidget,
                   date: dateText,
                 ),
               ),
-              const Spacer(flex: 1),
+              // const Spacer(),
             ],
           ),
         ),

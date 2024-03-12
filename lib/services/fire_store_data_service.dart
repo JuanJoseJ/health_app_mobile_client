@@ -195,4 +195,24 @@ class FireStoreDataService {
     });
     return userFood;
   }
+
+  Future<void> addFoodRecord(Map<String, dynamic> formData) async {
+    final CollectionReference foodRecords = db.collection('user_food');
+
+    try {
+      await foodRecords.add({
+        'date': formData['date'],
+        "food_register": {
+          'group': formData['group'],
+          'name': formData['name'],
+          'amount': formData['amount'],
+          'units': formData['units'],
+        }
+      });
+      print("Food record added successfully.");
+    } catch (e) {
+      print("Error adding food record: $e");
+      rethrow;
+    }
+  }
 }

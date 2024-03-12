@@ -84,6 +84,10 @@ class HomeDataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addFoodRecord(Map<String, dynamic> formData){
+    fireStoreDataService.addFoodRecord(formData);
+  }
+
   Future<void> fetchNutritionDataPoints(DateTime startDate,
       {DateTime? endDate}) async {
     updateCurrentAppState(AppState.FETCHING_DATA);
@@ -239,7 +243,7 @@ class HomeDataProvider extends ChangeNotifier {
   Map<String, DefaultDataPoint> _currentOutputVariables = {};
   Map<String, DefaultDataPoint> get currentOutputVariables =>
       _currentOutputVariables;
-  void updateCurrentCurrentOutputVariables(
+  void updateCurrentOutputVariables(
       Map<String, DefaultDataPoint> newOutputVariables) {
     _currentOutputVariables = newOutputVariables;
     notifyListeners();
@@ -268,7 +272,7 @@ class HomeDataProvider extends ChangeNotifier {
         "Heart Rate Variation": newHRV
       };
 
-      updateCurrentCurrentOutputVariables(newCurrentOutputVariables);
+      updateCurrentOutputVariables(newCurrentOutputVariables);
       updateCurrentAppState(AppState.DATA_READY);
       return newCurrentOutputVariables;
     } catch (e) {
