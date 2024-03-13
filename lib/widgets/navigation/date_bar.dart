@@ -33,13 +33,13 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
     return newString;
   }
 
-  void _updateDate(BuildContext context, HomeDataProvider provider,
+  void _updateDate(BuildContext context, HomeDataProvider hdp,
       {required bool isForward}) {
     DateTime newDate;
     DateTime startDate;
     DateTime endDate;
-    final currentDate = provider.currentDate;
-    final topBarSelect = provider.currentTopBarSelect;
+    final currentDate = hdp.currentDate;
+    final topBarSelect = hdp.currentTopBarSelect;
     final today = DateTime(
             DateTime.now().year, DateTime.now().month, DateTime.now().day + 1)
         .subtract(const Duration(seconds: 1));
@@ -59,20 +59,19 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
               .add(const Duration(hours: 24))
               .subtract(const Duration(seconds: 1));
           //Fetch data if not present for the days
-          if (newDate.isBefore(provider.currentMinDate) ||
-              newDate.isAfter(provider.currentMaxDate)) {
-            provider.fetchActivityDataPoints(
+          if (newDate.isBefore(hdp.currentMinDate) ||
+              newDate.isAfter(hdp.currentMaxDate)) {
+            hdp.fetchActivityDataPoints(
                 startDate.subtract(const Duration(days: 15)),
                 endDate.add(const Duration(days: 15)));
-            provider.fetchSleepDataPoints(
+            hdp.fetchSleepDataPoints(
                 startDate.subtract(const Duration(days: 15)),
                 endDate.add(const Duration(days: 15)));
-            provider.fetchHRVDataPoints(
-                startDate.subtract(const Duration(days: 15)),
+            hdp.fetchHRVDataPoints(startDate.subtract(const Duration(days: 15)),
                 endDate: endDate.add(const Duration(days: 15)));
           }
-          provider.updateCurrentDate(newDate);
-          provider.fetchNutritionDataPoints(startDate);
+          hdp.updateCurrentDate(newDate);
+          hdp.fetchNutritionDataPoints(newDate);
         } else {
           return;
         }
@@ -96,13 +95,13 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
                 .add(const Duration(days: 7))
                 .subtract(const Duration(seconds: 1));
           }
-          provider.fetchActivityDataPoints(startDate, endDate);
-          provider.fetchSleepDataPoints(startDate, endDate);
-          provider.fetchNutritionDataPoints(startDate, endDate: endDate);
-          provider.fetchHRVDataPoints(startDate,  endDate: endDate);
-          provider.updateCurrentMinDate(startDate);
-          provider.updateCurrentMaxDate(endDate);
-          provider.updateCurrentDate(startDate);
+          hdp.fetchActivityDataPoints(startDate, endDate);
+          hdp.fetchSleepDataPoints(startDate, endDate);
+          hdp.fetchNutritionDataPoints(startDate, endDate: endDate);
+          hdp.fetchHRVDataPoints(startDate, endDate: endDate);
+          hdp.updateCurrentMinDate(startDate);
+          hdp.updateCurrentMaxDate(endDate);
+          hdp.updateCurrentDate(startDate);
         } else {
           return;
         }
@@ -119,13 +118,13 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
           startDate = DateTime(newDate.year, newDate.month, 1);
           endDate = DateTime(newDate.year, newDate.month + 1, 1)
               .subtract(const Duration(seconds: 1));
-          provider.fetchActivityDataPoints(startDate, endDate);
-          provider.fetchSleepDataPoints(startDate, endDate);
-          provider.fetchNutritionDataPoints(startDate, endDate: endDate);
-          provider.fetchHRVDataPoints(startDate,  endDate: endDate);
-          provider.updateCurrentMinDate(startDate);
-          provider.updateCurrentMaxDate(endDate);
-          provider.updateCurrentDate(startDate);
+          hdp.fetchActivityDataPoints(startDate, endDate);
+          hdp.fetchSleepDataPoints(startDate, endDate);
+          hdp.fetchNutritionDataPoints(startDate, endDate: endDate);
+          hdp.fetchHRVDataPoints(startDate, endDate: endDate);
+          hdp.updateCurrentMinDate(startDate);
+          hdp.updateCurrentMaxDate(endDate);
+          hdp.updateCurrentDate(startDate);
           break;
         } else {
           return;
@@ -135,28 +134,27 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
     }
   }
 
-  Future<void> _selectDate(
-      BuildContext context, HomeDataProvider provider) async {
+  Future<void> _selectDate(BuildContext context, HomeDataProvider hdp) async {
     DateTime now = DateTime.now();
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: provider.currentDate,
+      initialDate: hdp.currentDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(now.year, now.month, now.day),
     );
     late DateTime startDate;
     late DateTime endDate;
-    DateTime currentDate = provider.currentDate;
+    DateTime currentDate = hdp.currentDate;
 
     if (picked != null && picked != currentDate) {
-      provider.updateCurrentDate(picked);
+      hdp.updateCurrentDate(picked);
       if (picked.isBefore(currentDate) || picked.isAfter(currentDate)) {
-        switch (provider.currentTopBarSelect) {
+        switch (hdp.currentTopBarSelect) {
           case 'day':
             startDate = picked.subtract(const Duration(days: 15));
             endDate = picked.add(const Duration(days: 15));
-            await provider.fetchNutritionDataPoints(startDate);
-            provider.fetchHRVDataPoints(startDate, endDate: endDate);
+            await hdp.fetchNutritionDataPoints(currentDate);
+            hdp.fetchHRVDataPoints(startDate, endDate: endDate);
             break;
           case 'week':
             startDate = DateTime(picked.year, picked.month, picked.day)
@@ -164,27 +162,27 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
             endDate = startDate
                 .add(const Duration(days: 7))
                 .subtract(const Duration(seconds: 1));
-            await provider.fetchNutritionDataPoints(startDate, endDate: endDate);
-            provider.fetchHRVDataPoints(startDate,  endDate: endDate);
+            await hdp.fetchNutritionDataPoints(startDate, endDate: endDate);
+            hdp.fetchHRVDataPoints(startDate, endDate: endDate);
             break;
           case 'month':
             startDate = DateTime(picked.year, picked.month, 1);
             endDate = DateTime(picked.year, picked.month + 1, 1)
                 .subtract(const Duration(seconds: 1));
-            await provider.fetchNutritionDataPoints(startDate, endDate: endDate);
-            provider.fetchHRVDataPoints(startDate,  endDate: endDate);
+            await hdp.fetchNutritionDataPoints(startDate, endDate: endDate);
+            hdp.fetchHRVDataPoints(startDate, endDate: endDate);
             break;
           default:
             startDate = picked.subtract(const Duration(days: 15));
             endDate = picked.add(const Duration(days: 15));
-            await provider.fetchNutritionDataPoints(startDate, endDate: endDate);
-            provider.fetchHRVDataPoints(startDate,  endDate: endDate);
+            await hdp.fetchNutritionDataPoints(startDate, endDate: endDate);
+            hdp.fetchHRVDataPoints(startDate, endDate: endDate);
             break;
         }
-        provider.updateCurrentMinDate(startDate);
-        provider.updateCurrentMaxDate(endDate);
-        provider.fetchActivityDataPoints(startDate, endDate);
-        provider.fetchSleepDataPoints(startDate, endDate);
+        hdp.updateCurrentMinDate(startDate);
+        hdp.updateCurrentMaxDate(endDate);
+        hdp.fetchActivityDataPoints(startDate, endDate);
+        hdp.fetchSleepDataPoints(startDate, endDate);
       }
     }
   }
@@ -251,12 +249,12 @@ class MyDropdownPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(
-      builder: (context, homeDataProvider, child) {
+      builder: (context, hdp, child) {
         return DropdownButton<String>(
-          value: homeDataProvider.currentTopBarSelect,
+          value: hdp.currentTopBarSelect,
           icon: Icon(Icons.arrow_drop_down),
           onChanged: (String? newValue) {
-            homeDataProvider.updateCurrentTopBarSelect(newValue ?? '');
+            hdp.updateCurrentTopBarSelect(newValue ?? '');
           },
           items: <String>['day', 'week', 'month']
               .map<DropdownMenuItem<String>>((String value) {

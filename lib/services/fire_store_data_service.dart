@@ -167,18 +167,26 @@ class FireStoreDataService {
       String userId, DateTime startDate,
       {DateTime? endDate}) async {
     List<DefaultDataPoint> userFood = [];
+    DateTime thisStartDate =
+        DateTime(startDate.year, startDate.month, startDate.day);
     final userFoodCol = db.collection("user_food");
 
     Query query = userFoodCol.where("userId", isEqualTo: userId);
+    print("START DATE IN SERVICE: $thisStartDate");
 
     await query.get().then((value) {
       for (var doc in value.docs) {
         var date = doc["date"] as Timestamp;
         var foodRegister = doc["food_register"] as List;
         DateTime docDate = date.toDate();
-        if (docDate.isAfter(startDate) &&
-            (endDate == null || docDate.isBefore(endDate))) {
+        print("DOC DATE IN SERVICE: $docDate");
+        if ((docDate.isAfter(thisStartDate) ||
+                docDate.isAtSameMomentAs(thisStartDate)) &&
+            (endDate == null ||
+                docDate.isBefore(endDate) ||
+                docDate.isAtSameMomentAs(endDate))) {
           for (Map fr in foodRegister) {
+            print("FR IN SERVICE: $fr");
             userFood.add(DefaultDataPoint.fromNutritionData({
               "logDate": docDate.toString(),
               "id": doc.id,
@@ -196,18 +204,22 @@ class FireStoreDataService {
     return userFood;
   }
 
-  Future<void> addFoodRecord(Map<String, dynamic> formData) async {
+  Future<void> addFoodRecord(
+      Map<String, dynamic> formData, String userId) async {
     final CollectionReference foodRecords = db.collection('user_food');
 
     try {
       await foodRecords.add({
         'date': formData['date'],
-        "food_register": {
-          'group': formData['group'],
-          'name': formData['name'],
-          'amount': formData['amount'],
-          'units': formData['units'],
-        }
+        "food_register": [
+          {
+            'group': formData['group'],
+            'name': formData['name'],
+            'amount': formData['amount'],
+            'unit': formData['units'],
+          }
+        ],
+        'userId': userId,
       });
       print("Food record added successfully.");
     } catch (e) {

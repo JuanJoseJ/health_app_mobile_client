@@ -58,7 +58,7 @@ Timestamp parseCustomDateString(String dateString) {
   // Adjust the pattern to match your date string format as closely as possible
   // Assuming "EEEE dd, yyyy" is the pattern that matches "Tuesday 12, 2024"
   // Note: This example might need adjustments based on the specifics of your date format
-  DateFormat format = DateFormat("EEEE dd, yyyy");
+  DateFormat format = DateFormat("MMMM dd, yyyy");
   
   try {
     // Parsing the date string without the time part (" at 0")

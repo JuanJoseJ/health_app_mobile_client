@@ -84,8 +84,8 @@ class HomeDataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addFoodRecord(Map<String, dynamic> formData){
-    fireStoreDataService.addFoodRecord(formData);
+  void addFoodRecord(Map<String, dynamic> formData) {
+    fireStoreDataService.addFoodRecord(formData, uid);
   }
 
   Future<void> fetchNutritionDataPoints(DateTime startDate,
@@ -134,6 +134,7 @@ class HomeDataProvider extends ChangeNotifier {
       .subtract(const Duration(seconds: 1)); //Start at current date
   DateTime get currentDate => _currentEndDate;
   void updateCurrentDate(DateTime newDate) {
+    print("NEW DATE IN PROVIDER: $newDate");
     _currentEndDate = newDate;
     notifyListeners();
   }
@@ -175,7 +176,8 @@ class HomeDataProvider extends ChangeNotifier {
               _currentEndDate.month, _currentEndDate.day - 10);
           fetchActivityDataPoints(_currentMinDate, _currentEndDate);
           fetchSleepDataPoints(_currentMinDate, _currentEndDate);
-          fetchNutritionDataPoints(_currentMinDate);
+          fetchNutritionDataPoints(DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day));
           fetchHRVDataPoints(_currentMinDate, endDate: _currentEndDate);
           break;
         case 'week':

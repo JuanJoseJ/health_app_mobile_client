@@ -20,20 +20,20 @@ class DetailScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeDataProvider>(builder: (context, hDP, child) {
+    return Consumer<HomeDataProvider>(builder: (context, hdp, child) {
       String dateText = '';
-      switch (hDP.currentTopBarSelect) {
+      switch (hdp.currentTopBarSelect) {
         case "day":
-          dateText = DateFormat('EEEE d, yyyy').format(hDP.currentDate);
+          dateText = DateFormat('MMMM dd, yyyy').format(hdp.currentDate);
         case "week":
-          DateTime startOfWeek = hDP.currentDate
-              .subtract(Duration(days: hDP.currentDate.weekday - 1));
+          DateTime startOfWeek = hdp.currentDate
+              .subtract(Duration(days: hdp.currentDate.weekday - 1));
           DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
           String startString = DateFormat('MMMM d').format(startOfWeek);
           String endString = DateFormat('MMMM d').format(endOfWeek);
           dateText = "$startString - $endString";
         case "month":
-          dateText = DateFormat('MMMM y').format(hDP.currentDate);
+          dateText = DateFormat('MMMM y').format(hdp.currentDate);
         default:
       }
 

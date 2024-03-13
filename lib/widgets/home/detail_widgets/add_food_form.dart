@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/util/dates_util.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart'; // For input formatters
 
 class FoodFormCard extends StatefulWidget {
