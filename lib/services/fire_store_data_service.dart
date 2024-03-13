@@ -166,6 +166,10 @@ class FireStoreDataService {
   Future<List<DefaultDataPoint>> fetchUsersFood(
       String userId, DateTime startDate,
       {DateTime? endDate}) async {
+    if (endDate == null) {
+      endDate = DateTime(startDate.year, startDate.month, startDate.day + 1)
+          .subtract(const Duration(seconds: 1));
+    }
     List<DefaultDataPoint> userFood = [];
     DateTime thisStartDate =
         DateTime(startDate.year, startDate.month, startDate.day);
@@ -180,11 +184,8 @@ class FireStoreDataService {
         DateTime docDate = date.toDate();
         if ((docDate.isAfter(thisStartDate) ||
                 docDate.isAtSameMomentAs(thisStartDate)) &&
-            (endDate == null ||
-                docDate.isBefore(endDate) ||
-                docDate.isAtSameMomentAs(endDate))) {
+            (docDate.isBefore(endDate!) || docDate.isAtSameMomentAs(endDate!))) {
           for (Map fr in foodRegister) {
-            print("FR IN SERVICE: $fr");
             userFood.add(DefaultDataPoint.fromNutritionData({
               "logDate": docDate.toString(),
               "id": doc.id,

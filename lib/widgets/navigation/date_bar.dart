@@ -71,7 +71,6 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
                 endDate: endDate.add(const Duration(days: 15)));
           }
           hdp.updateCurrentDate(newDate);
-          hdp.updateNutritionDataPoints([]);
           hdp.fetchNutritionDataPoints(newDate);
         } else {
           return;
