@@ -134,7 +134,6 @@ class HomeDataProvider extends ChangeNotifier {
       .subtract(const Duration(seconds: 1)); //Start at current date
   DateTime get currentDate => _currentEndDate;
   void updateCurrentDate(DateTime newDate) {
-    print("NEW DATE IN PROVIDER: $newDate");
     _currentEndDate = newDate;
     notifyListeners();
   }

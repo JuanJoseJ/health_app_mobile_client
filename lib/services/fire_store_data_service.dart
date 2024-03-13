@@ -172,14 +172,12 @@ class FireStoreDataService {
     final userFoodCol = db.collection("user_food");
 
     Query query = userFoodCol.where("userId", isEqualTo: userId);
-    print("START DATE IN SERVICE: $thisStartDate");
 
     await query.get().then((value) {
       for (var doc in value.docs) {
         var date = doc["date"] as Timestamp;
         var foodRegister = doc["food_register"] as List;
         DateTime docDate = date.toDate();
-        print("DOC DATE IN SERVICE: $docDate");
         if ((docDate.isAfter(thisStartDate) ||
                 docDate.isAtSameMomentAs(thisStartDate)) &&
             (endDate == null ||
