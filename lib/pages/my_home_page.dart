@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:health_app_mobile_client/charts/chart_output_variables.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/services/fit_bit_data_service.dart';
 import 'package:health_app_mobile_client/widgets/bullets/bullets_display.dart';
@@ -89,7 +89,7 @@ Widget? pageSelector(int i) {
       page = BulletsDisplay();
       break;
     case 2:
-      page = const ProfileScreen();
+      page = OutputsListChart();
       break;
     default:
       page = const HomeScafold();

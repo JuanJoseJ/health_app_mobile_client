@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:health/health.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/util/default_data_util.dart';
-import 'package:health_app_mobile_client/widgets/navigation/detail_top_bar.dart';
+import 'package:health_app_mobile_client/widgets/navigation/top_bar.dart';
 import 'package:provider/provider.dart';
 
 class OutputsListChart extends StatefulWidget {
-  final Function(String) setPage;
-  const OutputsListChart({super.key, required this.setPage});
+  final Function(String)? setPage;
+  const OutputsListChart({super.key, this.setPage});
 
   @override
   State<OutputsListChart> createState() => _OutputsListChartState();
@@ -29,10 +29,7 @@ class _OutputsListChartState extends State<OutputsListChart> {
   Widget build(BuildContext context) {
     return Consumer<HomeDataProvider>(builder: (context, hdp, child) {
       return Scaffold(
-        appBar: DetailTopBar(
-          notifyParent: widget.setPage,
-          chartId: "bullets",
-        ),
+        appBar: MyTopBar(),
         backgroundColor: Theme.of(context).colorScheme.background,
         body: ListView(
           children: hdp.currentOutputVariables.isEmpty
@@ -109,7 +106,6 @@ class OutputCard extends StatelessWidget {
     );
   }
 }
-
 
 String chooseUnit(HealthDataUnit unit) {
   String follow;

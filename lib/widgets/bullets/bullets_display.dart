@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:health_app_mobile_client/charts/chart_output_variables.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/util/app_states.dart';
 import 'package:health_app_mobile_client/widgets/bullets/bullets_scafold.dart';
@@ -31,8 +30,6 @@ class _BulletsDisplayState extends State<BulletsDisplay> {
         return LessonScafold(setPage: setPage);
       case "quiz":
         return QuizScaffold(setPage: setPage);
-      case "outputs":
-        return OutputsListChart(setPage: setPage);
       default:
         return BulletsScafold(setPage: setPage);
     }

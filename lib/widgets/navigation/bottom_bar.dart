@@ -21,8 +21,8 @@ class MyBottomBar extends StatelessWidget {
           label: 'Learn',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.account_circle),
-          label: 'Account',
+          icon: Icon(Icons.local_hospital),
+          label: 'Health',
           
         ),
         // Add more items as needed

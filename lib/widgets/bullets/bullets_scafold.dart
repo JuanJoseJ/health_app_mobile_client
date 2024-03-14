@@ -38,18 +38,28 @@ class BulletsScafold extends StatelessWidget {
                   setPage: setPage,
                   pageName: "quiz",
                 ),
-              BulletCard(
-                cardMainColor: Colors.deepPurple,
-                title: "Output Variables",
-                description:
-                    "",
-                setPage: setPage,
-                pageName: "outputs",
-              )
+              if (hdp.currentLesson.isEmpty)
+                NoLessonWidget(),
             ],
           ),
         ),
       );
     });
+  }
+}
+
+class NoLessonWidget extends StatelessWidget {
+  const NoLessonWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("You have no more lessons left to do"),
+      ],
+    );
   }
 }

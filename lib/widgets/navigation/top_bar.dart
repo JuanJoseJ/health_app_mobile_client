@@ -14,20 +14,6 @@ class MyTopBar extends StatelessWidget implements PreferredSizeWidget {
         style: Theme.of(context).textTheme.headlineSmall,
       ),
       actions: [], 
-        
-        // IconButton(
-        //   icon: Icon(
-        //     Icons.logout,
-        //     semanticLabel: 'exit',
-        //     color: Theme.of(context).colorScheme.primary,
-        //   ),
-        //   onPressed: () {
-        //     // Add your logout logic here
-        //   },
-        //   color: Theme.of(context).colorScheme.secondary,
-        // ),
-        
-      
     );
   }
 }
