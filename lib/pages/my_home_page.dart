@@ -65,9 +65,7 @@ class _MainPageState extends State<MainPage> {
         return homeDataProvider;
       },
       child: Scaffold(
-        // body: HealthApp(),
         body: pageSelector(_currentIndex),
-        // body: ExampleWidget(),
         bottomNavigationBar: MyBottomBar(
           currentIndex: _currentIndex,
           onTap: (index) {

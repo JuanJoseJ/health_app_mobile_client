@@ -76,14 +76,16 @@ class DetailCard extends StatelessWidget {
         ),
         title == "Food"
             ? Expanded(
-              flex: 2,
+                flex: 2,
                 child: Card(
                   child: FoodFormCard(
                     date: date,
                   ),
                 ),
               )
-            : Spacer(),
+            : title == "Profile"
+                ? SizedBox()
+                : Spacer(),
       ],
     );
   }

@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 class DateBar extends StatelessWidget implements PreferredSizeWidget {
-  const DateBar({Key? key});
+  final dynamic Function(String)? navigateFn;
+  const DateBar({Key? key, this.navigateFn});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -238,6 +239,15 @@ class DateBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.person,
+              color: Colors.black,
+            ),
+            onPressed: () => {navigateFn!("Profile")},
+          ),
+        ],
       );
     });
   }

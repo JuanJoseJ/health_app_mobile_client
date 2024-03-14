@@ -52,7 +52,7 @@ class CardsScafold extends StatelessWidget {
       }
 
       return Scaffold(
-        appBar: const DateBar(),
+        appBar: DateBar(navigateFn: navigateFn),
         backgroundColor: Theme.of(context).colorScheme.background,
         body: Padding(
           padding: EdgeInsets.all(8.0),

@@ -8,13 +8,13 @@ import 'package:provider/provider.dart';
 class DetailScaffold extends StatelessWidget {
   final dynamic Function(String) navigateFn;
   final StatefulWidget chart;
-  final Widget bottomWidget;
+  final Widget? bottomWidget;
   final String title;
   const DetailScaffold({
     super.key,
     required this.navigateFn,
     required this.chart,
-    required this.bottomWidget,
+    this.bottomWidget,
     required this.title,
   });
 

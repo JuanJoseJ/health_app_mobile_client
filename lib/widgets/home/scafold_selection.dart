@@ -7,6 +7,7 @@ import 'package:health_app_mobile_client/charts/chart_sleep_states_by_time.dart'
 import 'package:health_app_mobile_client/charts/chart_stress_by_day.dart';
 import 'package:health_app_mobile_client/charts/chart_stress_by_period.dart';
 import 'package:health_app_mobile_client/charts/side_tittle_widgets/bottom_tittle_widgets.dart';
+import 'package:health_app_mobile_client/pages/authentication/profile.dart';
 import 'package:health_app_mobile_client/pages/home_provider.dart';
 import 'package:health_app_mobile_client/widgets/home/detail_widgets/detail_display.dart';
 import 'package:health_app_mobile_client/widgets/home/resume_widgets/bottom_widgets/activity_bottom_widget.dart';
@@ -84,16 +85,6 @@ class _DataScafoldState extends State<DataScafold> {
             bottomWidget = const FoodListBottomWidget();
             title = "Food";
             break;
-          // case 'Add Food':
-          // // await hdp.fetchUserFood();
-          //   chart = hdp.currentTopBarSelect == 'day'
-          //       ? const FoodListChart()
-          //       : CaloriesByPeriodChart(
-          //           nPeriods: getNumberOfPeriods(),
-          //         );
-          //   bottomWidget = const FoodListBottomWidget();
-          //   title = "ADD FOOD";
-          //   break;
           case 'Stress':
             chart = hdp.currentTopBarSelect == 'day'
                 ? const StressChart()
@@ -104,6 +95,10 @@ class _DataScafoldState extends State<DataScafold> {
                     nPeriods: getNumberOfPeriods(),
                   );
             title = "Stress";
+          case 'Profile':
+            chart = ProfileBlock();
+            bottomWidget = null;
+            title = "Profile";
             break;
           default:
             chart = ActivityChart(
@@ -131,7 +126,7 @@ class _DataScafoldState extends State<DataScafold> {
               title: title!,
               navigateFn: navigate,
               chart: chart!,
-              bottomWidget: bottomWidget!,
+              bottomWidget: bottomWidget,
             );
             break;
           default:
