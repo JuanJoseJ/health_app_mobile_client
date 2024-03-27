@@ -98,7 +98,9 @@ class CardsScafold extends StatelessWidget {
                               : CaloriesByPeriodChart(
                                   nPeriods: getNumberOfPeriods()),
                           chartId: "Food",
-                          bottomWidget: FoodListBottomWidget(),
+                          bottomWidget: hdp.currentTopBarSelect == 'day'
+                              ? Spacer()
+                              : FoodListBottomWidget(),
                           notifyParent: navigateFn,
                         )),
                       ],

@@ -82,7 +82,10 @@ class _DataScafoldState extends State<DataScafold> {
                 : CaloriesByPeriodChart(
                     nPeriods: getNumberOfPeriods(),
                   );
-            bottomWidget = const FoodListBottomWidget();
+
+            bottomWidget = hdp.currentTopBarSelect == 'day'
+                ? null
+                : const FoodListBottomWidget();
             title = "Food";
             break;
           case 'Stress':

@@ -55,7 +55,7 @@ class FitBitDataService {
       // A better aproach would be to asossiate an account with a user token,
       // but as we are only using the client authN, that is not possible.
       // A back-end server would be required.
-      '&prompt=login_consent', // Remove the '_consent' to require login
+      '&prompt=login', // Remove the '_consent' to require login (or add it in case you want it)
     );
 
     if (!await launchUrl(authorizationUrl,
